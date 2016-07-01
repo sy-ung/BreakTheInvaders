@@ -5,28 +5,32 @@ using System;
 
 public class AssetManager : MonoBehaviour {
 
-    private static AssetManager m_Instance;
+    private static AssetManager m_instance;
 
-    private Hashtable m_Textures;
-    private Hashtable m_AudioClips;
-
-    public static AssetManager getInstance()
+    public static AssetManager m_Instance
     {
-        if (m_Instance == null)
+        get
         {
-            m_Instance = new AssetManager();
+            if(m_instance == null)
+            {
+                m_instance = FindObjectOfType<AssetManager>();
+                if(m_instance == null)
+                {
+                    GameObject t_AssetManagerObject = new GameObject("AssetManagerSingleton");
+                    m_instance = t_AssetManagerObject.AddComponent<AssetManager>();
+                    LoadAllAssets();
+                }
+            }
+            return m_instance;
         }
-
-        return m_Instance;
     }
 
-    private AssetManager()
-    {
-        m_Textures = new Hashtable();
-        m_AudioClips = new Hashtable();
 
-        LoadAllAssets();
-    }
+
+
+    private static Hashtable m_Sprite;
+    private static Hashtable m_AudioClips;
+
 
     void Awake()
     {
@@ -43,17 +47,22 @@ public class AssetManager : MonoBehaviour {
 	
 	}
 
-    void LoadAllAssets()
+    static void LoadAllAssets()
     {
-        
-        Sprite t_Texture = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Images/Player.png");
-        m_Textures.Add("Player",t_Texture);
+
+        m_Sprite = new Hashtable();
+        m_AudioClips = new Hashtable();
+
+
+        //Sprite t_Sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Images/Player.png");
+        m_Sprite.Add("Player", AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Images/Player.png"));
+        m_Sprite.Add("PlayerBall", AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Images/Ball.png"));
 
     }
 
-    public Sprite GetTexture(string p_TextureName)
+    public Sprite GetSprite(string p_SpriteName)
     {
-        return (Sprite) m_Textures[p_TextureName];
+        return (Sprite)m_Sprite[p_SpriteName];
     }
 
     public AudioClip GetAudioClip(string p_AudioClipName)
