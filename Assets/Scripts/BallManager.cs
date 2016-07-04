@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class BallManager : MonoBehaviour {
 
@@ -23,7 +22,20 @@ public class BallManager : MonoBehaviour {
         }
     }
 
-    private Ball m_PlayerBall;
+    private Ball m_playerball;
+    public Ball m_PlayerBall
+    {
+        get
+        {
+            if (m_playerball != null)
+                return m_playerball;
+            else
+            {
+                Debug.Log("m_playerball is null at get m_PlayerBall");
+                return null;
+            }
+        }
+    }
 
 
 
@@ -31,31 +43,39 @@ public class BallManager : MonoBehaviour {
     public void RespawnBall(Vector2 p_Position)
     {
 
-        if(m_PlayerBall == null)
+        if(m_playerball == null)
         {
-            m_PlayerBall = FindObjectOfType<Ball>();
-            if(m_PlayerBall == null)
+            m_playerball = FindObjectOfType<Ball>();
+            if(m_playerball == null)
             {
                 GameObject t_PlayerBallObject = new GameObject("PlayerBall");
-                m_PlayerBall = t_PlayerBallObject.AddComponent<Ball>();
+                m_playerball = t_PlayerBallObject.AddComponent<Ball>();
 
             }
         }
 
-        m_PlayerBall.transform.position = new Vector3(p_Position.x, p_Position.y, 0);
+        m_playerball.transform.position = new Vector3(p_Position.x, p_Position.y, 0);
+        m_playerball.OnRespawn();
 
     }
 
     public void SetBallSprite(Sprite p_NewSprite)
     {
-        if(m_PlayerBall == null)
-        {
+        if(m_playerball == null)
             Debug.Log("PlayerBall is null in BallManager.SetBallSprite");
-        }
+        
         else
-        {
-            m_PlayerBall.ChangeBallSprite(p_NewSprite);
-        }
+            m_playerball.ChangeBallSprite(p_NewSprite);
+        
+    }
+
+    public void SetBallScale(float p_NewScaleMultiplier)
+    {
+        if (m_playerball == null)
+            Debug.Log("m_PlayerBall is null in BallManager.SetBallScale");
+        else
+            m_playerball.ScaleBall(p_NewScaleMultiplier);
+            
     }
     
 	// Use this for initialization

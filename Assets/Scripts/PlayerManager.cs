@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
-
 public class PlayerManager : MonoBehaviour
 {
 
@@ -28,6 +26,19 @@ public class PlayerManager : MonoBehaviour
 
 
     private Player m_player;
+    public Player m_Player
+    {
+        get
+        {
+            if (m_player != null)
+                return m_player;
+            else
+            {
+                Debug.Log("m_player is null at get m_Player");
+                return null;
+            }
+        }
+    }
 
 
     void Awake()
@@ -52,65 +63,16 @@ public class PlayerManager : MonoBehaviour
         m_player.transform.position = new Vector3(p_NewPosition.x, p_NewPosition.y, 0);
         
     }
-
-    public void MovePlayer(Vector2 p_DeltaPosition)
-    {
-        if (m_player == null)
-        { 
-            RespawnPlayer(p_DeltaPosition);
-            Debug.Log("m_Player was null at PlayerManger.MovePlayer");
-        }
-
-        m_player.MovePlayer(p_DeltaPosition);
-    }
-
-    public void SetPlayerPosition(Vector2 p_NewPosition)
+    public Player GetPlayerReference()
     {
         if (m_player == null)
         {
-            RespawnPlayer(p_NewPosition);
-            Debug.Log("m_Player was null at PlayerManger.MovePlayer");
-        }
-
-        m_player.SetPlayerPosition(p_NewPosition);
-    }
-
-    public void SetPlayerSprite(Sprite p_NewSprite)
-    {
-        if(m_player == null)
-        {
-            Debug.Log("Player is null at PlayerManager.SetPlayerSprite");
+            Debug.Log("m_Player was null at PlayerManager.GetPlayerReference");
+            return null;
         }
         else
-        {
-            m_player.ChangePlayerSprite(p_NewSprite);
-        }
-    }
+            return m_player;
 
-    public Vector2 GetPlayerVelocity()
-    {
-        if(m_player == null)
-        {
-            Debug.Log("Player is null at PlayerManager.GetPlayerVelocity");
-            return Vector2.zero;
-        }
-        else
-        {
-            return m_player.m_Velocity;
-        }
-    }
-
-    public Vector2 GetPlayerSize()
-    {
-        if(m_player == null)
-        {
-            Debug.Log("Player is null at PlayerManager.GetPlayerSize");
-            return Vector2.zero;
-        }
-        else
-        {
-           return m_player.m_SpriteRenderer.bounds.size;
-        }
     }
 
 	// Use this for initialization

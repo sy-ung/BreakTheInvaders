@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
-using UnityEditor;
+//using UnityEditor;
 using System.Collections;
-using System;
 
 public class AssetManager : MonoBehaviour {
 
@@ -47,16 +46,17 @@ public class AssetManager : MonoBehaviour {
 	
 	}
 
-    static void LoadAllAssets()
+    private static void LoadAllAssets()
     {
 
         m_sprite = new Hashtable();
         m_audioClips = new Hashtable();
 
 
-        //Sprite t_Sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Images/Player.png");
-        m_sprite.Add("Player", AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Images/Player.png"));
-        m_sprite.Add("PlayerBall", AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Images/Ball.png"));
+        m_sprite.Add("Player", Resources.Load<Sprite>("Images/Player"));
+        m_sprite.Add("PlayerBall", Resources.Load<Sprite>("Images/Ball"));
+
+
 
     }
 

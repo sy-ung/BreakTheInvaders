@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 
 //This class is persistent throughout the game as it has references to all the singletons
