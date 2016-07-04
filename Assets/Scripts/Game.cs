@@ -3,7 +3,7 @@ using System.Collections;
 
 public class Game : MonoBehaviour {
 
-    Vector2 Spawnpoint = new Vector2(0, 0);
+    Vector2 Spawnpoint = new Vector2(0.0f, 0.0f);
 
 	// Use this for initialization
 	void Start () {
@@ -12,34 +12,21 @@ public class Game : MonoBehaviour {
         BallManager.m_Instance.RespawnBall(Spawnpoint);
         //PlayerManager.m_Instance.RespawnPlayer(new Vector2(0.5f, 0.5f));
         //PlayerManager.m_Instance.SetPlayerSprite(AssetManager.m_Instance.GetSprite("PlayerBall"));
-
-
     }
 	
 	// Update is called once per frame
 	void Update ()
     {
-        if(Input.GetKey(KeyCode.A))
-        {
-            PlayerManager.m_Instance.SetPlayerSprite(AssetManager.m_Instance.GetSprite("PlayerBall"));
-        }
+        CheckInput();
 
-        if (Input.GetKey(KeyCode.S))
-        {
-            PlayerManager.m_Instance.SetPlayerSprite(AssetManager.m_Instance.GetSprite("Player"));
-        }
+    }
 
-        if (Input.GetKey(KeyCode.Q))
+    void CheckInput()
+    {
+        if (Input.GetMouseButton(0))
         {
-            Spawnpoint = Spawnpoint + new Vector2(0.01f, 0);
-            PlayerManager.m_Instance.RespawnPlayer(Spawnpoint);
+            Vector2 t_MousePOS = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            PlayerManager.m_Instance.SetPlayerPosition(t_MousePOS);
         }
-
-        if (Input.GetKey(KeyCode.W))
-        {
-            Spawnpoint = Spawnpoint + new Vector2(0, 0.01f);
-            PlayerManager.m_Instance.RespawnPlayer(Spawnpoint);
-        }
-
     }
 }

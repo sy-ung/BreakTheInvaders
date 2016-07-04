@@ -28,8 +28,8 @@ public class AssetManager : MonoBehaviour {
 
 
 
-    private static Hashtable m_Sprite;
-    private static Hashtable m_AudioClips;
+    private static Hashtable m_sprite;
+    private static Hashtable m_audioClips;
 
 
     void Awake()
@@ -50,23 +50,23 @@ public class AssetManager : MonoBehaviour {
     static void LoadAllAssets()
     {
 
-        m_Sprite = new Hashtable();
-        m_AudioClips = new Hashtable();
+        m_sprite = new Hashtable();
+        m_audioClips = new Hashtable();
 
 
         //Sprite t_Sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Images/Player.png");
-        m_Sprite.Add("Player", AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Images/Player.png"));
-        m_Sprite.Add("PlayerBall", AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Images/Ball.png"));
+        m_sprite.Add("Player", AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Images/Player.png"));
+        m_sprite.Add("PlayerBall", AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Images/Ball.png"));
 
     }
 
     public Sprite GetSprite(string p_SpriteName)
     {
-        return (Sprite)m_Sprite[p_SpriteName];
+        return (Sprite)m_sprite[p_SpriteName];
     }
 
     public AudioClip GetAudioClip(string p_AudioClipName)
     {
-        return (AudioClip)m_AudioClips[p_AudioClipName];
+        return (AudioClip)m_audioClips[p_AudioClipName];
     }
 }

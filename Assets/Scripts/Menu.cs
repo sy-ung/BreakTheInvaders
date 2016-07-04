@@ -4,12 +4,12 @@ using System.Collections;
 
 public class Menu : MonoBehaviour {
 
-    private PointBlank m_PointBlank;
+    private PointBlank m_pointblank;
 
 
     void Awake()
     {
-        m_PointBlank = GameObject.FindGameObjectWithTag("tag_pointblank").GetComponent<PointBlank>();
+        m_pointblank = GameObject.FindGameObjectWithTag("tag_pointblank").GetComponent<PointBlank>();
     }
 
 
