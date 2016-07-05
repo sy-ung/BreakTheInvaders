@@ -7,8 +7,9 @@ public class Game : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 
-        PlayerManager.m_Instance.RespawnPlayer(new Vector2(0,-3));
-        BallManager.m_Instance.RespawnBall(Spawnpoint);
+        PlayerManager.m_Instance.RespawnPlayer();
+        BallManager.m_Instance.RespawnBall(new Vector2(0,1));
+        EnemyManager.m_Instance.SpawnEnemies(5,11);
     }
 	
 	// Update is called once per frame
@@ -18,31 +19,26 @@ public class Game : MonoBehaviour {
 
     }
 
+    float t_rot = 0;
+
     void CheckInput()
     {
-        if (Input.GetMouseButton(0))
+        if(Input.GetKeyDown(KeyCode.A))
         {
-            Vector2 t_MousePOS = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            t_MousePOS = new Vector2(t_MousePOS.x, -3);
-            PlayerManager.m_Instance.m_Player.SetPlayerPosition(t_MousePOS);
-        }
-
-        if(Input.GetKey(KeyCode.W))
-        {
-            PlayerManager.m_Instance.m_Player.SetPlayerScale(1.05f);
-        }
-
-        if (Input.GetKey(KeyCode.S))
-        {
-            PlayerManager.m_Instance.m_Player.SetPlayerScale(0.95f);
+            Player t_player = PlayerManager.m_Instance.m_Player;
+            if (t_player.m_CurrentControlMode == Player.ControlMode.BATTING)
+            {
+                t_player.m_CurrentControlMode = Player.ControlMode.DRAG;
+            }
+            else
+            {
+                t_player.m_CurrentControlMode = Player.ControlMode.BATTING;
+            }
         }
 
         if(Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
         {
-            Vector2 t_touchposition = Input.GetTouch(0).position;
-            t_touchposition = Camera.main.ScreenToWorldPoint(t_touchposition);
-            t_touchposition = new Vector2(t_touchposition.x, -3);
-            PlayerManager.m_Instance.m_Player.SetPlayerPosition(t_touchposition);
+
         }
     }
 }

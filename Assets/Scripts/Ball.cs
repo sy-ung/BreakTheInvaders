@@ -17,7 +17,8 @@ public class Ball : MonoBehaviour {
 
     private Vector2 m_direction;
 
-    public Ball()
+
+    private void Initialize()
     {
         m_ballaudiosystem = gameObject.AddComponent<AudioSource>();
         m_rigidbody2D = gameObject.AddComponent<Rigidbody2D>();
@@ -28,6 +29,8 @@ public class Ball : MonoBehaviour {
 	// Use this for initialization
 	void Awake ()
     {
+        Initialize();
+
         m_spriterenderer.sprite = AssetManager.m_Instance.GetSprite("PlayerBall");
         m_rigidbody2D.gravityScale = 0;
         m_rigidbody2D.mass = 1;
@@ -83,9 +86,9 @@ public class Ball : MonoBehaviour {
         }
         else if(transform.position.y - m_ballsizecheck.y < -m_boundrysize.y) //Bottom
         {
-            //transform.position = new Vector2(transform.position.x, -m_boundrysize.y + m_ballsizecheck.y);
-            //m_rigidbody2D.velocity = new Vector2(m_rigidbody2D.velocity.x, -m_rigidbody2D.velocity.y);
-            BallManager.m_Instance.RespawnBall(Vector2.zero);
+            transform.position = new Vector2(transform.position.x, -m_boundrysize.y + m_ballsizecheck.y);
+            m_rigidbody2D.velocity = new Vector2(m_rigidbody2D.velocity.x, -m_rigidbody2D.velocity.y);
+            //BallManager.m_Instance.RespawnBall(Vector2.zero);
         }
 
 
@@ -107,21 +110,28 @@ public class Ball : MonoBehaviour {
 	void Update ()
     {
         ScreenBoundryCheck();
-        
-        Debug.Log(m_rigidbody2D.velocity.y);
+        SpeedCheck();
+        Debug.Log(m_rigidbody2D.velocity.magnitude);
     }
 
     void OnCollisionEnter2D(Collision2D p_Collision)
     {
-        
-        if(p_Collision.collider.tag == "Player")
-        {
-            Player t_player = PlayerManager.m_Instance.GetPlayerReference();
+        bool t_piercing = true;
+        if(!t_piercing || p_Collision.collider.tag == "Player")
+        { 
             Vector2 t_direction = ((Vector2)transform.position - p_Collision.contacts[0].point).normalized;
             transform.position = p_Collision.contacts[0].point + t_direction * m_ballsizecheck.magnitude;
             m_rigidbody2D.velocity = t_direction * m_defaultspeed;
+        }
+        else
+        {
+            float t_speed = m_rigidbody2D.velocity.magnitude;
+            m_rigidbody2D.velocity = m_direction * m_defaultspeed;
+        }
 
-
+        if (p_Collision.collider.tag == "Player")
+        {
+            Player t_player = PlayerManager.m_Instance.m_Player;
             if (p_Collision.contacts[0].point.y < t_player.GetTopYLine() &&
                 p_Collision.contacts[0].point.y > t_player.transform.position.y)
             {
@@ -133,29 +143,38 @@ public class Ball : MonoBehaviour {
             }
             SpeedCheck();
         }
+        if(p_Collision.collider.tag == "Enemy")
+        {
+            float t_speed = m_rigidbody2D.velocity.magnitude;
+            m_rigidbody2D.velocity = m_direction * m_defaultspeed;
+            Destroy(p_Collision.collider.gameObject);
+        }
     }
     
     //So it never slows down past a certain speed
     void SpeedCheck()
     {
-        Player t_player = PlayerManager.m_Instance.GetPlayerReference();
+        Player t_player = PlayerManager.m_Instance.m_Player;
 
         m_direction = m_rigidbody2D.velocity.normalized;
 
-        float t_yminspeedlimit = 3;
-
-        if(m_rigidbody2D.velocity.magnitude < m_defaultspeed)
+        if(m_rigidbody2D.velocity.magnitude > m_defaultspeed || m_rigidbody2D.velocity.magnitude < m_defaultspeed)
         {
             m_rigidbody2D.velocity = m_direction * m_defaultspeed;
         }
 
-        if(m_rigidbody2D.velocity.y < m_defaultspeed && m_rigidbody2D.velocity.y > -m_defaultspeed)
-        {
-            if(transform.position.y > t_player.transform.position.y)
-                m_rigidbody2D.velocity = new Vector2(m_rigidbody2D.velocity.x, m_defaultspeed);
-            if(transform.position.y < t_player.transform.position.y)
-                m_rigidbody2D.velocity = new Vector2(m_rigidbody2D.velocity.x, -m_defaultspeed);
-        }
+        //if(m_rigidbody2D.velocity.magnitude < m_defaultspeed)
+        //{
+        //    m_rigidbody2D.velocity = m_direction * m_defaultspeed;
+        //}
+
+        //if(m_rigidbody2D.velocity.y < m_defaultspeed && m_rigidbody2D.velocity.y > -m_defaultspeed)
+        //{
+        //    if(transform.position.y > t_player.transform.position.y)
+        //        m_rigidbody2D.velocity = new Vector2(m_rigidbody2D.velocity.x, m_defaultspeed);
+        //    if(transform.position.y < t_player.transform.position.y)
+        //        m_rigidbody2D.velocity = new Vector2(m_rigidbody2D.velocity.x, -m_defaultspeed);
+        //}
  
         
     }

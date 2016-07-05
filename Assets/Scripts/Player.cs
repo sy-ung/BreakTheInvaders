@@ -1,7 +1,20 @@
 ﻿using UnityEngine;
 
-public class Player : MonoBehaviour {
 
+public class Player : MonoBehaviour {
+    public enum ControlMode
+    {
+        DRAG,
+        BATTING,
+        SLINGSHOT
+    };
+
+    private ControlMode m_currentcontrolmode;
+    public ControlMode m_CurrentControlMode
+    {
+        get { return m_currentcontrolmode; }
+        set { m_currentcontrolmode = value; }
+    }
 
 
     private SpriteRenderer m_spriterenderer;
@@ -23,9 +36,14 @@ public class Player : MonoBehaviour {
         private set { m_velocity = value;}
     }
 
-    private BoxCollider2D m_boxcollider2D;
+
 
     private Vector2 m_newposition;
+
+    private Quaternion m_newrotation;
+
+    private BoxCollider2D m_boxcollider2D;
+
     private Rigidbody2D m_rigidbody2D;
     private Vector2 m_originalscale;
 
@@ -33,7 +51,12 @@ public class Player : MonoBehaviour {
     private Vector2 m_playersizecheck;
     private Vector2 m_boundrysize;
 
-    public Player()
+    private float m_startingline;
+
+    private Vector2 m_previousmousepos;
+
+
+    private void Initialize()
     {
         m_rigidbody2D = gameObject.AddComponent<Rigidbody2D>();
         m_spriterenderer = gameObject.AddComponent<SpriteRenderer>();
@@ -42,15 +65,19 @@ public class Player : MonoBehaviour {
     
     void Awake()
     {
+        Initialize();
+
         m_rigidbody2D.gravityScale = 0;
         m_spriterenderer.sprite = AssetManager.m_Instance.GetSprite("Player");
 
         m_rigidbody2D.mass = 1;
-        m_rigidbody2D.isKinematic = true;
+        m_rigidbody2D.isKinematic = false;
+        m_rigidbody2D.freezeRotation = true;
+        
 
         //This is to calculate the scale of the player paddle in propotion to the screen size
         float t_AspectRatio = (float)Camera.main.pixelHeight / (float)Camera.main.pixelWidth;
-        m_originalscale = (transform.localScale * t_AspectRatio);
+        m_originalscale = (transform.localScale * t_AspectRatio)/1.5f;
         transform.localScale = m_originalscale;
 
         //Converting screen width and height to world points
@@ -58,13 +85,18 @@ public class Player : MonoBehaviour {
         m_playersizecheck = new Vector2(m_spriterenderer.bounds.size.x / 2, m_spriterenderer.bounds.size.y / 2);
 
         m_boxcollider2D.size = new Vector2(m_spriterenderer.sprite.bounds.size.x, m_spriterenderer.sprite.bounds.size.y);
-       
+
+        m_startingline = -Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, Screen.height)).y + (m_playersizecheck.y * 10);
+
+        transform.position = new Vector2(0, m_startingline);
+              
     }
 
 	// Use this for initialization
 	void Start ()
     {
         m_newposition = transform.position;
+        m_currentcontrolmode = ControlMode.DRAG;
 
     }
 
@@ -86,11 +118,27 @@ public class Player : MonoBehaviour {
         m_playersizecheck = new Vector2(m_spriterenderer.bounds.size.x / 2, m_spriterenderer.bounds.size.y / 2);
     }
 
+    
+
 	// Update is called once per frame
 	void Update ()
     {
         MoveCheck();
         ScreenBoundryCheck();
+
+        switch(m_currentcontrolmode)
+        {
+            case ControlMode.BATTING:
+                BattingMode();
+                break;
+            case ControlMode.DRAG:
+                DragMode();
+                break;
+            default:
+                break;
+        }
+        m_rigidbody2D.velocity = Vector2.zero;
+
 	}
 
 
@@ -102,6 +150,13 @@ public class Player : MonoBehaviour {
             transform.position = Vector2.Lerp(transform.position, m_newposition, 0.2f);
             m_Velocity = ((Vector2)transform.position - t_PreviousPosition) / Time.deltaTime;
         }
+
+        if(m_newrotation != transform.rotation)
+        {
+            transform.rotation = Quaternion.Lerp(transform.rotation, m_newrotation, 0.25f);
+        }
+
+
     }
 
     private void ScreenBoundryCheck()
@@ -120,8 +175,56 @@ public class Player : MonoBehaviour {
             transform.position = new Vector2(m_boundrysize.x - m_playersizecheck.x, transform.position.y);
      }
 
-     public float GetTopYLine()
+    public float GetTopYLine()
     {
         return transform.position.y + m_playersizecheck.y;
+    }
+
+    private bool m_swinging = false;
+    private float t_swingtimer = 0.20f;
+    private float t_resettimer = 0.0f;
+    void BattingMode()
+    {
+        Vector2 t_mousepos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector2 t_direction = (t_mousepos - (Vector2)transform.position).normalized;
+        Vector2 t_distance = t_direction * m_playersizecheck.magnitude * 0.5f;
+        if (!m_swinging)
+        { 
+            //Keeping the paddle close to the mouse cursor
+            m_newposition = t_mousepos - t_distance * 2;
+
+            //Keeping the right of the paddle pointing towards the cursor
+            m_newrotation = Quaternion.FromToRotation(Vector3.right, t_direction);
+        }
+        else
+        {
+            t_resettimer += Time.deltaTime;
+            if(t_resettimer > t_swingtimer)
+            {
+                t_resettimer = 0.0f;
+                m_swinging = false;
+            }
+        }
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            m_swinging = true;
+            transform.position = t_mousepos + t_distance * 2;
+            transform.rotation = Quaternion.FromToRotation(-Vector3.right, t_direction);
+            m_newrotation = transform.rotation;
+            m_newposition = transform.position;
+        }
+        
+
+
+    }
+
+    void DragMode()
+    {
+        Vector2 t_mousepos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        t_mousepos = new Vector2(t_mousepos.x, m_startingline);
+        m_newposition = t_mousepos;
+        m_newrotation = Quaternion.identity;
+        
     }
 }

@@ -46,7 +46,7 @@ public class PlayerManager : MonoBehaviour
         
     }
 
-    public void RespawnPlayer(Vector2 p_NewPosition)
+    public void RespawnPlayer()
     {
         if (m_player == null)
         {
@@ -59,20 +59,6 @@ public class PlayerManager : MonoBehaviour
                 m_player.tag = "Player";
             }
         }
-
-        m_player.transform.position = new Vector3(p_NewPosition.x, p_NewPosition.y, 0);
-        
-    }
-    public Player GetPlayerReference()
-    {
-        if (m_player == null)
-        {
-            Debug.Log("m_Player was null at PlayerManager.GetPlayerReference");
-            return null;
-        }
-        else
-            return m_player;
-
     }
 
 	// Use this for initialization

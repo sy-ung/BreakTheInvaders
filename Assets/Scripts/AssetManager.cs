@@ -55,6 +55,7 @@ public class AssetManager : MonoBehaviour {
 
         m_sprite.Add("Player", Resources.Load<Sprite>("Images/Player"));
         m_sprite.Add("PlayerBall", Resources.Load<Sprite>("Images/Ball"));
+        m_sprite.Add("EnemyOne", Resources.Load<Sprite>("Images/EnemyOne"));
 
 
 
