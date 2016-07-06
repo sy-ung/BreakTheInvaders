@@ -17,6 +17,10 @@ public class Ball : MonoBehaviour {
 
     private Vector2 m_direction;
 
+    bool m_piercing;
+
+    private float m_firingrate = 0.1f;
+    private float m_firingtimer = 0;
 
     private void Initialize()
     {
@@ -49,6 +53,10 @@ public class Ball : MonoBehaviour {
 
         m_circlecollider2D.radius = m_spriterenderer.sprite.bounds.size.x / 2;
 
+        m_piercing = false;
+
+        m_firingtimer = m_firingrate;
+
     }
 
     void Start()
@@ -58,7 +66,7 @@ public class Ball : MonoBehaviour {
     }
     public void OnRespawn()
     {
-        m_defaultspeed = 10f;
+        m_defaultspeed = 0f;
         m_rigidbody2D.velocity = new Vector2(0, -m_defaultspeed);
     }
 
@@ -88,7 +96,6 @@ public class Ball : MonoBehaviour {
         {
             transform.position = new Vector2(transform.position.x, -m_boundrysize.y + m_ballsizecheck.y);
             m_rigidbody2D.velocity = new Vector2(m_rigidbody2D.velocity.x, -m_rigidbody2D.velocity.y);
-            //BallManager.m_Instance.RespawnBall(Vector2.zero);
         }
 
 
@@ -111,13 +118,27 @@ public class Ball : MonoBehaviour {
     {
         ScreenBoundryCheck();
         SpeedCheck();
-        Debug.Log(m_rigidbody2D.velocity.magnitude);
+        
+        if(m_firingtimer>m_firingrate)
+        { 
+            if(Input.GetMouseButton(0))
+            {
+                FireBullet();
+                m_firingtimer = 0;
+            }
+        }
+        else
+        {
+            m_firingtimer += Time.deltaTime;
+        }
+
     }
 
     void OnCollisionEnter2D(Collision2D p_Collision)
     {
-        bool t_piercing = true;
-        if(!t_piercing || p_Collision.collider.tag == "Player")
+
+        //Check to see if the ball is able to pierce through enemies
+        if (!m_piercing || p_Collision.collider.tag == "Player")
         { 
             Vector2 t_direction = ((Vector2)transform.position - p_Collision.contacts[0].point).normalized;
             transform.position = p_Collision.contacts[0].point + t_direction * m_ballsizecheck.magnitude;
@@ -125,10 +146,10 @@ public class Ball : MonoBehaviour {
         }
         else
         {
-            float t_speed = m_rigidbody2D.velocity.magnitude;
             m_rigidbody2D.velocity = m_direction * m_defaultspeed;
         }
 
+        //What to do when colliding with player
         if (p_Collision.collider.tag == "Player")
         {
             Player t_player = PlayerManager.m_Instance.m_Player;
@@ -143,10 +164,10 @@ public class Ball : MonoBehaviour {
             }
             SpeedCheck();
         }
+
+        //What to when colliding with enemy
         if(p_Collision.collider.tag == "Enemy")
         {
-            float t_speed = m_rigidbody2D.velocity.magnitude;
-            m_rigidbody2D.velocity = m_direction * m_defaultspeed;
             Destroy(p_Collision.collider.gameObject);
         }
     }
@@ -158,24 +179,49 @@ public class Ball : MonoBehaviour {
 
         m_direction = m_rigidbody2D.velocity.normalized;
 
-        if(m_rigidbody2D.velocity.magnitude > m_defaultspeed || m_rigidbody2D.velocity.magnitude < m_defaultspeed)
+        
+        if(m_rigidbody2D.velocity.y < m_defaultspeed/2 && m_rigidbody2D.velocity.y > -m_defaultspeed/2)
         {
+            if(m_rigidbody2D.velocity.y > 0)
+            { 
+                m_rigidbody2D.velocity = new Vector2(m_rigidbody2D.velocity.x, m_defaultspeed / 2);
+            }
+            else
+            {
+                m_rigidbody2D.velocity = new Vector2(m_rigidbody2D.velocity.x, -m_defaultspeed / 2);
+            }
+        }
+
+        if (m_rigidbody2D.velocity.magnitude > m_defaultspeed || m_rigidbody2D.velocity.magnitude < m_defaultspeed)
+        {
+            
             m_rigidbody2D.velocity = m_direction * m_defaultspeed;
         }
 
-        //if(m_rigidbody2D.velocity.magnitude < m_defaultspeed)
-        //{
-        //    m_rigidbody2D.velocity = m_direction * m_defaultspeed;
-        //}
-
-        //if(m_rigidbody2D.velocity.y < m_defaultspeed && m_rigidbody2D.velocity.y > -m_defaultspeed)
-        //{
-        //    if(transform.position.y > t_player.transform.position.y)
-        //        m_rigidbody2D.velocity = new Vector2(m_rigidbody2D.velocity.x, m_defaultspeed);
-        //    if(transform.position.y < t_player.transform.position.y)
-        //        m_rigidbody2D.velocity = new Vector2(m_rigidbody2D.velocity.x, -m_defaultspeed);
-        //}
- 
         
+        
+    }
+
+    void FireBullet()
+    {
+        Vector2 t_mousePOS = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector2 t_firedirection = (t_mousePOS - (Vector2)transform.position).normalized;
+        BallBullet t_bullet = (new GameObject("BallBullet").AddComponent<BallBullet>());
+
+        Vector2 t_startPosition = (Vector2)transform.position + (t_firedirection * (t_bullet.GetComponent<SpriteRenderer>().bounds.size.magnitude/2));
+        t_bullet.transform.position = t_startPosition;
+
+        if(m_rigidbody2D.velocity.magnitude == 0)
+            t_bullet.m_RigidBody2D.velocity = t_firedirection * 10 * 1.5f;
+        else
+            t_bullet.m_RigidBody2D.velocity = t_firedirection * m_defaultspeed * 1.5f;
+
+        t_bullet.transform.rotation = Quaternion.FromToRotation(t_bullet.transform.right, t_firedirection);
+        t_bullet.tag = "Bullet";
+
+
+        Physics2D.IgnoreCollision(m_circlecollider2D, t_bullet.GetComponent<BoxCollider2D>());
+        Physics2D.IgnoreCollision(t_bullet.GetComponent<BoxCollider2D>(), PlayerManager.m_Instance.m_Player.GetComponent<BoxCollider2D>());
+
     }
 }

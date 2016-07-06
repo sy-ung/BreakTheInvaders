@@ -150,6 +150,10 @@ public class Player : MonoBehaviour {
             transform.position = Vector2.Lerp(transform.position, m_newposition, 0.2f);
             m_Velocity = ((Vector2)transform.position - t_PreviousPosition) / Time.deltaTime;
         }
+        else
+        {
+            transform.position = m_newposition;
+        }
 
         if(m_newrotation != transform.rotation)
         {
@@ -225,6 +229,16 @@ public class Player : MonoBehaviour {
         t_mousepos = new Vector2(t_mousepos.x, m_startingline);
         m_newposition = t_mousepos;
         m_newrotation = Quaternion.identity;
-        
+
+        if (Input.touchCount > 0)
+        { 
+            Vector2 t_touchloc = Camera.main.ScreenToWorldPoint(Input.GetTouch(0).position);
+            Debug.Log(t_touchloc);
+            t_touchloc = new Vector2(t_touchloc.x, m_startingline);
+            m_newposition = t_touchloc;
+            m_newrotation = Quaternion.identity;
+        }
+
+
     }
 }

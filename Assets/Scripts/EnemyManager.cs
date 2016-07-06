@@ -3,6 +3,7 @@ using System.Collections;
 
 public class EnemyManager : MonoBehaviour {
 
+
     private Enemy m_enemytype1;
 
     private static EnemyManager m_instance;
@@ -26,8 +27,7 @@ public class EnemyManager : MonoBehaviour {
 
     void Awake()
     {
-        //GameObject t_enemy = new GameObject("EnemyType1");
-        //m_enemytype1 = t_enemy.AddComponent<Enemy>();
+
     }
 
 	// Use this for initialization
@@ -38,14 +38,10 @@ public class EnemyManager : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        Enemy t_enemycheck = FindObjectOfType<Enemy>();
-        if(t_enemycheck == null)
-        {
-            SpawnEnemies(5, 11);
-        }
+
 	}
 
-    public void SpawnEnemies(int p_Rows, int p_Columns)
+    public void SpawnEnemies(int p_Rows, int p_Columns, Enemy p_EnemyType)
     {
         Vector2 t_screensize = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, Screen.height));
 
@@ -58,7 +54,8 @@ public class EnemyManager : MonoBehaviour {
         { 
             for (int j = 0; j < p_Columns; j++)
             {
-                Enemy t_enemy = (new GameObject("EnemyType1")).AddComponent<Enemy>();
+                //Enemy t_enemy = (new GameObject("EnemyType " + j)).AddComponent<Enemy>();
+                Enemy t_enemy = Instantiate(p_EnemyType);
                 t_enemy.tag = "Enemy";
 
                 float t_posy = ((t_screensize.y - t_enemy.m_HalfSize.y)) - ((t_enemy.m_HalfSize.y * 2) * i) - (i*t_paddingy);
@@ -82,5 +79,16 @@ public class EnemyManager : MonoBehaviour {
             }
             t_previousspawnPOS = Vector2.zero;
         }
+    }
+
+    public void KillAllEnemies()
+    {
+        Enemy[] t_allenemies = GameObject.FindObjectsOfType<Enemy>();
+
+        for(int i = 0; i<t_allenemies.Length; i++)
+        {
+            Destroy(t_allenemies[i].gameObject);
+        }
+
     }
 }

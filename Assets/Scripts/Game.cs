@@ -4,18 +4,27 @@ public class Game : MonoBehaviour {
 
     Vector2 Spawnpoint = new Vector2(0.0f, 0.0f);
 
+    public Enemy Enemy1;
+
 	// Use this for initialization
 	void Start () {
 
         PlayerManager.m_Instance.RespawnPlayer();
         BallManager.m_Instance.RespawnBall(new Vector2(0,1));
-        EnemyManager.m_Instance.SpawnEnemies(5,11);
+        
+        EnemyManager.m_Instance.SpawnEnemies(5,11,Enemy1);
     }
 	
 	// Update is called once per frame
 	void Update ()
     {
         CheckInput();
+
+        Enemy t_enemycheck = FindObjectOfType<Enemy>();
+        if (t_enemycheck == null)
+        {
+            EnemyManager.m_Instance.SpawnEnemies(5, 11,Enemy1);
+        }
 
     }
 

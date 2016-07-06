@@ -48,17 +48,13 @@ public class AssetManager : MonoBehaviour {
 
     private static void LoadAllAssets()
     {
-
         m_sprite = new Hashtable();
         m_audioClips = new Hashtable();
-
 
         m_sprite.Add("Player", Resources.Load<Sprite>("Images/Player"));
         m_sprite.Add("PlayerBall", Resources.Load<Sprite>("Images/Ball"));
         m_sprite.Add("EnemyOne", Resources.Load<Sprite>("Images/EnemyOne"));
-
-
-
+        m_sprite.Add("BallBullet", Resources.Load<Sprite>("Images/Bullet"));
     }
 
     public Sprite GetSprite(string p_SpriteName)
