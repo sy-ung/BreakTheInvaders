@@ -1,10 +1,12 @@
 fileFormatVersion: 2
 guid: b71a6d44e4792f043b2da493be8f8149
-timeCreated: 1467223681
+timeCreated: 1467837728
 licenseType: Free
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - m_StandardBallBullet: {fileID: 11490170, guid: 779a02df9127f4f408e7377852c4afe4,
+      type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

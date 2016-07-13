@@ -41,36 +41,37 @@ public class EnemyManager : MonoBehaviour {
 
 	}
 
-    public void SpawnEnemies(int p_Rows, int p_Columns, Enemy p_EnemyType)
+    public void SpawnEnemies(int p_Rows, int p_Columns, string p_EnemyTypeName)
     {
         Vector2 t_screensize = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, Screen.height));
+        GameObject t_enemyobject = AssetManager.m_Instance.GetPrefab(p_EnemyTypeName);
+
 
         bool t_switchside = false;
         Vector2 t_currentspawnPOS;
-        Vector2 t_previousspawnPOS = Vector2.zero;
+        Vector2 t_previousspawnPOS = Vector2.zero - new Vector2(0,0);
         float t_paddingx = 0.05f;
         float t_paddingy = 0.1f;
         for (int i = 0; i < p_Rows;i++)
         { 
             for (int j = 0; j < p_Columns; j++)
             {
-                //Enemy t_enemy = (new GameObject("EnemyType " + j)).AddComponent<Enemy>();
-                Enemy t_enemy = Instantiate(p_EnemyType);
+                Enemy t_enemy = (Instantiate(t_enemyobject)).GetComponent<Enemy>();
                 t_enemy.tag = "Enemy";
 
-                float t_posy = ((t_screensize.y - t_enemy.m_HalfSize.y)) - ((t_enemy.m_HalfSize.y * 2) * i) - (i*t_paddingy);
-                float t_posx = ((t_enemy.m_HalfSize.x * 2) + t_paddingx);
+                Vector2 t_enemyhalfsize = t_enemy.m_HalfSize;
+
+                float t_posy = ((t_screensize.y - t_enemyhalfsize.y)) - ((t_enemyhalfsize.y * 2) * i) - (i*t_paddingy);
+                float t_posx = ((t_enemyhalfsize.x * 2) + t_paddingx);
 
                 if (t_switchside)
                 {
                     t_currentspawnPOS = new Vector2((t_previousspawnPOS.x + t_posx * j), t_posy);
-                    //t_currentspawnPOS = new Vector2((t_previousspawnPOS.x + ((t_enemy.m_HalfSize.x * 2) + t_paddingx) * j), t_posy);
                     t_switchside = false;
                 }
                 else
                 {
                     t_currentspawnPOS = new Vector2((t_previousspawnPOS.x - t_posx * j), t_posy);
-                    //t_currentspawnPOS = new Vector2((t_previousspawnPOS.x - ((t_enemy.m_HalfSize.x * 2) + t_paddingx) * j), t_posy);
                     t_switchside = true;
                 }
 
