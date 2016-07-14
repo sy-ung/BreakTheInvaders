@@ -17,6 +17,8 @@ public class Ball : MonoBehaviour {
 
     private Vector2 m_direction;
 
+    private Vector2 m_storedcurrentposition;
+
     bool m_piercing;
 
     private float m_firingrate = 0.1f;
@@ -72,7 +74,7 @@ public class Ball : MonoBehaviour {
     }
     public void OnRespawn()
     {
-        m_defaultspeed = 0f;
+        m_defaultspeed = 5f;
         m_rigidbody2D.velocity = new Vector2(0, -m_defaultspeed);
     }
 
@@ -118,7 +120,9 @@ public class Ball : MonoBehaviour {
         }
         
     }
-	
+
+
+
 	// Update is called once per frame
 	void Update ()
     {
@@ -137,23 +141,31 @@ public class Ball : MonoBehaviour {
         {
             m_firingtimer += Time.deltaTime;
         }
-
+        m_storedcurrentposition = transform.position;
     }
 
     void OnCollisionEnter2D(Collision2D p_Collision)
     {
 
         //Check to see if the ball is able to pierce through enemies
+        //m_piercing = true;
+        transform.position = m_storedcurrentposition;
+        //transform.position = p_Collision.contacts[0].point - t_direction * m_ballsizecheck.magnitude;
+
+        
+
         if (!m_piercing || p_Collision.collider.tag == "Player")
         { 
             Vector2 t_direction = ((Vector2)transform.position - p_Collision.contacts[0].point).normalized;
-            transform.position = p_Collision.contacts[0].point + t_direction * m_ballsizecheck.magnitude;
+            //transform.position = p_Collision.contacts[0].point + t_direction * m_ballsizecheck.magnitude;
             m_rigidbody2D.velocity = t_direction * m_defaultspeed;
         }
         else
         {
-            m_rigidbody2D.velocity = m_direction * m_defaultspeed;
+           m_rigidbody2D.velocity = m_direction * m_defaultspeed;
         }
+
+
 
         //What to do when colliding with player
         if (p_Collision.collider.tag == "Player")
@@ -168,7 +180,7 @@ public class Ball : MonoBehaviour {
             {
                 m_rigidbody2D.velocity = new Vector2(m_rigidbody2D.velocity.x + t_player.m_Velocity.x, m_rigidbody2D.velocity.y);
             }
-            SpeedCheck();
+            //SpeedCheck();
         }
 
         //What to when colliding with enemy
@@ -176,13 +188,14 @@ public class Ball : MonoBehaviour {
         {
             Destroy(p_Collision.collider.gameObject);
         }
+
+        //Dont move on collision
+
     }
     
     //So it never slows down past a certain speed
     void SpeedCheck()
     {
-        Player t_player = PlayerManager.m_Instance.m_Player;
-
         m_direction = m_rigidbody2D.velocity.normalized;
 
         
@@ -190,19 +203,19 @@ public class Ball : MonoBehaviour {
         {
             if(m_rigidbody2D.velocity.y > 0)
             { 
-                m_rigidbody2D.velocity = new Vector2(m_rigidbody2D.velocity.x, m_defaultspeed / 2);
+                m_rigidbody2D.velocity = new Vector2(m_rigidbody2D.velocity.x, m_defaultspeed);
             }
             else
             {
-                m_rigidbody2D.velocity = new Vector2(m_rigidbody2D.velocity.x, -m_defaultspeed / 2);
+                m_rigidbody2D.velocity = new Vector2(m_rigidbody2D.velocity.x, -m_defaultspeed);
             }
         }
 
-        if (m_rigidbody2D.velocity.magnitude > m_defaultspeed || m_rigidbody2D.velocity.magnitude < m_defaultspeed)
-        {
+        //if (m_rigidbody2D.velocity.magnitude > m_defaultspeed || m_rigidbody2D.velocity.magnitude < m_defaultspeed)
+        //{
             
-            m_rigidbody2D.velocity = m_direction * m_defaultspeed;
-        }
+        //    m_rigidbody2D.velocity = m_direction * m_defaultspeed;
+        //}
 
         
         

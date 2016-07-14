@@ -5,8 +5,10 @@ public class GreenEnemy : Enemy {
     void Awake()
     {
         base.Awake();
-        SetSprite(AssetManager.m_Instance.GetSprite("EnemyOne"));
+        SetSprite("EnemyOne");
         m_spriterenderer.color = Color.green;
+        m_movementspeed = 0.5f;
+        m_movementtimer = 0.75f;
     }
     
 	// Use this for initialization
@@ -19,4 +21,6 @@ public class GreenEnemy : Enemy {
     {
         base.Update();
 	}
+
+
 }

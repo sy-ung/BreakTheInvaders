@@ -41,11 +41,11 @@ public class EnemyManager : MonoBehaviour {
 
 	}
 
-    public void SpawnEnemies(int p_Rows, int p_Columns, string p_EnemyTypeName)
+    public void SpawnEnemies(int p_Rows, int p_Columns, string p_EnemyTypePrefabName)
     {
         Vector2 t_screensize = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, Screen.height));
-        GameObject t_enemyobject = AssetManager.m_Instance.GetPrefab(p_EnemyTypeName);
 
+        GameObject t_EnemyPrefab = AssetManager.m_Instance.GetPrefab(p_EnemyTypePrefabName);
 
         bool t_switchside = false;
         Vector2 t_currentspawnPOS;
@@ -56,7 +56,7 @@ public class EnemyManager : MonoBehaviour {
         { 
             for (int j = 0; j < p_Columns; j++)
             {
-                Enemy t_enemy = (Instantiate(t_enemyobject)).GetComponent<Enemy>();
+                Enemy t_enemy = (Instantiate(t_EnemyPrefab)).GetComponent<Enemy>();
                 t_enemy.tag = "Enemy";
 
                 Vector2 t_enemyhalfsize = t_enemy.m_HalfSize;

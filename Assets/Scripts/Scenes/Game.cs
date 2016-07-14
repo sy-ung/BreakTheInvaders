@@ -12,6 +12,9 @@ public class Game : MonoBehaviour {
 
         PlayerManager.m_Instance.RespawnPlayer();
         BallManager.m_Instance.RespawnBall(new Vector2(0,1));
+
+        UIManager.m_Instance.AddUIElementToScreen("ControlWheel",UIManager.ScreenAnchor.LOWER_RIGHT);
+
         SpawnEnemies();
     }
 	
@@ -29,10 +32,8 @@ public class Game : MonoBehaviour {
     }
     void SpawnEnemies()
     {
-        EnemyManager.m_Instance.SpawnEnemies(1, 5, "GreenEnemy");
+        //EnemyManager.m_Instance.SpawnEnemies(1, 1, "RedEnemy");
     }
-
-    float t_rot = 0;
 
     void CheckInput()
     {

@@ -6,9 +6,10 @@ class RedEnemy:Enemy
     {
         //m_spritename = "EnemyOne";
         base.Awake();
-        SetSprite(AssetManager.m_Instance.GetSprite("EnemyOne"));
+        SetSprite("EnemyOne");
         m_spriterenderer.color = Color.red;
-        //SetSprite(Resources.Load<Sprite>("Images/EnemyBasic"));
+        m_movementspeed = 0.5f;
+        m_movementtimer = 0.5f;
 
     }
 

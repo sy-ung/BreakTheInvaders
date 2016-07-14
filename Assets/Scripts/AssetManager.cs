@@ -48,15 +48,19 @@ public class AssetManager : MonoBehaviour {
         m_sprite = new Hashtable();
         m_audioClips = new Hashtable();
         m_prefabs = new Hashtable();
-
+        
+        //Textures
         m_sprite.Add("Player", Resources.Load<Sprite>("Images/Player"));
         m_sprite.Add("PlayerBall", Resources.Load<Sprite>("Images/Ball"));
         m_sprite.Add("EnemyOne", Resources.Load<Sprite>("Images/EnemyBasic"));
         m_sprite.Add("BallBullet", Resources.Load<Sprite>("Images/Bullet"));
+        m_sprite.Add("ControlWheel", Resources.Load<Sprite>("Images/Wheel"));
 
-        m_prefabs.Add("RedEnemy", Resources.Load<GameObject>("Prefabs/Red_Enemy"));
-        m_prefabs.Add("GreenEnemy", Resources.Load<GameObject>("Prefabs/Green_Enemy"));
 
+        //Prefabs
+        m_prefabs.Add("RedEnemy", Resources.Load<GameObject>("Prefabs/GameObjects/Red_Enemy"));
+        m_prefabs.Add("GreenEnemy", Resources.Load<GameObject>("Prefabs/GameObjects/Green_Enemy"));
+        m_prefabs.Add("ControlWheel", Resources.Load<GameObject>("Prefabs/UIObjects/ControlWheel"));
 
     }
 
