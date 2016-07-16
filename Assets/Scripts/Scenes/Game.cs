@@ -13,11 +13,16 @@ public class Game : MonoBehaviour {
         PlayerManager.m_Instance.RespawnPlayer();
         BallManager.m_Instance.RespawnBall(new Vector2(0,1));
 
-        UIManager.m_Instance.AddUIElementToScreen("ControlWheel",UIManager.ScreenAnchor.LOWER_RIGHT);
 
+        SetUpUI();
         SpawnEnemies();
     }
 	
+    void SetUpUI()
+    {
+        UIManager.m_Instance.AddUIElementToScreen("ControlWheel", UIManager.ScreenAnchor.LOWER_RIGHT, new Vector2(-20, 20));
+    }
+
 	// Update is called once per frame
 	void Update ()
     {
@@ -32,7 +37,7 @@ public class Game : MonoBehaviour {
     }
     void SpawnEnemies()
     {
-        //EnemyManager.m_Instance.SpawnEnemies(1, 1, "RedEnemy");
+        EnemyManager.m_Instance.SpawnEnemies(5, 5, "RedEnemy");
     }
 
     void CheckInput()

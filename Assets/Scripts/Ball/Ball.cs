@@ -24,8 +24,10 @@ public class Ball : MonoBehaviour {
     private float m_firingrate = 0.1f;
     private float m_firingtimer = 0;
 
-    private Bullet m_currentbullet;
-    public Bullet m_CurrentBullet
+    private Player m_player;
+
+    private GameObject m_currentbullet;
+    public GameObject m_CurrentBullet
     {
         set { m_currentbullet = value; }
     }
@@ -65,6 +67,9 @@ public class Ball : MonoBehaviour {
 
         m_firingtimer = m_firingrate;
 
+        SetCurrentBullet("BallBulletDefault");
+
+        m_player = PlayerManager.m_Instance.m_Player;
     }
 
     void Start()
@@ -121,6 +126,11 @@ public class Ball : MonoBehaviour {
         
     }
 
+    public void SetCurrentBullet(string p_BulletPrefabName)
+    {
+        m_currentbullet = AssetManager.m_Instance.GetPrefab(p_BulletPrefabName);
+    }
+
 
 
 	// Update is called once per frame
@@ -130,11 +140,17 @@ public class Ball : MonoBehaviour {
         SpeedCheck();
         
         if(m_firingtimer>m_firingrate)
-        { 
-            if(Input.GetMouseButton(0))
+        {
+
+            //if(Input.GetMouseButton(0))
+            if(Input.touchCount > 0)
             {
-                FireBullet(m_currentbullet);
-                m_firingtimer = 0;
+                for(int i = 0; i<Input.touches.Length;i++)
+                { 
+                    if(Input.GetTouch(i).position.y > m_player.GetTopYLine())
+                    FireBullet();
+                    m_firingtimer = 0;
+                }
             }
         }
         else
@@ -221,14 +237,14 @@ public class Ball : MonoBehaviour {
         
     }
 
-    void FireBullet(Bullet p_Bullet)
+    void FireBullet()
     {
         Vector2 t_mousePOS = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector2 t_firedirection = (t_mousePOS - (Vector2)transform.position).normalized;
 
         //BallBullet t_bullet = (new GameObject("BallBullet").AddComponent<BallBullet>());
 
-        Bullet t_bullet = Instantiate(p_Bullet);
+        Bullet t_bullet = Instantiate(m_currentbullet).GetComponent<Bullet>();
 
         Vector2 t_startPosition = (Vector2)transform.position + (t_firedirection * (t_bullet.GetComponent<SpriteRenderer>().bounds.size.magnitude/2));
         t_bullet.transform.position = t_startPosition;

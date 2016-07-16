@@ -61,6 +61,7 @@ public class AssetManager : MonoBehaviour {
         m_prefabs.Add("RedEnemy", Resources.Load<GameObject>("Prefabs/GameObjects/Red_Enemy"));
         m_prefabs.Add("GreenEnemy", Resources.Load<GameObject>("Prefabs/GameObjects/Green_Enemy"));
         m_prefabs.Add("ControlWheel", Resources.Load<GameObject>("Prefabs/UIObjects/ControlWheel"));
+        m_prefabs.Add("BallBulletDefault", Resources.Load<GameObject>("Prefabs/GameObjects/BallBulletRegular"));
 
     }
 

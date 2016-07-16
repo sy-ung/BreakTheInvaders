@@ -39,6 +39,10 @@ public class Player : MonoBehaviour {
 
 
     private Vector2 m_newposition;
+    public Vector2 m_NewPosition
+    {
+        set { m_newposition = value; }
+    }
 
     private Quaternion m_newrotation;
 
@@ -86,7 +90,7 @@ public class Player : MonoBehaviour {
 
         m_boxcollider2D.size = new Vector2(m_spriterenderer.sprite.bounds.size.x, m_spriterenderer.sprite.bounds.size.y);
 
-        m_startingline = -Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, Screen.height)).y + (m_playersizecheck.y * 10);
+        m_startingline = -Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, Screen.height)).y + (m_playersizecheck.y * 25);
 
         transform.position = new Vector2(0, m_startingline);
               
@@ -132,6 +136,7 @@ public class Player : MonoBehaviour {
                 BattingMode();
                 break;
             case ControlMode.DRAG:
+                break;
                 DragMode();
                 break;
             default:
@@ -154,6 +159,8 @@ public class Player : MonoBehaviour {
         {
             transform.position = m_newposition;
         }
+
+        return;
 
         if(m_newrotation != transform.rotation)
         {
@@ -223,6 +230,7 @@ public class Player : MonoBehaviour {
 
     }
 
+    //Was for testing
     void DragMode()
     {
         Vector2 t_mousepos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -238,7 +246,5 @@ public class Player : MonoBehaviour {
             m_newposition = t_touchloc;
             m_newrotation = Quaternion.identity;
         }
-
-
     }
 }

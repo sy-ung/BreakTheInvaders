@@ -14,7 +14,8 @@ public class UIManager : MonoBehaviour {
 
     private Hashtable m_uielements;
 
-    private Vector2 m_screensize = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, Screen.height));
+    private Vector2 m_screensize = new Vector2(Screen.width, Screen.height);
+
 
     public static UIManager m_Instance
     {
@@ -37,43 +38,52 @@ public class UIManager : MonoBehaviour {
         Instantiate(AssetManager.m_Instance.GetPrefab(p_UIElementPrefabName)).transform.position = p_Position;
     }
 
-    public void AddUIElementToScreen(string p_UIElementPrefabName, ScreenAnchor p_ScreenAnchor)
+    public void AddUIElementToScreen(string p_UIElementPrefabName, ScreenAnchor p_ScreenAnchor, Vector2 p_Offset)
     {
 
         UIElement t_NewElement = Instantiate(AssetManager.m_Instance.GetPrefab(p_UIElementPrefabName)).GetComponent<UIElement>();
-        Vector2 t_offset = t_NewElement.m_HalfSize;
+        Vector2 t_sizeoffset = t_NewElement.m_HalfSize;
+        Vector2 t_finalposition;
         switch (p_ScreenAnchor)
         {
             case ScreenAnchor.TOP_LEFT:
-                t_NewElement.transform.position = new Vector2(-m_screensize.x,m_screensize.y) + new Vector2(t_offset.x,-t_offset.y);
+                t_finalposition = Camera.main.ScreenToWorldPoint( new Vector2(0, m_screensize.y) + p_Offset);
+                t_NewElement.transform.position = t_finalposition + new Vector2(t_sizeoffset.x,-t_sizeoffset.y);
                 break;
             case ScreenAnchor.TOP_CENTER:
-                t_NewElement.transform.position = new Vector2(0, m_screensize.y) + new Vector2(0, -t_offset.y);
+                t_finalposition = Camera.main.ScreenToWorldPoint(new Vector2(m_screensize.x/2, m_screensize.y) + p_Offset);
+                t_NewElement.transform.position = t_finalposition + new Vector2(0, -t_sizeoffset.y);
                 break;
             case ScreenAnchor.TOP_RIGHT:
-                t_NewElement.transform.position = new Vector2(m_screensize.x, m_screensize.y) + new Vector2(-t_offset.x, -t_offset.y);
+                t_finalposition = Camera.main.ScreenToWorldPoint(new Vector2(m_screensize.x, m_screensize.y) + p_Offset);
+                t_NewElement.transform.position = t_finalposition + new Vector2(-t_sizeoffset.x, -t_sizeoffset.y);
                 break;
 
             case ScreenAnchor.CENTER_LEFT:
-                t_NewElement.transform.position = new Vector2(-m_screensize.x, 0) + new Vector2(t_offset.x, 0);
+                t_finalposition = Camera.main.ScreenToWorldPoint(new Vector2(0, m_screensize.y/2) + p_Offset);
+                t_NewElement.transform.position = t_finalposition + new Vector2(t_sizeoffset.x, 0);
                 break;
             case ScreenAnchor.CENTER:
-                t_NewElement.transform.position = new Vector2(0, 0);
+                t_finalposition = Camera.main.ScreenToWorldPoint(new Vector2(m_screensize.x/2, m_screensize.y/2) + p_Offset);
+                t_NewElement.transform.position = t_finalposition;
                 break;
             case ScreenAnchor.CENTER_RIGHT:
-                t_NewElement.transform.position = new Vector2(m_screensize.x, 0) + new Vector2(-t_offset.x, 0);
+                t_finalposition = Camera.main.ScreenToWorldPoint(new Vector2(m_screensize.x, m_screensize.y/2) + p_Offset);
+                t_NewElement.transform.position = t_finalposition + new Vector2(-t_sizeoffset.x, 0);
                 break;
 
             case ScreenAnchor.LOWER_LEFT:
-                t_NewElement.transform.position = new Vector2(-m_screensize.x, -m_screensize.y) + new Vector2(t_offset.x, +t_offset.y);
+                t_finalposition = Camera.main.ScreenToWorldPoint(new Vector2(0, 0) + p_Offset);
+                t_NewElement.transform.position = t_finalposition + new Vector2(t_sizeoffset.x, t_sizeoffset.y);
                 break;
             case ScreenAnchor.LOWER_CENTER:
-                t_NewElement.transform.position = new Vector2(0, -m_screensize.y) + new Vector2(0, +t_offset.y);
+                t_finalposition = Camera.main.ScreenToWorldPoint(new Vector2(m_screensize.x/2, 0) + p_Offset);
+                t_NewElement.transform.position = t_finalposition + new Vector2(0, t_sizeoffset.y);
                 break;
             case ScreenAnchor.LOWER_RIGHT:
-                t_NewElement.transform.position = new Vector2(m_screensize.x, -m_screensize.y) + new Vector2(-t_offset.x, t_offset.y);
+                t_finalposition = Camera.main.ScreenToWorldPoint(new Vector2(m_screensize.x, 0) + p_Offset);
+                t_NewElement.transform.position = t_finalposition + new Vector2(-t_sizeoffset.x, t_sizeoffset.y);
                 break;
-
             default:
                 break;
         }
@@ -87,10 +97,11 @@ public class UIManager : MonoBehaviour {
     }
 
 	// Use this for initialization
-	void Start () {
-	
+	void Start ()
+    {
+	    
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
 	
