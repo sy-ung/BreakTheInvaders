@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 public class Game : MonoBehaviour {
 
     Vector2 Spawnpoint = new Vector2(0.0f, 0.0f);
 
-    
+    Text DebugText;
 
 
 	// Use this for initialization
@@ -13,6 +14,7 @@ public class Game : MonoBehaviour {
         PlayerManager.m_Instance.RespawnPlayer();
         BallManager.m_Instance.RespawnBall(new Vector2(0,1));
 
+        DebugText = GameObject.FindGameObjectWithTag("DebugBox").GetComponent<Text>();
 
         SetUpUI();
         SpawnEnemies();
@@ -20,7 +22,8 @@ public class Game : MonoBehaviour {
 	
     void SetUpUI()
     {
-        UIManager.m_Instance.AddUIElementToScreen("ControlWheel", UIManager.ScreenAnchor.LOWER_RIGHT, new Vector2(-20, 20));
+        //UIManager.m_Instance.AddUIElementToScreen("ControlWheel", UIManager.ScreenAnchor.LOWER_LEFT, new Vector2(0, 0));
+        UIManager.m_Instance.AddUIElementToScreen("ControlBar", UIManager.ScreenAnchor.LOWER_CENTER, new Vector2(0, 100));
     }
 
 	// Update is called once per frame
@@ -33,11 +36,11 @@ public class Game : MonoBehaviour {
         {
             SpawnEnemies();
         }
-
+        //Debug();
     }
     void SpawnEnemies()
     {
-        EnemyManager.m_Instance.SpawnEnemies(5, 5, "RedEnemy");
+        EnemyManager.m_Instance.SpawnEnemies(5, 5, "GreenEnemy");
     }
 
     void CheckInput()
@@ -59,5 +62,15 @@ public class Game : MonoBehaviour {
         {
 
         }
+    }
+
+    void Debug()
+    {
+        if (Input.touchCount > 0)
+        {
+            DebugText.text = "Number of touches " + Input.touchCount;
+        }
+        else
+            DebugText.text = "No touches";
     }
 }

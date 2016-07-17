@@ -64,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\AssetManager.cs" />
+    <Compile Include="Assets\Scripts\BackgroundManager.cs" />
     <Compile Include="Assets\Scripts\Ball\Ball.cs" />
     <Compile Include="Assets\Scripts\Ball\BallBullet.cs" />
     <Compile Include="Assets\Scripts\BallManager.cs" />
@@ -78,6 +79,7 @@
     <Compile Include="Assets\Scripts\PointBlank.cs" />
     <Compile Include="Assets\Scripts\Scenes\Game.cs" />
     <Compile Include="Assets\Scripts\Scenes\Menu.cs" />
+    <Compile Include="Assets\Scripts\UI\UIControlBar.cs" />
     <Compile Include="Assets\Scripts\UI\UIControlWheel.cs" />
     <Compile Include="Assets\Scripts\UI\UIElement.cs" />
     <Compile Include="Assets\Scripts\UIManager.cs" />

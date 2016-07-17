@@ -145,11 +145,14 @@ public class Ball : MonoBehaviour {
             //if(Input.GetMouseButton(0))
             if(Input.touchCount > 0)
             {
-                for(int i = 0; i<Input.touches.Length;i++)
-                { 
-                    if(Input.GetTouch(i).position.y > m_player.GetTopYLine())
-                    FireBullet();
-                    m_firingtimer = 0;
+                for(int i = 0; i<Input.touchCount;i++)
+                {
+                    Vector2 t_touchpos = Camera.main.ScreenToWorldPoint(Input.GetTouch(i).position);
+                    if (t_touchpos.y > m_player.GetTopYLine())
+                    { 
+                        FireBullet(t_touchpos);
+                        m_firingtimer = 0;
+                    }
                 }
             }
         }
@@ -237,10 +240,9 @@ public class Ball : MonoBehaviour {
         
     }
 
-    void FireBullet()
+    void FireBullet(Vector2 p_TargetLocation)
     {
-        Vector2 t_mousePOS = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector2 t_firedirection = (t_mousePOS - (Vector2)transform.position).normalized;
+        Vector2 t_firedirection = (p_TargetLocation - (Vector2)transform.position).normalized;
 
         //BallBullet t_bullet = (new GameObject("BallBullet").AddComponent<BallBullet>());
 

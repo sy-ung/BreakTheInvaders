@@ -55,12 +55,14 @@ public class AssetManager : MonoBehaviour {
         m_sprite.Add("EnemyOne", Resources.Load<Sprite>("Images/EnemyBasic"));
         m_sprite.Add("BallBullet", Resources.Load<Sprite>("Images/Bullet"));
         m_sprite.Add("ControlWheel", Resources.Load<Sprite>("Images/Wheel"));
+        m_sprite.Add("ControlBar", Resources.Load<Sprite>("Images/MovementBar"));
 
 
         //Prefabs
         m_prefabs.Add("RedEnemy", Resources.Load<GameObject>("Prefabs/GameObjects/Red_Enemy"));
         m_prefabs.Add("GreenEnemy", Resources.Load<GameObject>("Prefabs/GameObjects/Green_Enemy"));
         m_prefabs.Add("ControlWheel", Resources.Load<GameObject>("Prefabs/UIObjects/ControlWheel"));
+        m_prefabs.Add("ControlBar", Resources.Load<GameObject>("Prefabs/UIObjects/ControlBar"));
         m_prefabs.Add("BallBulletDefault", Resources.Load<GameObject>("Prefabs/GameObjects/BallBulletRegular"));
 
     }
