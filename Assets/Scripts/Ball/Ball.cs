@@ -75,11 +75,11 @@ public class Ball : MonoBehaviour {
     void Start()
     {
         OnRespawn();
-        
+        ScaleBall(1);
     }
     public void OnRespawn()
     {
-        m_defaultspeed = 5f;
+        m_defaultspeed = 0f;
         m_rigidbody2D.velocity = new Vector2(0, -m_defaultspeed);
     }
 

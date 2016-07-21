@@ -20,8 +20,8 @@ class UIControlBar : UIElement {
         m_boxcollider2D.isTrigger = true;
         m_rigidbody.isKinematic = true;
         m_player = PlayerManager.m_Instance.m_Player;
+        SetScale(1);
 
-        SetScale(1.0f);
     }
 
     void Initialize()
@@ -31,9 +31,10 @@ class UIControlBar : UIElement {
     }
 
 	// Use this for initialization
-	void Start () {
-	
-	}
+	void Start ()
+    {
+        
+    }
 	
 	// Update is called once per frame
 	void Update () {

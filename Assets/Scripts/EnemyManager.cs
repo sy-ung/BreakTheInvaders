@@ -4,7 +4,7 @@ using System.Collections;
 public class EnemyManager : MonoBehaviour {
 
 
-    private Enemy m_enemytype1;
+    private bool m_killall = false;
 
     private static EnemyManager m_instance;
     public static EnemyManager m_Instance
@@ -38,11 +38,12 @@ public class EnemyManager : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-
 	}
 
     public void SpawnEnemies(int p_Rows, int p_Columns, string p_EnemyTypePrefabName)
     {
+        m_killall = false;
+
         Vector2 t_screensize = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, Screen.height));
 
         GameObject t_EnemyPrefab = AssetManager.m_Instance.GetPrefab(p_EnemyTypePrefabName);
@@ -50,8 +51,8 @@ public class EnemyManager : MonoBehaviour {
         bool t_switchside = false;
         Vector2 t_currentspawnPOS;
         Vector2 t_previousspawnPOS = Vector2.zero - new Vector2(0,0);
-        float t_paddingx = 0.05f;
-        float t_paddingy = 0.1f;
+        float t_paddingx = 0f;
+        float t_paddingy = 0f;
         for (int i = 0; i < p_Rows;i++)
         { 
             for (int j = 0; j < p_Columns; j++)
@@ -61,8 +62,8 @@ public class EnemyManager : MonoBehaviour {
 
                 Vector2 t_enemyhalfsize = t_enemy.m_HalfSize;
 
-                float t_posy = ((t_screensize.y - t_enemyhalfsize.y)) - ((t_enemyhalfsize.y * 2) * i) - (i*t_paddingy);
-                float t_posx = ((t_enemyhalfsize.x * 2) + t_paddingx);
+                float t_posy = ((t_screensize.y - t_enemyhalfsize.y)) - ((t_enemyhalfsize.y * 2) * i) - (i* t_enemy.m_HalfSize.y * t_paddingy);
+                float t_posx = ((t_enemyhalfsize.x * 2) + t_enemy.m_HalfSize.y * t_paddingx);
 
                 if (t_switchside)
                 {
@@ -82,10 +83,24 @@ public class EnemyManager : MonoBehaviour {
         }
     }
 
+    public void MoveEnemiesDown()
+    {
+        Enemy[] t_enemies = FindObjectsOfType<Enemy>();
+        for (int i = 0; i < t_enemies.Length; i++)
+        {
+            if (m_killall)
+                break;
+            else
+            {
+                t_enemies[i].m_movedown = true;
+            }
+        }
+    }
+
     public void KillAllEnemies()
     {
         Enemy[] t_allenemies = GameObject.FindObjectsOfType<Enemy>();
-
+        m_killall = true;
         for(int i = 0; i<t_allenemies.Length; i++)
         {
             Destroy(t_allenemies[i].gameObject);

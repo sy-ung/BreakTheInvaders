@@ -7,13 +7,15 @@ public class GreenEnemy : Enemy {
         base.Awake();
         SetSprite("EnemyOne");
         m_spriterenderer.color = Color.green;
-        m_movementspeed = 0.5f;
-        m_movementtimer = 0.75f;
+        m_movementspeedx = 0.5f;
+        m_movementtimer = -1f;
+
     }
     
 	// Use this for initialization
-	void Start () {
-	
+	void Start ()
+    {
+        SetScale(1);
 	}
 	
 	// Update is called once per frame
@@ -21,6 +23,11 @@ public class GreenEnemy : Enemy {
     {
         base.Update();
 	}
+
+    void LateUpdate()
+    {
+        base.LateUpdate();
+    }
 
 
 }

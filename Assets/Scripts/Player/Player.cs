@@ -101,7 +101,8 @@ public class Player : MonoBehaviour {
     {
         m_newposition = transform.position;
         m_currentcontrolmode = ControlMode.DRAG;
-
+        
+        SetPlayerScale(1);
     }
 
     public void ChangePlayerSprite(Sprite p_NewPlayerSprite)
@@ -119,7 +120,7 @@ public class Player : MonoBehaviour {
     public void SetPlayerScale(float p_ScaleMultiplier)
     {
         transform.localScale *= p_ScaleMultiplier;
-        m_playersizecheck = new Vector2(m_spriterenderer.bounds.size.x / 2, m_spriterenderer.bounds.size.y / 2);
+        m_playersizecheck = m_spriterenderer.bounds.size / 2;
     }
 
     

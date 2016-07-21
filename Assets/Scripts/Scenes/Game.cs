@@ -12,7 +12,7 @@ public class Game : MonoBehaviour {
 	void Start () {
 
         PlayerManager.m_Instance.RespawnPlayer();
-        BallManager.m_Instance.RespawnBall(new Vector2(0,1));
+        //BallManager.m_Instance.RespawnBall(new Vector2(0,1));
 
         DebugText = GameObject.FindGameObjectWithTag("DebugBox").GetComponent<Text>();
 
@@ -23,7 +23,7 @@ public class Game : MonoBehaviour {
     void SetUpUI()
     {
         //UIManager.m_Instance.AddUIElementToScreen("ControlWheel", UIManager.ScreenAnchor.LOWER_LEFT, new Vector2(0, 0));
-        UIManager.m_Instance.AddUIElementToScreen("ControlBar", UIManager.ScreenAnchor.LOWER_CENTER, new Vector2(0, 100));
+        UIManager.m_Instance.AddUIElementToScreen("ControlBar", UIManager.ScreenAnchor.LOWER_LEFT, new Vector2(0.1f,0.05f));
     }
 
 	// Update is called once per frame

@@ -6,10 +6,9 @@ public class UIElement : MonoBehaviour {
     // Use this for initialization
     protected SpriteRenderer m_spriterenderer;
 
-    private Vector2 m_halfsize;
     public Vector2 m_HalfSize
     {
-        get { return m_halfsize; }
+        get { return m_spriterenderer.bounds.size/2; }
     }
 
     protected void Awake()
@@ -29,8 +28,7 @@ public class UIElement : MonoBehaviour {
 
     public void SetScale(float p_ScaleFactor)
     {
-        transform.localScale = transform.localScale * p_ScaleFactor;
-        m_halfsize = (m_spriterenderer.bounds.size / 2);
+        transform.localScale *= p_ScaleFactor;
     }
 	
 	// Update is called once per frame
