@@ -59,6 +59,13 @@ public class Player : MonoBehaviour {
 
     private Vector2 m_previousmousepos;
 
+    private float m_firingrate = 0.1f;
+    private float m_firingtimer = 0;
+
+    public bool m_startfiring;
+
+
+    private Muzzle m_muzzle;
 
     private void Initialize()
     {
@@ -73,6 +80,7 @@ public class Player : MonoBehaviour {
 
         m_rigidbody2D.gravityScale = 0;
         m_spriterenderer.sprite = AssetManager.m_Instance.GetSprite("Player");
+        m_spriterenderer.color = new Color(0, 100, 25);
 
         m_rigidbody2D.mass = 1;
         m_rigidbody2D.isKinematic = false;
@@ -81,7 +89,7 @@ public class Player : MonoBehaviour {
 
         //This is to calculate the scale of the player paddle in propotion to the screen size
         float t_AspectRatio = (float)Camera.main.pixelHeight / (float)Camera.main.pixelWidth;
-        m_originalscale = (transform.localScale * t_AspectRatio)/1.5f;
+        m_originalscale = (transform.localScale * t_AspectRatio)/4f;
         transform.localScale = m_originalscale;
 
         //Converting screen width and height to world points
@@ -93,7 +101,10 @@ public class Player : MonoBehaviour {
         m_startingline = -Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, Screen.height)).y + (m_playersizecheck.y * 25);
 
         transform.position = new Vector2(0, m_startingline);
-              
+
+        m_firingtimer = m_firingrate;
+
+        m_newposition = transform.position;
     }
 
 	// Use this for initialization
@@ -103,6 +114,16 @@ public class Player : MonoBehaviour {
         m_currentcontrolmode = ControlMode.DRAG;
         
         SetPlayerScale(1);
+
+
+        SpawnBarrel();
+        //t_mf.transform.parent = transform;
+    }
+
+    void SpawnBarrel()
+    {
+        m_muzzle = new GameObject("PlayerMuzzle").AddComponent<Muzzle>();
+        m_muzzle.transform.SetParent(transform);
     }
 
     public void ChangePlayerSprite(Sprite p_NewPlayerSprite)
@@ -128,8 +149,10 @@ public class Player : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
+
         MoveCheck();
         ScreenBoundryCheck();
+        CheckFire();
 
         switch(m_currentcontrolmode)
         {
@@ -159,6 +182,12 @@ public class Player : MonoBehaviour {
         else
         {
             transform.position = m_newposition;
+        }
+
+
+        if (transform.position.y != m_startingline)
+        {
+            m_newposition = new Vector2(m_newposition.x, m_startingline);
         }
 
         return;
@@ -247,5 +276,29 @@ public class Player : MonoBehaviour {
             m_newposition = t_touchloc;
             m_newrotation = Quaternion.identity;
         }
+    }
+
+    void CheckFire()
+    {
+        if (m_firingtimer > m_firingrate)
+        {
+
+            if(m_startfiring)
+            { 
+                FireBullet();
+                m_firingtimer = 0;
+            }
+
+        }
+        else
+        {
+            m_firingtimer += Time.deltaTime;
+        }
+    }
+
+    void FireBullet()
+    {
+
+        m_muzzle.FireProjectile();
     }
 }

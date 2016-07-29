@@ -54,6 +54,7 @@ public class BallManager : MonoBehaviour {
             {
                 GameObject t_PlayerBallObject = new GameObject("PlayerBall");
                 m_playerball = t_PlayerBallObject.AddComponent<Ball>();
+                m_playerball.tag = "PlayerBall";
             }
         }
 

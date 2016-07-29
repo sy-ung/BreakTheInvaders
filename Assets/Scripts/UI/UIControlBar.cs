@@ -15,7 +15,7 @@ class UIControlBar : UIElement {
         base.Awake();
         Initialize();
 
-        m_spriterenderer.sprite = AssetManager.m_Instance.GetSprite("ControlBar");
+        SetSprite("ControlBar");
         m_boxcollider2D.size = m_spriterenderer.bounds.size;
         m_boxcollider2D.isTrigger = true;
         m_rigidbody.isKinematic = true;
@@ -39,7 +39,6 @@ class UIControlBar : UIElement {
 	// Update is called once per frame
 	void Update () {
         InputCheck();
-        GameObject.FindGameObjectWithTag("DebugBox").GetComponent<Text>().text = new Vector2(Screen.width,Screen.height).ToString();
 	}
 
     void InputCheck()

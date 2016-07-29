@@ -5,13 +5,8 @@ public class Enemy : MonoBehaviour {
 
     protected SpriteRenderer m_spriterenderer;
 
-    protected float m_movementspeedy;
+    protected Vector2 m_movementspeed;
 
-    protected float m_movementspeedx;
-    public float m_MovementSpeedX
-    {
-        set { m_movementspeedx = value; }
-    }
     protected bool m_changedirection = false;
 
     public Vector2 m_HalfSize
@@ -25,12 +20,25 @@ public class Enemy : MonoBehaviour {
     private Rigidbody2D m_rigidbody2D;
     private BoxCollider2D m_boxcollider2D;
 
-    protected float m_movementtimer;
-    float m_timer = 0;
+    protected float m_origmovementtimer;
+    public float m_OriginalMovementTimer
+    {
+        get { return m_origmovementtimer; }
+    }
+
+    public float m_movementtimer;
+    public float m_timer = 0;
 
     private Vector2 m_boundries;
 
     public bool m_movedown = false;
+
+    protected GameObject m_deathparticle;
+
+    protected int m_points;
+
+    protected bool m_stayinbounds;
+    private bool m_inbounds;
 
     protected void Awake()
     {
@@ -38,8 +46,9 @@ public class Enemy : MonoBehaviour {
         m_rigidbody2D.gravityScale = 0;
         m_rigidbody2D.isKinematic = true;
         m_rigidbody2D.freezeRotation = true;
-        m_movementspeedy = 0.5f;
         m_boundries = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, Screen.height));
+        m_spriterenderer.sortingOrder = 2;
+
         //SetSprite(AssetManager.m_Instance.GetSprite(m_spritename));
     }
 
@@ -66,55 +75,68 @@ public class Enemy : MonoBehaviour {
         transform.localScale = transform.localScale * p_ScaleFactor;
     }
 
-	// Use this for initialization
-	void Start() {
-	
-	}
+	//Check to see if only one enemy has spawned. Make it super fast if so.
+	protected void Start() {
 
-    // Update is called once per frame
-    public bool stopmoving = false;
+        Enemy[] t_enemies = FindObjectsOfType<Enemy>();
+        if (t_enemies.Length == 1)
+        { 
+            m_movementtimer = 0;
+            m_movementspeed *= 2;
+        }
+        else
+            m_movementtimer = m_origmovementtimer;
+
+    }
 
     protected void Update()
     {
-        if (m_movedown)
-            MoveDown();
-        else
+        //if (m_movedown)
+        //    MoveDown();
+        //else
             MoveEnemy();
     }
 
     protected void LateUpdate()
     {
         if(!m_movedown)
-            CheckBoundry();
-        Debug.Log(transform.position);
+        { 
+            if(m_stayinbounds)
+                CheckBoundry();
+        }
     }
 
     public void MoveEnemy()
     {
-        if (!stopmoving)
-        { 
-            if (m_timer > m_movementtimer)
-            {
-                m_timer = 0;
 
-                if (m_changedirection)
-                    transform.position = new Vector2(transform.position.x - m_HalfSize.x * m_movementspeedx, transform.position.y);
-                else if (!m_changedirection)
-                    transform.position = new Vector2(transform.position.x + m_HalfSize.x * m_movementspeedx, transform.position.y);  
-            }
+
+        if (m_timer > m_movementtimer)
+        {
+            if (m_movedown)
+                MoveDown();
             else
             {
-                m_timer += Time.deltaTime;
+                if (m_changedirection)
+                    transform.position = new Vector2(transform.position.x - m_HalfSize.x * m_movementspeed.x, transform.position.y);
+                else if (!m_changedirection)
+                    transform.position = new Vector2(transform.position.x + m_HalfSize.x * m_movementspeed.x, transform.position.y);
             }
+            m_timer = 0;
+
+
         }
+        else
+        {
+            m_timer += Time.deltaTime;
+        }
+        
     }
     public bool CheckBoundry()
     {
         if (!m_changedirection)
         {
-            if (transform.position.x + m_HalfSize.x * m_movementspeedx > m_boundries.x - m_HalfSize.x * 2)
+            if (transform.position.x + m_HalfSize.x > m_boundries.x - (m_HalfSize.x))
             {
-                m_spriterenderer.color = Color.red;
                 EnemyManager.m_Instance.MoveEnemiesDown();
                 return true;
             }
@@ -124,9 +146,8 @@ public class Enemy : MonoBehaviour {
         }
         else if (m_changedirection)
         {
-            if (transform.position.x - m_HalfSize.x * m_movementspeedx < -m_boundries.x + m_HalfSize.x * 2)
+            if (transform.position.x - m_HalfSize.x< -m_boundries.x + (m_HalfSize.x))
             {
-                m_spriterenderer.color = Color.blue;
                 EnemyManager.m_Instance.MoveEnemiesDown();
                 return true;
             }
@@ -140,7 +161,7 @@ public class Enemy : MonoBehaviour {
     {
 
         ChangeDirection();
-        transform.position += new Vector3(0, -0.1f, 0);
+        transform.position += new Vector3(0, -(m_HalfSize.y * m_movementspeed.y), 0);
         m_movedown = false;
         if (transform.position.y < PlayerManager.m_Instance.m_Player.GetTopYLine() + m_HalfSize.y * 2)
         {
@@ -160,6 +181,24 @@ public class Enemy : MonoBehaviour {
         if(p_Collision.collider.gameObject.tag == "Enemy")
         {
             Physics2D.IgnoreCollision(m_boxcollider2D, p_Collision.collider);
+        }
+    }
+
+    public void Death()
+    {
+        //Check to see if enemy is in view
+        Vector2 t_screen = Camera.main.GetComponent<ResolutionFix>().m_ScreenSizeWorldPoint;
+        if(transform.position.y - m_spriterenderer.bounds.size.y /2 < t_screen.y)
+        { 
+            if(transform.position.x + m_spriterenderer.bounds.size.x / 2 > -t_screen.x &&
+                transform.position.x - m_spriterenderer.bounds.size.x / 2 < t_screen.x) 
+            { 
+                Instantiate(m_deathparticle, transform.position, Quaternion.identity);
+                EnemyManager.m_Instance.IncreaseSpeed();
+                GameObject.FindGameObjectWithTag("pointblank").GetComponent<Game>().AddPoints(m_points);
+
+                Destroy(gameObject);
+            }
         }
     }
 }

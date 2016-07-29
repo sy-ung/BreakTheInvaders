@@ -6,6 +6,8 @@ public class EnemyManager : MonoBehaviour {
 
     private bool m_killall = false;
 
+    int m_spawnedenemiescount;
+
     private static EnemyManager m_instance;
     public static EnemyManager m_Instance
     {
@@ -38,11 +40,13 @@ public class EnemyManager : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
+        
 	}
 
     public void SpawnEnemies(int p_Rows, int p_Columns, string p_EnemyTypePrefabName)
     {
         m_killall = false;
+        m_spawnedenemiescount = p_Rows * p_Columns;
 
         Vector2 t_screensize = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, Screen.height));
 
@@ -62,7 +66,7 @@ public class EnemyManager : MonoBehaviour {
 
                 Vector2 t_enemyhalfsize = t_enemy.m_HalfSize;
 
-                float t_posy = ((t_screensize.y - t_enemyhalfsize.y)) - ((t_enemyhalfsize.y * 2) * i) - (i* t_enemy.m_HalfSize.y * t_paddingy);
+                float t_posy = ((t_screensize.y - t_enemyhalfsize.y)) + (((t_enemyhalfsize.y * 2) * i) - (i* t_enemy.m_HalfSize.y * t_paddingy));
                 float t_posx = ((t_enemyhalfsize.x * 2) + t_enemy.m_HalfSize.y * t_paddingx);
 
                 if (t_switchside)
@@ -80,6 +84,31 @@ public class EnemyManager : MonoBehaviour {
                 t_previousspawnPOS = t_currentspawnPOS;
             }
             t_previousspawnPOS = Vector2.zero;
+        }
+    }
+
+    public void IncreaseSpeed()
+    {
+        Enemy[] t_enemies = FindObjectsOfType<Enemy>();
+        for (int i = 0; i < t_enemies.Length; i++)
+        {
+            if (m_killall)
+                break;
+            else
+            {
+                float t_newmovementtimer;
+                if (t_enemies.Length > 1)
+                { 
+                    t_newmovementtimer = (float)(t_enemies.Length - 1) / m_spawnedenemiescount;
+                    t_enemies[i].m_movementtimer = t_newmovementtimer;
+                    t_enemies[i].m_timer = t_enemies[i].m_movementtimer;
+                }
+                else
+                {
+                    t_enemies[i].m_movementtimer = 0;
+                }
+                
+            }
         }
     }
 

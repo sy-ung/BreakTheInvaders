@@ -21,16 +21,9 @@ public class Ball : MonoBehaviour {
 
     bool m_piercing;
 
-    private float m_firingrate = 0.1f;
-    private float m_firingtimer = 0;
+
 
     private Player m_player;
-
-    private GameObject m_currentbullet;
-    public GameObject m_CurrentBullet
-    {
-        set { m_currentbullet = value; }
-    }
 
     private void Initialize()
     {
@@ -65,9 +58,9 @@ public class Ball : MonoBehaviour {
 
         m_piercing = false;
 
-        m_firingtimer = m_firingrate;
 
-        SetCurrentBullet("BallBulletDefault");
+
+
 
         m_player = PlayerManager.m_Instance.m_Player;
     }
@@ -79,7 +72,7 @@ public class Ball : MonoBehaviour {
     }
     public void OnRespawn()
     {
-        m_defaultspeed = 0f;
+        m_defaultspeed = 5f;
         m_rigidbody2D.velocity = new Vector2(0, -m_defaultspeed);
     }
 
@@ -126,10 +119,7 @@ public class Ball : MonoBehaviour {
         
     }
 
-    public void SetCurrentBullet(string p_BulletPrefabName)
-    {
-        m_currentbullet = AssetManager.m_Instance.GetPrefab(p_BulletPrefabName);
-    }
+
 
 
 
@@ -139,27 +129,7 @@ public class Ball : MonoBehaviour {
         ScreenBoundryCheck();
         SpeedCheck();
         
-        if(m_firingtimer>m_firingrate)
-        {
 
-            //if(Input.GetMouseButton(0))
-            if(Input.touchCount > 0)
-            {
-                for(int i = 0; i<Input.touchCount;i++)
-                {
-                    Vector2 t_touchpos = Camera.main.ScreenToWorldPoint(Input.GetTouch(i).position);
-                    if (t_touchpos.y > m_player.GetTopYLine())
-                    { 
-                        FireBullet(t_touchpos);
-                        m_firingtimer = 0;
-                    }
-                }
-            }
-        }
-        else
-        {
-            m_firingtimer += Time.deltaTime;
-        }
         m_storedcurrentposition = transform.position;
     }
 
@@ -169,14 +139,10 @@ public class Ball : MonoBehaviour {
         //Check to see if the ball is able to pierce through enemies
         //m_piercing = true;
         transform.position = m_storedcurrentposition;
-        //transform.position = p_Collision.contacts[0].point - t_direction * m_ballsizecheck.magnitude;
-
-        
 
         if (!m_piercing || p_Collision.collider.tag == "Player")
         { 
             Vector2 t_direction = ((Vector2)transform.position - p_Collision.contacts[0].point).normalized;
-            //transform.position = p_Collision.contacts[0].point + t_direction * m_ballsizecheck.magnitude;
             m_rigidbody2D.velocity = t_direction * m_defaultspeed;
         }
         else
@@ -190,22 +156,23 @@ public class Ball : MonoBehaviour {
         if (p_Collision.collider.tag == "Player")
         {
             Player t_player = PlayerManager.m_Instance.m_Player;
-            if (p_Collision.contacts[0].point.y < t_player.GetTopYLine() &&
-                p_Collision.contacts[0].point.y > t_player.transform.position.y)
-            {
-                m_rigidbody2D.velocity = new Vector2(m_rigidbody2D.velocity.x + t_player.m_Velocity.x, -m_rigidbody2D.velocity.y);
-            }
-            else if (p_Collision.contacts[0].point.y > t_player.GetTopYLine())
-            {
-                m_rigidbody2D.velocity = new Vector2(m_rigidbody2D.velocity.x + t_player.m_Velocity.x, m_rigidbody2D.velocity.y);
-            }
+            //if (p_Collision.contacts[0].point.y < t_player.GetTopYLine() &&
+            //    p_Collision.contacts[0].point.y > t_player.transform.position.y)
+            //{
+            //    m_rigidbody2D.velocity = new Vector2(m_rigidbody2D.velocity.x + t_player.m_Velocity.x, -m_rigidbody2D.velocity.y);
+            //}
+            //else if (p_Collision.contacts[0].point.y > t_player.GetTopYLine())
+            //{
+            //    m_rigidbody2D.velocity = new Vector2(m_rigidbody2D.velocity.x + t_player.m_Velocity.x, m_rigidbody2D.velocity.y);
+            //}
+            m_rigidbody2D.velocity = new Vector2(m_rigidbody2D.velocity.x + t_player.m_Velocity.x, m_rigidbody2D.velocity.y);
             //SpeedCheck();
         }
 
         //What to when colliding with enemy
         if(p_Collision.collider.tag == "Enemy")
         {
-            Destroy(p_Collision.collider.gameObject);
+            p_Collision.gameObject.GetComponent<Enemy>().Death();
         }
 
         //Dont move on collision
@@ -240,28 +207,5 @@ public class Ball : MonoBehaviour {
         
     }
 
-    void FireBullet(Vector2 p_TargetLocation)
-    {
-        Vector2 t_firedirection = (p_TargetLocation - (Vector2)transform.position).normalized;
 
-        //BallBullet t_bullet = (new GameObject("BallBullet").AddComponent<BallBullet>());
-
-        Bullet t_bullet = Instantiate(m_currentbullet).GetComponent<Bullet>();
-
-        Vector2 t_startPosition = (Vector2)transform.position + (t_firedirection * (t_bullet.GetComponent<SpriteRenderer>().bounds.size.magnitude/2));
-        t_bullet.transform.position = t_startPosition;
-
-        if(m_rigidbody2D.velocity.magnitude == 0)
-            t_bullet.m_RigidBody2D.velocity = t_firedirection * 10 * 1.5f;
-        else
-            t_bullet.m_RigidBody2D.velocity = t_firedirection * m_defaultspeed * 1.5f;
-
-        t_bullet.transform.rotation = Quaternion.FromToRotation(t_bullet.transform.right, t_firedirection);
-        t_bullet.tag = "Bullet";
-
-
-        Physics2D.IgnoreCollision(m_circlecollider2D, t_bullet.GetComponent<BoxCollider2D>());
-        Physics2D.IgnoreCollision(t_bullet.GetComponent<BoxCollider2D>(), PlayerManager.m_Instance.m_Player.GetComponent<BoxCollider2D>());
-
-    }
 }

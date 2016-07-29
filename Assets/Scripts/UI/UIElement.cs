@@ -30,6 +30,11 @@ public class UIElement : MonoBehaviour {
     {
         transform.localScale *= p_ScaleFactor;
     }
+
+    public void SetSprite(string p_SpriteName)
+    {
+        m_spriterenderer.sprite = AssetManager.m_Instance.GetSprite(p_SpriteName);
+    }
 	
 	// Update is called once per frame
 	protected void Update ()

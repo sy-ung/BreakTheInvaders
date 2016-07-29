@@ -13,12 +13,18 @@ public class Bullet : MonoBehaviour {
 
     private float m_timer;
 
+    protected float m_speed;
+
     public Rigidbody2D m_RigidBody2D
     {
         get { return m_rigidbody2D; }
     }
 
     private BoxCollider2D m_boxcollider2D;
+
+    public GameObject m_MuzzleFlash;
+
+    bool m_alive = true;
 
     void Initialize()
     {
@@ -39,7 +45,7 @@ public class Bullet : MonoBehaviour {
         m_rigidbody2D.isKinematic = false;
 
         m_boxcollider2D.size = m_spriterenderer.bounds.size;
-        m_lifetime = 1.5f;
+        m_lifetime = 1f;
         m_timer = 0;
 
         Bullet[] t_allbullets = FindObjectsOfType<Bullet>();
@@ -47,35 +53,59 @@ public class Bullet : MonoBehaviour {
         {
             Physics2D.IgnoreCollision(m_boxcollider2D, t_allbullets[i].GetComponent<BoxCollider2D>());
         }
-
+        
     }
 
 	// Use this for initialization
 	void Start () {
-	
-
+        m_rigidbody2D.velocity = Vector3.up * m_speed;
+        Physics2D.IgnoreCollision(m_boxcollider2D, BallManager.m_Instance.m_PlayerBall.GetComponent<Collider2D>());
+        Physics2D.IgnoreCollision(m_boxcollider2D, PlayerManager.m_Instance.m_Player.GetComponent<Collider2D>());
+        PlayMuzzleFlash();
 	}
 	
 	// Update is called once per frame
 	void Update ()
     {
-        m_timer += Time.deltaTime;
-        if (m_timer > m_lifetime)
+        if(m_alive)
+        { 
+            m_timer += Time.deltaTime;
+            if (m_timer > m_lifetime)
+                Destroy(gameObject);
+            else
+                CheckBoundry();
+        }
+    }
+    void LateUpdate()
+    {
+        if (!m_alive)
             Destroy(gameObject);
-	}
+    }
 
     void OnCollisionEnter2D(Collision2D p_Collision)
     {
-        if(p_Collision.collider.tag == "Bullet")
-        {
-            Physics2D.IgnoreCollision(p_Collision.collider, m_boxcollider2D);
-        }
-
-        if(p_Collision.collider.gameObject.tag == "Enemy")
-        {
-            Destroy(gameObject);
-            Destroy(p_Collision.collider.gameObject);
+        if(m_alive)
+        { 
+            if(p_Collision.collider.tag == "Enemy")
+            {
+                p_Collision.collider.GetComponent<Enemy>().Death();
+                Destroy(gameObject);
+            }
         }
     }
 
+    void CheckBoundry()
+    {
+        Vector2 t_screen = Camera.main.GetComponent<ResolutionFix>().m_ScreenSizeWorldPoint;
+
+        if (transform.position.y - m_spriterenderer.bounds.size.y/2  > t_screen.y)
+        {
+            m_alive = false;
+        }
+    }
+
+    void PlayMuzzleFlash()
+    {
+
+    }
 }
