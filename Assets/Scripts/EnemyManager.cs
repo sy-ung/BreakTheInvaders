@@ -43,6 +43,20 @@ public class EnemyManager : MonoBehaviour {
         
 	}
 
+    //Will spawn a random enemy squad at random sizes
+    public void SpawnSquad()
+    {
+        EnemySquad t_es = new GameObject("ENEMY SQUAD").AddComponent<EnemySquad>();
+        t_es.CreateSquad("GreenEnemy", 1, 5);
+        
+    }
+
+    public void SpawnSquad(string p_EnemyPrefabName, int p_Rows, int p_Coloumns)
+    {
+        EnemySquad t_es = new GameObject("EnemySquad").AddComponent<EnemySquad>();
+        t_es.CreateSquad(p_EnemyPrefabName, p_Rows, p_Coloumns);
+    }
+
     public void SpawnEnemies(int p_Rows, int p_Columns, string p_EnemyTypePrefabName)
     {
         m_killall = false;

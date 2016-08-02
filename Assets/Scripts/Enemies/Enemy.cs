@@ -5,7 +5,7 @@ public class Enemy : MonoBehaviour {
 
     protected SpriteRenderer m_spriterenderer;
 
-    protected Vector2 m_movementspeed;
+    public Vector2 m_movementspeed;
 
     protected bool m_changedirection = false;
 
@@ -38,7 +38,18 @@ public class Enemy : MonoBehaviour {
     protected int m_points;
 
     protected bool m_stayinbounds;
-    private bool m_inbounds;
+    private bool m_inboundsX;
+    private bool m_inboundsY;
+
+    public EnemySquad m_CurrentEnemySquad;
+
+    private bool m_alive;
+    public bool m_Alive
+    {
+        get { return m_alive; }
+    }
+
+    public bool m_SoleSurvivor = false;
 
     protected void Awake()
     {
@@ -76,22 +87,29 @@ public class Enemy : MonoBehaviour {
     }
 
 	//Check to see if only one enemy has spawned. Make it super fast if so.
-	protected void Start() {
-
-        Enemy[] t_enemies = FindObjectsOfType<Enemy>();
-        if (t_enemies.Length == 1)
-        { 
-            m_movementtimer = 0;
-            m_movementspeed *= 2;
+	protected void Start()
+    {
+        if (m_SoleSurvivor)
+        {
+            BecomeSoleSurvivor();
         }
         else
             m_movementtimer = m_origmovementtimer;
 
+        m_alive = true;
+
+    }
+
+    public void BecomeSoleSurvivor()
+    {
+        m_movementtimer = 0;
+        m_movementspeed *= 2;
+        Debug.Log("I AM SOLE SURVIVOR");
     }
 
     protected void Update()
     {
-        MoveEnemy();
+        MoveEnemyCheck();
     }
 
     protected void LateUpdate()
@@ -105,19 +123,21 @@ public class Enemy : MonoBehaviour {
 
     public void MoveEnemy()
     {
-
-
+        if (m_movedown)
+            MoveDown();
+        else
+        {
+            if (m_changedirection)
+                transform.position = new Vector2(transform.position.x - m_HalfSize.x * m_movementspeed.x, transform.position.y);
+            else if (!m_changedirection)
+                transform.position = new Vector2(transform.position.x + m_HalfSize.x * m_movementspeed.x, transform.position.y);
+        }
+    }
+    public void MoveEnemyCheck()
+    {
         if (m_timer > m_movementtimer)
         {
-            if (m_movedown)
-                MoveDown();
-            else
-            {
-                if (m_changedirection)
-                    transform.position = new Vector2(transform.position.x - m_HalfSize.x * m_movementspeed.x, transform.position.y);
-                else if (!m_changedirection)
-                    transform.position = new Vector2(transform.position.x + m_HalfSize.x * m_movementspeed.x, transform.position.y);
-            }
+            MoveEnemy();
             m_timer = 0;
         }
         else
@@ -126,24 +146,35 @@ public class Enemy : MonoBehaviour {
         }
         
     }
+
     public void CheckBoundry()
     {
         if (transform.position.x + m_HalfSize.x > -Camera.main.GetComponent<ResolutionFix>().m_ScreenSizeWorldPoint.x &&
-            transform.position.x - m_HalfSize.x < Camera.main.GetComponent<ResolutionFix>().m_ScreenSizeWorldPoint.x &&
-            transform.position.y - m_HalfSize.y < Camera.main.GetComponent<ResolutionFix>().m_ScreenSizeWorldPoint.y)
+            transform.position.x - m_HalfSize.x < Camera.main.GetComponent<ResolutionFix>().m_ScreenSizeWorldPoint.x)
         { 
-            m_inbounds = true;
+            m_inboundsX = true;
         }
         else
         {
-            m_inbounds = false;
+            m_inboundsX = false;
         }
+
+        if(transform.position.y - m_HalfSize.y < Camera.main.GetComponent<ResolutionFix>().m_ScreenSizeWorldPoint.y)
+        {
+            m_inboundsY = true;
+        }
+        else
+        {
+            m_inboundsY = false;
+        }
+
+
 
         if (!m_changedirection)
         {
             if (transform.position.x + m_HalfSize.x > m_boundries.x - (m_HalfSize.x))
             {
-                EnemyManager.m_Instance.MoveEnemiesDown();
+                m_CurrentEnemySquad.MoveSquadDown();
 
             }
 
@@ -152,7 +183,7 @@ public class Enemy : MonoBehaviour {
         {
             if (transform.position.x - m_HalfSize.x< -m_boundries.x + (m_HalfSize.x))
             {
-                EnemyManager.m_Instance.MoveEnemiesDown();
+                m_CurrentEnemySquad.MoveSquadDown();
             }
         }
     }
@@ -165,7 +196,7 @@ public class Enemy : MonoBehaviour {
         m_movedown = false;
         if (transform.position.y < PlayerManager.m_Instance.m_Player.GetTopYLine() + m_HalfSize.y * 2)
         {
-            EnemyManager.m_Instance.KillAllEnemies();
+            m_CurrentEnemySquad.KillAllInSquad();
         }
     }
     public void ChangeDirection()
@@ -194,9 +225,15 @@ public class Enemy : MonoBehaviour {
                 transform.position.x - m_spriterenderer.bounds.size.x / 2 < t_screen.x) 
             { 
                 Instantiate(m_deathparticle, transform.position, Quaternion.identity);
-                EnemyManager.m_Instance.IncreaseSpeed();
-                GameObject.FindGameObjectWithTag("pointblank").GetComponent<Game>().AddPoints(m_points);
 
+                m_alive = false;
+
+                m_CurrentEnemySquad.RemoveEnemyFromSquad(this);
+
+                if(!m_CurrentEnemySquad.m_IsSquadDead)
+                    m_CurrentEnemySquad.IncreaseSquadSpeed();
+
+                GameObject.FindGameObjectWithTag("pointblank").GetComponent<Game>().AddPoints(m_points);
                 Destroy(gameObject);
             }
         }

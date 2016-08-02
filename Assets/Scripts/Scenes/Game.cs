@@ -15,7 +15,7 @@ public class Game : MonoBehaviour {
         BallManager.m_Instance.RespawnBall(new Vector2(0,1));
 
         SetUpUI();
-        SpawnEnemies();
+        //SpawnEnemies();
 
         m_pointstext = GameObject.FindGameObjectWithTag("CurrentScoreText").GetComponent<Text>();
 
@@ -36,13 +36,14 @@ public class Game : MonoBehaviour {
         Enemy t_enemycheck = FindObjectOfType<Enemy>();
         if (t_enemycheck == null)
         {
-            SpawnEnemies();
+            //SpawnEnemies();
         }
         //Debug();
     }
     void SpawnEnemies()
     {
-        EnemyManager.m_Instance.SpawnEnemies(5, 5, "BlueEnemy");
+        //EnemyManager.m_Instance.SpawnEnemies(5, 5, "BlueEnemy)
+        EnemyManager.m_Instance.SpawnSquad();
     }
 
     void CheckInput()
@@ -63,6 +64,11 @@ public class Game : MonoBehaviour {
         if(Input.GetKey(KeyCode.D))
         {
             PlayerManager.m_Instance.m_Player.MovePlayer(new Vector3(0.5f, 0));
+        }
+
+        if(Input.GetKeyDown(KeyCode.P))
+        {
+            SpawnEnemies();
         }
 
         if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)

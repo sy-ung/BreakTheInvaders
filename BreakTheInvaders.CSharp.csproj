@@ -74,6 +74,7 @@
     <Compile Include="Assets\Scripts\Enemies\BlueEnemy.cs" />
     <Compile Include="Assets\Scripts\Enemies\Enemy.cs" />
     <Compile Include="Assets\Scripts\Enemies\EnemyBullet.cs" />
+    <Compile Include="Assets\Scripts\Enemies\EnemySquad.cs" />
     <Compile Include="Assets\Scripts\Enemies\GreenEnemy.cs" />
     <Compile Include="Assets\Scripts\Enemies\RedEnemy.cs" />
     <Compile Include="Assets\Scripts\Enemies\YellowEnemy.cs" />
