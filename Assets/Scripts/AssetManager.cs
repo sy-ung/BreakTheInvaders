@@ -52,17 +52,24 @@ public class AssetManager : MonoBehaviour {
         //Textures
         m_sprite.Add("Player", Resources.Load<Sprite>("Images/Player/playerpaddle"));
         m_sprite.Add("PlayerBall", Resources.Load<Sprite>("Images/Ball"));
+
         m_sprite.Add("EnemyOne", Resources.Load<Sprite>("Images/EnemyBasic"));
+        m_sprite.Add("EnemyTwo", Resources.Load<Sprite>("Images/EnemyBasic2"));
+        m_sprite.Add("EnemySpecial", Resources.Load<Sprite>("Images/EnemySpecial"));
+
         m_sprite.Add("Bullet", Resources.Load<Sprite>("Images/Bullet"));
+        m_sprite.Add("PlayerMuzzle", Resources.Load<Sprite>("Images/Player/playerbarrel"));
+
         m_sprite.Add("ControlWheel", Resources.Load<Sprite>("Images/Wheel"));
         m_sprite.Add("ControlBar", Resources.Load<Sprite>("Images/MovementBar"));
-        m_sprite.Add("PlayerMuzzle", Resources.Load<Sprite>("Images/Player/playerbarrel"));
         m_sprite.Add("ShootButton", Resources.Load<Sprite>("Images/ShootButton"));
 
 
         //Prefabs
-        m_prefabs.Add("RedEnemy", Resources.Load<GameObject>("Prefabs/GameObjects/Red_Enemy"));
-        m_prefabs.Add("GreenEnemy", Resources.Load<GameObject>("Prefabs/GameObjects/Green_Enemy"));
+        m_prefabs.Add("RedEnemy", Resources.Load<GameObject>("Prefabs/GameObjects/Enemies/Red_Enemy_Type1"));
+        m_prefabs.Add("GreenEnemy", Resources.Load<GameObject>("Prefabs/GameObjects/Enemies/Green_Enemy_Type1"));
+        m_prefabs.Add("BlueEnemy", Resources.Load<GameObject>("Prefabs/GameObjects/Enemies/Blue_Enemy_Type2"));
+
 
         m_prefabs.Add("ControlWheel", Resources.Load<GameObject>("Prefabs/UIObjects/ControlWheel"));
         m_prefabs.Add("ControlBar", Resources.Load<GameObject>("Prefabs/UIObjects/ControlBar"));

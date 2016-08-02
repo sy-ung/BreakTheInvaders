@@ -42,7 +42,7 @@ public class Game : MonoBehaviour {
     }
     void SpawnEnemies()
     {
-        EnemyManager.m_Instance.SpawnEnemies(5, 5, "GreenEnemy");
+        EnemyManager.m_Instance.SpawnEnemies(5, 5, "BlueEnemy");
     }
 
     void CheckInput()
@@ -84,7 +84,6 @@ public class Game : MonoBehaviour {
     public void AddPoints(int p_Points)
     {
         m_points += p_Points;
-        Debug.Log(m_points);
         m_pointstext.text = m_points.ToString();
     }
 }

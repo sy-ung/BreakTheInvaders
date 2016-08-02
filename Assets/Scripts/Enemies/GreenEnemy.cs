@@ -14,8 +14,6 @@ public class GreenEnemy : Enemy {
         m_stayinbounds = true;
     }
 
-
-
 	// Use this for initialization
 	void Start ()
     {
@@ -37,10 +35,7 @@ public class GreenEnemy : Enemy {
 
     public void Death()
     {
-        
-
         base.Death();
-
     }
 
 }

@@ -91,10 +91,7 @@ public class Enemy : MonoBehaviour {
 
     protected void Update()
     {
-        //if (m_movedown)
-        //    MoveDown();
-        //else
-            MoveEnemy();
+        MoveEnemy();
     }
 
     protected void LateUpdate()
@@ -122,8 +119,6 @@ public class Enemy : MonoBehaviour {
                     transform.position = new Vector2(transform.position.x + m_HalfSize.x * m_movementspeed.x, transform.position.y);
             }
             m_timer = 0;
-
-
         }
         else
         {
@@ -131,17 +126,26 @@ public class Enemy : MonoBehaviour {
         }
         
     }
-    public bool CheckBoundry()
+    public void CheckBoundry()
     {
+        if (transform.position.x + m_HalfSize.x > -Camera.main.GetComponent<ResolutionFix>().m_ScreenSizeWorldPoint.x &&
+            transform.position.x - m_HalfSize.x < Camera.main.GetComponent<ResolutionFix>().m_ScreenSizeWorldPoint.x &&
+            transform.position.y - m_HalfSize.y < Camera.main.GetComponent<ResolutionFix>().m_ScreenSizeWorldPoint.y)
+        { 
+            m_inbounds = true;
+        }
+        else
+        {
+            m_inbounds = false;
+        }
+
         if (!m_changedirection)
         {
             if (transform.position.x + m_HalfSize.x > m_boundries.x - (m_HalfSize.x))
             {
                 EnemyManager.m_Instance.MoveEnemiesDown();
-                return true;
+
             }
-            else
-                return false;
 
         }
         else if (m_changedirection)
@@ -149,12 +153,8 @@ public class Enemy : MonoBehaviour {
             if (transform.position.x - m_HalfSize.x< -m_boundries.x + (m_HalfSize.x))
             {
                 EnemyManager.m_Instance.MoveEnemiesDown();
-                return true;
             }
-            else
-                return false;
         }
-        return false;
     }
 
     public void MoveDown()

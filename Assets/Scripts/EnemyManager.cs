@@ -98,16 +98,15 @@ public class EnemyManager : MonoBehaviour {
             {
                 float t_newmovementtimer;
                 if (t_enemies.Length > 1)
-                { 
+                {
                     t_newmovementtimer = (float)(t_enemies.Length - 1) / m_spawnedenemiescount;
-                    t_enemies[i].m_movementtimer = t_newmovementtimer;
+                    t_enemies[i].m_movementtimer *= t_newmovementtimer;
                     t_enemies[i].m_timer = t_enemies[i].m_movementtimer;
                 }
                 else
                 {
                     t_enemies[i].m_movementtimer = 0;
                 }
-                
             }
         }
     }
