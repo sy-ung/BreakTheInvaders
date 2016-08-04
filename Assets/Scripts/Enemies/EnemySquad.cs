@@ -14,6 +14,10 @@ public class EnemySquad : MonoBehaviour {
         get { return m_issquaddead; }
     }
 
+    private bool m_squadinboundsX = false;
+    public bool m_squadinboundsY = false;
+
+
     // Use this for initialization
     void Start () {
 	
@@ -22,8 +26,23 @@ public class EnemySquad : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
-        
+        SquadBoundryCheck();
 	}
+
+    void SquadBoundryCheck()
+    {
+        if(!m_squadinboundsX || !m_squadinboundsY)
+        { 
+            for(int i = 0; i <m_enemies.Count; i++)
+            {
+                if(m_enemies[i].m_InBoundsX)
+                {
+                    m_squadinboundsX = true;
+                    break;
+                }
+            }
+        }
+    }
 
     public void CreateSquad(string p_EnemyPrefabName, int p_Rows, int p_Columns)
     {
@@ -33,9 +52,11 @@ public class EnemySquad : MonoBehaviour {
 
         bool t_switchside = false;
         Vector2 t_currentspawnPOS;
-        Vector2 t_previousspawnPOS = Vector2.zero + new Vector2(0, 5);
+        Vector2 t_previousspawnPOS = Vector2.zero + new Vector2(0, 7);
+
         float t_paddingx = 0f;
-        float t_paddingy = 0f;
+        float t_paddingy = 0.1f;
+
         m_spawnedenemiescount = p_Rows * p_Columns;
         for (int i = 0; i < p_Rows; i++)
         {
@@ -44,26 +65,26 @@ public class EnemySquad : MonoBehaviour {
                 Enemy t_enemy = (Instantiate(t_EnemyPrefab)).GetComponent<Enemy>();
                 t_enemy.tag = "Enemy";
 
-                Vector2 t_enemyhalfsize = t_enemy.m_HalfSize;
-
-                floa t_posy = ((t_screensize.y - t_enemyhalfsize.y)) + (((t_enemyhalfsize.y * 2) * i) - (i * t_enemy.m_HalfSize.y * t_paddingy));
-                float t_posx = ((t_enemyhalfsize.x * 2) + t_enemy.m_HalfSize.y * t_paddingx);
+                float t_posx = t_enemy.m_HalfSize.x * 2;
+                float t_posy = t_previousspawnPOS.y - ((t_enemy.m_HalfSize.y * 2) * i) - (i * t_paddingy);
 
                 if (t_switchside)
                 {
-                    t_currentspawnPOS = new Vector2((t_previousspawnPOS.x + t_posx * j), t_posy);
+                    t_currentspawnPOS = new Vector2((t_previousspawnPOS.x + (t_posx * j) + (j * t_paddingx)), t_posy);
                     t_switchside = false;
                 }
                 else
                 {
-                    t_currentspawnPOS = new Vector2((t_previousspawnPOS.x - t_posx * j), t_posy);
+                    t_currentspawnPOS = new Vector2((t_previousspawnPOS.x - (t_posx * j) - (j * t_paddingx)), t_posy);
                     t_switchside = true;
                 }
 
                 t_enemy.transform.position = t_currentspawnPOS;
-                t_previousspawnPOS = t_currentspawnPOS;
+                Debug.Log(t_currentspawnPOS.y);
+                t_previousspawnPOS = new Vector2(t_currentspawnPOS.x, t_previousspawnPOS.y);
 
-                if(p_Rows == 1 && p_Columns == 1)
+
+                if (p_Rows == 1 && p_Columns == 1)
                 {
                     t_enemy.m_SoleSurvivor = true;
                 }
@@ -73,7 +94,8 @@ public class EnemySquad : MonoBehaviour {
                
                 
             }
-            t_previousspawnPOS = Vector2.zero;
+
+            t_previousspawnPOS = new Vector2(0, t_previousspawnPOS.y);
         }
     }
 
@@ -89,6 +111,20 @@ public class EnemySquad : MonoBehaviour {
             }
         }
     }
+
+    public void MoveSquad()
+    {
+        for (int i = 0; i < m_enemies.Count; i++)
+        {
+            if (m_killall)
+                break;
+            else
+            {
+                m_enemies[i].m_move = true;
+            }
+        }
+    }
+
     public void IncreaseSquadSpeed()
     {
         float t_newmovementtimer = (float)(m_enemies.Count - 1) / m_spawnedenemiescount;

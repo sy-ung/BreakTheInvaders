@@ -32,14 +32,25 @@ public class Enemy : MonoBehaviour {
     private Vector2 m_boundries;
 
     public bool m_movedown = false;
+    public bool m_move = false;
 
     protected GameObject m_deathparticle;
 
     protected int m_points;
 
     protected bool m_stayinbounds;
+
     private bool m_inboundsX;
+    public bool m_InBoundsX
+    {
+        get { return m_inboundsX; }
+    }
+
     private bool m_inboundsY;
+    public bool m_InBoundsY
+    {
+        get { return m_inboundsY; }
+    }
 
     public EnemySquad m_CurrentEnemySquad;
 
@@ -104,7 +115,6 @@ public class Enemy : MonoBehaviour {
     {
         m_movementtimer = 0;
         m_movementspeed *= 2;
-        Debug.Log("I AM SOLE SURVIVOR");
     }
 
     protected void Update()
@@ -114,38 +124,48 @@ public class Enemy : MonoBehaviour {
 
     protected void LateUpdate()
     {
-        if(!m_movedown)
+        if (m_stayinbounds && !m_movedown)
+            CheckBoundry();
+    }
+
+    public void MoveEnemyCheck()
+    {
+        if(!m_move)
         { 
-            if(m_stayinbounds)
-                CheckBoundry();
+            if (m_timer > m_movementtimer)
+            {
+                if (!m_movedown)
+                    m_move = true;
+                else
+                    m_move = false;
+
+                m_timer = 0;
+                MoveEnemy();
+            }
+            else
+            {
+                m_timer += Time.deltaTime;
+            }
         }
     }
 
     public void MoveEnemy()
     {
-        if (m_movedown)
-            MoveDown();
-        else
-        {
+        if(m_move)
+        { 
             if (m_changedirection)
                 transform.position = new Vector2(transform.position.x - m_HalfSize.x * m_movementspeed.x, transform.position.y);
             else if (!m_changedirection)
                 transform.position = new Vector2(transform.position.x + m_HalfSize.x * m_movementspeed.x, transform.position.y);
+
+            m_move = false;
+        }
+        else if(m_movedown)
+        {
+            MoveDown();
         }
     }
-    public void MoveEnemyCheck()
-    {
-        if (m_timer > m_movementtimer)
-        {
-            MoveEnemy();
-            m_timer = 0;
-        }
-        else
-        {
-            m_timer += Time.deltaTime;
-        }
-        
-    }
+
 
     public void CheckBoundry()
     {
@@ -190,7 +210,6 @@ public class Enemy : MonoBehaviour {
 
     public void MoveDown()
     {
-
         ChangeDirection();
         transform.position += new Vector3(0, -(m_HalfSize.y * m_movementspeed.y), 0);
         m_movedown = false;

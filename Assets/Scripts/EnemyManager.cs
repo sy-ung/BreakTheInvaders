@@ -47,7 +47,7 @@ public class EnemyManager : MonoBehaviour {
     public void SpawnSquad()
     {
         EnemySquad t_es = new GameObject("ENEMY SQUAD").AddComponent<EnemySquad>();
-        t_es.CreateSquad("GreenEnemy", 1, 5);
+        t_es.CreateSquad("GreenEnemy", 3, 5);
         
     }
 
