@@ -14,7 +14,7 @@ public class EnemySquad : MonoBehaviour {
         get { return m_issquaddead; }
     }
 
-    private bool m_squadinboundsX = false;
+    public bool m_squadinboundsX = false;
     public bool m_squadinboundsY = false;
 
 
@@ -27,19 +27,43 @@ public class EnemySquad : MonoBehaviour {
 	void Update ()
     {
         SquadBoundryCheck();
-	}
+    }
 
     void SquadBoundryCheck()
     {
-        if(!m_squadinboundsX || !m_squadinboundsY)
+
+        if (!m_squadinboundsX || !m_squadinboundsY)
         { 
             for(int i = 0; i <m_enemies.Count; i++)
             {
-                if(m_enemies[i].m_InBoundsX)
-                {
-                    m_squadinboundsX = true;
-                    break;
+                if(!m_squadinboundsX)
+                { 
+                    if(m_enemies[i].m_InBoundsX)
+                    {
+                        m_squadinboundsX = true;
+                        Debug.Log("Squad is within X boundry");
+                        break;
+                    }
                 }
+
+                if (!m_squadinboundsY)
+                {
+                    if(m_enemies[i].m_InBoundsY)
+                    {
+                        m_squadinboundsY = true;
+                        Debug.Log("Squad is within Y boundry");
+                        break;
+                    }
+                }
+            }
+            if (!m_squadinboundsX)
+            {
+                MoveSquad(true);
+            }
+
+            if (!m_squadinboundsY)
+            {
+                MoveSquadDown(true);
             }
         }
     }
@@ -51,8 +75,10 @@ public class EnemySquad : MonoBehaviour {
         GameObject t_EnemyPrefab = AssetManager.m_Instance.GetPrefab(p_EnemyPrefabName);
 
         bool t_switchside = false;
+
+        Vector2 t_origin = Vector2.zero + new Vector2(-7, 7);
         Vector2 t_currentspawnPOS;
-        Vector2 t_previousspawnPOS = Vector2.zero + new Vector2(0, 7);
+        Vector2 t_previousspawnPOS = t_origin;
 
         float t_paddingx = 0f;
         float t_paddingy = 0.1f;
@@ -80,13 +106,12 @@ public class EnemySquad : MonoBehaviour {
                 }
 
                 t_enemy.transform.position = t_currentspawnPOS;
-                Debug.Log(t_currentspawnPOS.y);
                 t_previousspawnPOS = new Vector2(t_currentspawnPOS.x, t_previousspawnPOS.y);
 
 
                 if (p_Rows == 1 && p_Columns == 1)
                 {
-                    t_enemy.m_SoleSurvivor = true;
+                    //t_enemy.m_SoleSurvivor = true;
                 }
 
                 t_enemy.m_CurrentEnemySquad = this;
@@ -95,11 +120,11 @@ public class EnemySquad : MonoBehaviour {
                 
             }
 
-            t_previousspawnPOS = new Vector2(0, t_previousspawnPOS.y);
+            t_previousspawnPOS = new Vector2(t_origin.x, t_previousspawnPOS.y);
         }
     }
 
-    public void MoveSquadDown()
+    public void MoveSquadDown(bool p_Value)
     {
         for (int i = 0; i < m_enemies.Count; i++)
         {
@@ -107,12 +132,12 @@ public class EnemySquad : MonoBehaviour {
                 break;
             else
             {
-                m_enemies[i].m_movedown = true;
+                m_enemies[i].m_movedown = p_Value;
             }
         }
     }
 
-    public void MoveSquad()
+    public void MoveSquad(bool p_Value)
     {
         for (int i = 0; i < m_enemies.Count; i++)
         {
@@ -120,7 +145,7 @@ public class EnemySquad : MonoBehaviour {
                 break;
             else
             {
-                m_enemies[i].m_move = true;
+                m_enemies[i].m_move = p_Value;
             }
         }
     }

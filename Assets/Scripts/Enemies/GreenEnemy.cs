@@ -7,7 +7,7 @@ public class GreenEnemy : Enemy {
         base.Awake();
         SetSprite("EnemyOne");
         m_spriterenderer.color = Color.green;
-        m_movementspeed = new Vector2(0.75f, 1.0f);
+        m_movementspeed = new Vector2(0.75f, 2.0f);
         m_origmovementtimer = 0.75f;
         m_deathparticle = AssetManager.m_Instance.GetPrefab("EnemyDeathParticle1");
         m_points = 100;

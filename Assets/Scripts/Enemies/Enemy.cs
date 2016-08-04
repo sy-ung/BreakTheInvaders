@@ -130,28 +130,26 @@ public class Enemy : MonoBehaviour {
 
     public void MoveEnemyCheck()
     {
-        if(!m_move)
-        { 
-            if (m_timer > m_movementtimer)
-            {
-                if (!m_movedown)
-                    m_move = true;
-                else
-                    m_move = false;
-
-                m_timer = 0;
-                MoveEnemy();
-            }
-            else
-            {
-                m_timer += Time.deltaTime;
-            }
+        if (m_timer > m_movementtimer)
+        {
+            m_timer = 0;
+            MoveEnemy();
         }
+        else
+        {
+            m_timer += Time.deltaTime;
+        }
+        
     }
 
     public void MoveEnemy()
     {
-        if(m_move)
+
+        if (m_movedown)
+        {
+            MoveDown();
+        }
+        else if (m_move)
         { 
             if (m_changedirection)
                 transform.position = new Vector2(transform.position.x - m_HalfSize.x * m_movementspeed.x, transform.position.y);
@@ -160,10 +158,7 @@ public class Enemy : MonoBehaviour {
 
             m_move = false;
         }
-        else if(m_movedown)
-        {
-            MoveDown();
-        }
+
     }
 
 
@@ -179,8 +174,9 @@ public class Enemy : MonoBehaviour {
             m_inboundsX = false;
         }
 
-        if(transform.position.y - m_HalfSize.y < Camera.main.GetComponent<ResolutionFix>().m_ScreenSizeWorldPoint.y)
+        if(transform.position.y < Camera.main.GetComponent<ResolutionFix>().m_ScreenSizeWorldPoint.y)
         {
+            if(!m_inboundsY)
             m_inboundsY = true;
         }
         else
@@ -189,28 +185,34 @@ public class Enemy : MonoBehaviour {
         }
 
 
-
-        if (!m_changedirection)
-        {
-            if (transform.position.x + m_HalfSize.x > m_boundries.x - (m_HalfSize.x))
+        if(m_CurrentEnemySquad.m_squadinboundsY && m_CurrentEnemySquad.m_squadinboundsX)
+        { 
+            if (!m_changedirection)
             {
-                m_CurrentEnemySquad.MoveSquadDown();
+                if (transform.position.x + m_HalfSize.x > m_boundries.x - (m_HalfSize.x))
+                {
+                    Debug.Log("BlahBlah");
+                    m_CurrentEnemySquad.MoveSquadDown(true);
+
+                }
 
             }
-
-        }
-        else if (m_changedirection)
-        {
-            if (transform.position.x - m_HalfSize.x< -m_boundries.x + (m_HalfSize.x))
+            else if (m_changedirection)
             {
-                m_CurrentEnemySquad.MoveSquadDown();
+                if (transform.position.x - m_HalfSize.x< -m_boundries.x + (m_HalfSize.x))
+                {
+                    Debug.Log("BlahBlah");
+                    m_CurrentEnemySquad.MoveSquadDown(true);
+                }
             }
         }
     }
 
     public void MoveDown()
     {
-        ChangeDirection();
+        if(m_CurrentEnemySquad.m_squadinboundsX && m_CurrentEnemySquad.m_squadinboundsY)
+            ChangeDirection();
+
         transform.position += new Vector3(0, -(m_HalfSize.y * m_movementspeed.y), 0);
         m_movedown = false;
         if (transform.position.y < PlayerManager.m_Instance.m_Player.GetTopYLine() + m_HalfSize.y * 2)
