@@ -18,7 +18,6 @@ class UIControlWheel : UIElement {
     {
         base.Awake();
         Initialize();
-        m_spriterenderer.sprite = AssetManager.m_Instance.GetSprite("ControlWheel");
 
         m_circlecollider2D.radius = m_spriterenderer.bounds.size.x/2;
         m_circlecollider2D.isTrigger = true;
@@ -29,8 +28,8 @@ class UIControlWheel : UIElement {
 
     void Initialize()
     {
-        m_rigidbody = gameObject.AddComponent<Rigidbody2D>();
-        m_circlecollider2D = gameObject.AddComponent<CircleCollider2D>();
+        m_rigidbody = gameObject.GetComponent<Rigidbody2D>();
+        m_circlecollider2D = gameObject.GetComponent<CircleCollider2D>();
     }
 	
 	// Update is called once per frame

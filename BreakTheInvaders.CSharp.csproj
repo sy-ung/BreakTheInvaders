@@ -58,12 +58,6 @@
     <Reference Include="UnityEngine.Networking">
       <HintPath>Library\UnityAssemblies\UnityEngine.Networking.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.Networking">
-      <HintPath>Library\UnityAssemblies\UnityEngine.Networking.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>Library\UnityAssemblies\UnityEngine.UI.dll</HintPath>
-    </Reference>
     <Reference Include="UnityEditor">
       <HintPath>Library\UnityAssemblies\UnityEditor.dll</HintPath>
     </Reference>
@@ -74,23 +68,36 @@
     <Compile Include="Assets\Scripts\Backgrounds\Background.cs" />
     <Compile Include="Assets\Scripts\Backgrounds\Foreground.cs" />
     <Compile Include="Assets\Scripts\Ball\Ball.cs" />
+    <Compile Include="Assets\Scripts\Ball\BlueBall.cs" />
+    <Compile Include="Assets\Scripts\Ball\DefaultBall.cs" />
+    <Compile Include="Assets\Scripts\Ball\GreenBall.cs" />
+    <Compile Include="Assets\Scripts\Ball\RedBall.cs" />
     <Compile Include="Assets\Scripts\BallManager.cs" />
     <Compile Include="Assets\Scripts\Bullet.cs" />
-    <Compile Include="Assets\Scripts\DeathParticle.cs" />
-    <Compile Include="Assets\Scripts\Enemies\BlueEnemy.cs" />
     <Compile Include="Assets\Scripts\Enemies\Enemy.cs" />
     <Compile Include="Assets\Scripts\Enemies\EnemyBullet.cs" />
     <Compile Include="Assets\Scripts\Enemies\EnemySquad.cs" />
-    <Compile Include="Assets\Scripts\Enemies\GreenEnemy.cs" />
-    <Compile Include="Assets\Scripts\Enemies\RedEnemy.cs" />
-    <Compile Include="Assets\Scripts\Enemies\YellowEnemy.cs" />
+    <Compile Include="Assets\Scripts\Enemies\EnemyType1.cs" />
+    <Compile Include="Assets\Scripts\EnemyDeath.cs" />
     <Compile Include="Assets\Scripts\EnemyManager.cs" />
-    <Compile Include="Assets\Scripts\Player\Muzzle.cs" />
+    <Compile Include="Assets\Scripts\Explosion.cs" />
+    <Compile Include="Assets\Scripts\Muzzle.cs" />
+    <Compile Include="Assets\Scripts\Player\BasicBullet.cs" />
+    <Compile Include="Assets\Scripts\Player\BasicMuzzle.cs" />
+    <Compile Include="Assets\Scripts\Player\BlueBullet.cs" />
+    <Compile Include="Assets\Scripts\Player\BlueMuzzle.cs" />
+    <Compile Include="Assets\Scripts\Player\GreenBullet.cs" />
+    <Compile Include="Assets\Scripts\Player\GreenMuzzle.cs" />
     <Compile Include="Assets\Scripts\Player\MuzzleFlash.cs" />
     <Compile Include="Assets\Scripts\Player\Player.cs" />
-    <Compile Include="Assets\Scripts\Player\PlayerBullet.cs" />
+    <Compile Include="Assets\Scripts\Player\RedBeamBullet.cs" />
+    <Compile Include="Assets\Scripts\Player\RedBeamMuzzle.cs" />
     <Compile Include="Assets\Scripts\PlayerManager.cs" />
     <Compile Include="Assets\Scripts\PointBlank.cs" />
+    <Compile Include="Assets\Scripts\PowerUp.cs" />
+    <Compile Include="Assets\Scripts\PowerUp\BluePowerUp.cs" />
+    <Compile Include="Assets\Scripts\PowerUp\GreenPowerUp.cs" />
+    <Compile Include="Assets\Scripts\PowerUp\RedPowerUp.cs" />
     <Compile Include="Assets\Scripts\ResolutionFix.cs" />
     <Compile Include="Assets\Scripts\Scenes\Game.cs" />
     <Compile Include="Assets\Scripts\Scenes\Menu.cs" />

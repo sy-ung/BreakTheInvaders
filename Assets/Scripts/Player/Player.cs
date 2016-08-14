@@ -59,38 +59,24 @@ public class Player : MonoBehaviour {
 
     private Vector2 m_previousmousepos;
 
-    private float m_firingrate = 0.1f;
-    private float m_firingtimer = 0;
-
-    public bool m_startfiring;
-
-
     private Muzzle m_muzzle;
 
     private void Initialize()
     {
-        m_rigidbody2D = gameObject.AddComponent<Rigidbody2D>();
-        m_spriterenderer = gameObject.AddComponent<SpriteRenderer>();
-        m_boxcollider2D = gameObject.AddComponent<BoxCollider2D>();
-    }
-    
-    void Awake()
-    {
-        Initialize();
+
 
         m_rigidbody2D.gravityScale = 0;
-        m_spriterenderer.sprite = AssetManager.m_Instance.GetSprite("Player");
         m_spriterenderer.color = new Color(0, 100, 25);
 
         m_rigidbody2D.mass = 1;
-        m_rigidbody2D.isKinematic = false;
         m_rigidbody2D.freezeRotation = true;
-        
+        m_rigidbody2D.collisionDetectionMode = CollisionDetectionMode2D.Discrete;
 
         //This is to calculate the scale of the player paddle in propotion to the screen size
         float t_AspectRatio = (float)Camera.main.pixelHeight / (float)Camera.main.pixelWidth;
-        m_originalscale = (transform.localScale * t_AspectRatio)/4f;
+        m_originalscale = (transform.localScale * t_AspectRatio) / 4f;
         transform.localScale = m_originalscale;
+
 
         //Converting screen width and height to world points
         m_boundrysize = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, Screen.height));
@@ -102,27 +88,50 @@ public class Player : MonoBehaviour {
 
         transform.position = new Vector2(0, m_startingline);
 
-        m_firingtimer = m_firingrate;
+
 
         m_newposition = transform.position;
+
+        gameObject.layer = 14;
+    }
+    
+    void Awake()
+    {
+        m_rigidbody2D = gameObject.GetComponent<Rigidbody2D>();
+        m_spriterenderer = gameObject.GetComponent<SpriteRenderer>();
+        m_boxcollider2D = gameObject.GetComponent<BoxCollider2D>();
+    }
+
+    void ChangeSprite(Sprite p_NewSprite)
+    {
+        m_spriterenderer.sprite = p_NewSprite;
+        m_boxcollider2D.size = new Vector2(m_spriterenderer.sprite.bounds.size.x, m_spriterenderer.sprite.bounds.size.y);
     }
 
 	// Use this for initialization
 	void Start ()
     {
+        Initialize();
+
+        m_spriterenderer.sortingLayerName = "Player";
+
         m_newposition = transform.position;
         m_currentcontrolmode = ControlMode.DRAG;
         
         SetPlayerScale(1);
 
 
-        SpawnBarrel();
+        SpawnBarrel(AssetManager.m_Instance.GetPrefab("RedBeamMuzzle"));
         //t_mf.transform.parent = transform;
     }
 
-    void SpawnBarrel()
+    public void SpawnBarrel(GameObject p_NewMuzzle)
     {
-        m_muzzle = new GameObject("PlayerMuzzle").AddComponent<Muzzle>();
+        if(m_muzzle !=null)
+        {
+            m_muzzle.DestroyMuzzle();
+        }
+        m_muzzle = Instantiate(p_NewMuzzle).GetComponent<Muzzle>();
         m_muzzle.transform.SetParent(transform);
     }
 
@@ -152,9 +161,8 @@ public class Player : MonoBehaviour {
 
         MoveCheck();
         ScreenBoundryCheck();
-        CheckFire();
 
-        switch(m_currentcontrolmode)
+        switch (m_currentcontrolmode)
         {
             case ControlMode.BATTING:
                 BattingMode();
@@ -278,27 +286,18 @@ public class Player : MonoBehaviour {
         }
     }
 
-    void CheckFire()
+    public void SetMuzzleToFire(bool p_value)
     {
-        if (m_firingtimer > m_firingrate)
-        {
+        m_muzzle.m_StartFiring = p_value;
+    }
 
-            if(m_startfiring)
-            { 
-                FireBullet();
-                m_firingtimer = 0;
-            }
-
-        }
-        else
+    public void OnCollisionEnter2D(Collision2D p_Collision)
+    {
+        if(p_Collision.collider.tag == "PowerUp")
         {
-            m_firingtimer += Time.deltaTime;
+            p_Collision.gameObject.GetComponent<PowerUp>().ApplyMuzzlePowerUp();
         }
     }
 
-    void FireBullet()
-    {
 
-        m_muzzle.FireProjectile();
-    }
 }

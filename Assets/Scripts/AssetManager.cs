@@ -24,8 +24,6 @@ public class AssetManager : MonoBehaviour {
         }
     }
 
-    private static Hashtable m_sprite;
-    private static Hashtable m_audioClips;
     private static Hashtable m_prefabs;
 
     void Awake()
@@ -45,53 +43,50 @@ public class AssetManager : MonoBehaviour {
 
     private static void LoadAllAssets()
     {
-        m_sprite = new Hashtable();
-        m_audioClips = new Hashtable();
         m_prefabs = new Hashtable();
-        
-        //Textures
-        m_sprite.Add("Player", Resources.Load<Sprite>("Images/Player/playerpaddle"));
-        m_sprite.Add("PlayerBall", Resources.Load<Sprite>("Images/Ball"));
-
-        m_sprite.Add("EnemyOne", Resources.Load<Sprite>("Images/EnemyBasic"));
-        m_sprite.Add("EnemyTwo", Resources.Load<Sprite>("Images/EnemyBasic2"));
-        m_sprite.Add("EnemySpecial", Resources.Load<Sprite>("Images/EnemySpecial"));
-
-        m_sprite.Add("Bullet", Resources.Load<Sprite>("Images/Bullet"));
-        m_sprite.Add("PlayerMuzzle", Resources.Load<Sprite>("Images/Player/playerbarrel"));
-
-        m_sprite.Add("ControlWheel", Resources.Load<Sprite>("Images/Wheel"));
-        m_sprite.Add("ControlBar", Resources.Load<Sprite>("Images/MovementBar"));
-        m_sprite.Add("ShootButton", Resources.Load<Sprite>("Images/ShootButton"));
-
 
         //Prefabs
-        m_prefabs.Add("RedEnemy", Resources.Load<GameObject>("Prefabs/GameObjects/Enemies/Red_Enemy_Type1"));
-        m_prefabs.Add("GreenEnemy", Resources.Load<GameObject>("Prefabs/GameObjects/Enemies/Green_Enemy_Type1"));
-        m_prefabs.Add("BlueEnemy", Resources.Load<GameObject>("Prefabs/GameObjects/Enemies/Blue_Enemy_Type2"));
+
+        m_prefabs.Add("Player", Resources.Load<GameObject>("Prefabs/GameObjects/Player"));
+
+        m_prefabs.Add("DefaultBall", Resources.Load<GameObject>("Prefabs/GameObjects/Balls/DefaultBall"));
+        m_prefabs.Add("GreenBall", Resources.Load<GameObject>("Prefabs/GameObjects/Balls/GreenBall"));
+        m_prefabs.Add("BlueBall", Resources.Load<GameObject>("Prefabs/Gameobjects/Balls/BlueBall"));
+        m_prefabs.Add("RedBall", Resources.Load<GameObject>("Prefabs/GameObjects/Balls/RedBall"));
+
+        m_prefabs.Add("RedPower", Resources.Load<GameObject>("Prefabs/GameObjects/PowerUps/RedPowerUp"));
+        m_prefabs.Add("GreenPower", Resources.Load<GameObject>("Prefabs/GameObjects/PowerUps/GreenPowerUp"));
+        m_prefabs.Add("BluePower", Resources.Load<GameObject>("Prefabs/GameObjects/PowerUps/BluePowerUp"));
+
+        m_prefabs.Add("EnemyType1", Resources.Load<GameObject>("Prefabs/GameObjects/Enemies/Enemy_Type1"));
 
 
         m_prefabs.Add("ControlWheel", Resources.Load<GameObject>("Prefabs/UIObjects/ControlWheel"));
         m_prefabs.Add("ControlBar", Resources.Load<GameObject>("Prefabs/UIObjects/ControlBar"));
         m_prefabs.Add("ShootButton", Resources.Load<GameObject>("Prefabs/UIObjects/ShootButton"));
 
-        m_prefabs.Add("BulletDefault", Resources.Load<GameObject>("Prefabs/GameObjects/BulletRegular"));
+
+        m_prefabs.Add("BasicMuzzle", Resources.Load<GameObject>("Prefabs/Gameobjects/Muzzles/BasicMuzzle"));
+        m_prefabs.Add("BulletDefault", Resources.Load<GameObject>("Prefabs/GameObjects/Bullets/BulletBasic"));
+        m_prefabs.Add("BulletDefaultExplosion", Resources.Load<GameObject>("Prefabs/Gameobjects/Bullets/BulletBasicExplosion"));
+
+        m_prefabs.Add("BlueMuzzle", Resources.Load<GameObject>("Prefabs/Gameobjects/Muzzles/BlueMuzzle"));
+        m_prefabs.Add("BulletBlue", Resources.Load<GameObject>("Prefabs/GameObjects/Bullets/BulletBlue"));
+        m_prefabs.Add("BulletBlueExplosion", Resources.Load<GameObject>("Prefabs/GameObjects/Bullets/BulletBlueExplosion"));
+
+        m_prefabs.Add("GreenMuzzle", Resources.Load<GameObject>("Prefabs/Gameobjects/Muzzles/GreenMuzzle"));
+        m_prefabs.Add("BulletGreen", Resources.Load<GameObject>("Prefabs/GameObjects/Bullets/BulletGreen"));
+        m_prefabs.Add("BulletGreenExplosion", Resources.Load<GameObject>("Prefabs/GameObjects/Bullets/BulletGreenExplosion"));
+
+        m_prefabs.Add("RedBeamMuzzle", Resources.Load<GameObject>("Prefabs/Gameobjects/Muzzles/RedBeamMuzzle"));
+        m_prefabs.Add("BulletRedBeam", Resources.Load<GameObject>("Prefabs/Gameobjects/Bullets/BulletRedBeam"));
+
         m_prefabs.Add("EnemyDeathParticle1", Resources.Load<GameObject>("Prefabs/Particles/EnemyDeathParticle1/EnemyDeathParticle1"));
         m_prefabs.Add("MuzzleFlashDefault", Resources.Load<GameObject>("Prefabs/Particles/MuzzleFlash/MuzzleFlash"));
 
-
+        m_prefabs.Add("EnemyBullet", Resources.Load<GameObject>("Prefabs/GameObjects/Bullets/EnemyBullet"));
         
 
-    }
-
-    public Sprite GetSprite(string p_SpriteName)
-    {
-        return (Sprite)m_sprite[p_SpriteName];
-    }
-
-    public AudioClip GetAudioClip(string p_AudioClipName)
-    {
-        return (AudioClip)m_audioClips[p_AudioClipName];
     }
 
     public GameObject GetPrefab(string p_PrefabName)

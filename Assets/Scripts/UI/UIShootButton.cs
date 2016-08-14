@@ -15,22 +15,18 @@ public class UIShootButton : UIElement {
 
         Initialize();
 
-        SetSprite("ShootButton");
         m_circlecollider2D.radius = m_spriterenderer.bounds.size.x/2;
         m_circlecollider2D.isTrigger = true;
 
         m_rigidbody.isKinematic = true;
 
         SetScale(1.5f);
-
-
-
     }
 
     void Initialize()
     {
-        m_rigidbody = gameObject.AddComponent<Rigidbody2D>();
-        m_circlecollider2D = gameObject.AddComponent<CircleCollider2D>();
+        m_rigidbody = gameObject.GetComponent<Rigidbody2D>();
+        m_circlecollider2D = gameObject.GetComponent<CircleCollider2D>();
     }
 
 	// Use this for initialization
@@ -60,12 +56,12 @@ public class UIShootButton : UIElement {
                     {
                         if (Input.GetTouch(i).phase == TouchPhase.Began)
                         {
-                            m_player.m_startfiring = true;
+                            m_player.SetMuzzleToFire(true);
                         }
                         
                         if (Input.GetTouch(i).phase == TouchPhase.Ended)
                         {
-                            m_player.m_startfiring = false;
+                            m_player.SetMuzzleToFire(false);
                         }
                         
                     }

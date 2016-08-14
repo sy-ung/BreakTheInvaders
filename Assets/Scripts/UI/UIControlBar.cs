@@ -15,7 +15,6 @@ class UIControlBar : UIElement {
         base.Awake();
         Initialize();
 
-        SetSprite("ControlBar");
         m_boxcollider2D.size = m_spriterenderer.bounds.size;
         m_boxcollider2D.isTrigger = true;
         m_rigidbody.isKinematic = true;
@@ -26,8 +25,8 @@ class UIControlBar : UIElement {
 
     void Initialize()
     {
-        m_rigidbody = gameObject.AddComponent<Rigidbody2D>();
-        m_boxcollider2D = gameObject.AddComponent<BoxCollider2D>();
+        m_rigidbody = gameObject.GetComponent<Rigidbody2D>();
+        m_boxcollider2D = gameObject.GetComponent<BoxCollider2D>();
     }
 
 	// Use this for initialization

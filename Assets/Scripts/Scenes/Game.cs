@@ -18,9 +18,9 @@ public class Game : MonoBehaviour {
         //SpawnEnemies();
 
         m_pointstext = GameObject.FindGameObjectWithTag("CurrentScoreText").GetComponent<Text>();
-
     }
-	
+
+
     void SetUpUI()
     {
         //UIManager.m_Instance.AddUIElementToScreen("ControlWheel", UIManager.ScreenAnchor.LOWER_LEFT, new Vector2(0, 0));
@@ -31,6 +31,7 @@ public class Game : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
+
         CheckInput();
 
         Enemy t_enemycheck = FindObjectOfType<Enemy>();
@@ -50,11 +51,11 @@ public class Game : MonoBehaviour {
     {
         if(Input.GetKey(KeyCode.Space))
         {
-            PlayerManager.m_Instance.m_Player.m_startfiring = true;
+            PlayerManager.m_Instance.m_Player.SetMuzzleToFire(true);
         }
         if(Input.GetKeyUp(KeyCode.Space))
         {
-            PlayerManager.m_Instance.m_Player.m_startfiring = false;
+            PlayerManager.m_Instance.m_Player.SetMuzzleToFire(false);
         }
 
         if(Input.GetKey(KeyCode.A))
@@ -70,6 +71,36 @@ public class Game : MonoBehaviour {
         {
             SpawnEnemies();
         }
+        if(Input.GetKeyDown(KeyCode.O))
+        {
+            EnemySquad[] t_squads = FindObjectsOfType<EnemySquad>();
+            for(int i = 0; i < t_squads.Length ;i++)
+            {
+                t_squads[i].KillAllInSquad();
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.U))
+        {
+            PlayerManager.m_Instance.ChangeMuzzle(AssetManager.m_Instance.GetPrefab("BasicMuzzle"));
+        }
+
+        if (Input.GetKeyDown(KeyCode.J))
+        {
+            PlayerManager.m_Instance.ChangeMuzzle(AssetManager.m_Instance.GetPrefab("RedBeamMuzzle"));
+        }
+
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            PlayerManager.m_Instance.ChangeMuzzle(AssetManager.m_Instance.GetPrefab("BlueMuzzle"));
+        }
+
+        if (Input.GetKeyDown(KeyCode.N))
+        {
+            PlayerManager.m_Instance.ChangeMuzzle(AssetManager.m_Instance.GetPrefab("GreenMuzzle"));
+        }
+
+
 
         if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
         {

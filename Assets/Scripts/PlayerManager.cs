@@ -45,6 +45,10 @@ public class PlayerManager : MonoBehaviour
     {
         
     }
+    public void ChangeMuzzle(GameObject p_NewMuzzle)
+    {
+        m_Player.SpawnBarrel(p_NewMuzzle);
+    }
 
     public void RespawnPlayer()
     {
@@ -54,9 +58,7 @@ public class PlayerManager : MonoBehaviour
             m_player = FindObjectOfType<Player>();
             if(m_player == null)
             {
-                GameObject t_PlayerObject = new GameObject("Player");
-                m_player = t_PlayerObject.AddComponent<Player>();
-                m_player.tag = "Player";
+                m_player = Instantiate(AssetManager.m_Instance.GetPrefab("Player")).GetComponent<Player>();
             }
         }
     }

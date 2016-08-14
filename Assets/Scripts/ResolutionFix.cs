@@ -4,6 +4,7 @@ using System.Collections;
 public class ResolutionFix : MonoBehaviour {
 
     Vector2 m_screensizeworldpoint;
+
     public Vector2 m_ScreenSizeWorldPoint
     {
         get
@@ -32,4 +33,9 @@ public class ResolutionFix : MonoBehaviour {
 	void Update () {
 	
 	}
+
+    public void ShakeCamera()
+    {
+
+    }
 }

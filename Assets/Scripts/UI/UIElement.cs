@@ -18,7 +18,10 @@ public class UIElement : MonoBehaviour {
 
     private void Initialize()
     {
-        m_spriterenderer = gameObject.AddComponent<SpriteRenderer>();
+        m_spriterenderer = gameObject.GetComponent<SpriteRenderer>();
+        m_spriterenderer.sortingLayerName = "UI";
+        gameObject.layer = 5;
+        gameObject.tag = "UI";
     }
 
 	void Start ()
@@ -31,9 +34,9 @@ public class UIElement : MonoBehaviour {
         transform.localScale *= p_ScaleFactor;
     }
 
-    public void SetSprite(string p_SpriteName)
+    public void SetSprite(Sprite p_SpriteName)
     {
-        m_spriterenderer.sprite = AssetManager.m_Instance.GetSprite(p_SpriteName);
+        m_spriterenderer.sprite = p_SpriteName;
     }
 	
 	// Update is called once per frame

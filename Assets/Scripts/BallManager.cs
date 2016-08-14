@@ -39,7 +39,7 @@ public class BallManager : MonoBehaviour {
 
     void Awake()
     {
-        //m_StandardBallBullet = 
+
     }
 
 
@@ -52,17 +52,33 @@ public class BallManager : MonoBehaviour {
             m_playerball = FindObjectOfType<Ball>();
             if(m_playerball == null)
             {
-                GameObject t_PlayerBallObject = new GameObject("PlayerBall");
-                m_playerball = t_PlayerBallObject.AddComponent<Ball>();
-                m_playerball.tag = "PlayerBall";
+                m_playerball = Instantiate(AssetManager.m_Instance.GetPrefab("GreenBall")).GetComponent<Ball>();
             }
         }
 
         m_playerball.transform.position = new Vector3(p_Position.x, p_Position.y, 0);
-        m_playerball.OnRespawn();
+        m_playerball.LaunchBall();
 
     }
+    public void ChangeBall(GameObject p_NewBall)
+    {
+        if (m_playerball != null)
+        {
+            GameObject t_newball = Instantiate(p_NewBall, m_playerball.transform.position, m_playerball.transform.rotation) as GameObject;
 
+            Vector2 t_direction = m_playerball.m_Direction;
+            Vector2 t_storedposition = m_playerball.m_StoredCurrentPosition;
+
+            Destroy(m_playerball.gameObject);
+
+            m_playerball = t_newball.GetComponent<Ball>();
+            m_playerball.m_Direction = t_direction;
+            m_playerball.m_StoredCurrentPosition = t_storedposition;
+
+        }
+        else
+            Debug.Log("m_playerball in BallManager.ChangeBall is null");
+    }
    
 	// Use this for initialization
 	void Start () {
