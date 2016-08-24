@@ -8,8 +8,12 @@ public class Game : MonoBehaviour {
     Text DebugText;
     Text m_pointstext;
     private int m_points = 0;
-	// Use this for initialization
-	void Start () {
+
+    float m_spawnenemytime = 1.0f;
+    float m_spawnenemytimer = 0;
+
+    // Use this for initialization
+    void Start () {
 
         PlayerManager.m_Instance.RespawnPlayer();
         BallManager.m_Instance.RespawnBall(new Vector2(0,1));
@@ -31,20 +35,84 @@ public class Game : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
-
-        CheckInput();
-
-        Enemy t_enemycheck = FindObjectOfType<Enemy>();
-        if (t_enemycheck == null)
+        if(m_spawnenemytimer>m_spawnenemytime)
         {
             //SpawnEnemies();
+            m_spawnenemytimer = 0;
         }
-        //Debug();
+        else
+        {
+            m_spawnenemytimer += Time.deltaTime;
+        }
+
+        CheckInput();
+        MouseInput();
+
     }
     void SpawnEnemies()
     {
         //EnemyManager.m_Instance.SpawnEnemies(5, 5, "BlueEnemy)
         EnemyManager.m_Instance.SpawnSquad();
+    }
+
+    void TouchInput()
+    {
+        if (Input.touchCount > 0)
+        {
+            for (int i = 0; i < Input.touchCount; i++)
+            {
+                Ray t_raycast = Camera.main.ScreenPointToRay(Input.GetTouch(i).position);
+                RaycastHit2D t_rayhit = Physics2D.Raycast(t_raycast.origin, t_raycast.direction, Mathf.Infinity);
+
+                if (t_rayhit)
+                {
+                    if (t_rayhit.collider.gameObject.tag == "ControlBox")
+                    {
+                        t_rayhit.collider.gameObject.GetComponent<UIControlBar>().OnTouch(Input.GetTouch(i).position, Input.GetTouch(i).phase);
+                    }
+
+                    if(t_rayhit.collider.gameObject.tag == "ShootButton")
+                    {
+                        t_rayhit.collider.gameObject.GetComponent<UIShootButton>().PlayerFireWeapon(Input.GetTouch(i).phase);
+                    }
+
+                }
+            }
+        }
+    }
+
+    void MouseInput()
+    {
+        Ray t_raycast = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit2D t_rayhit = Physics2D.Raycast(t_raycast.origin, t_raycast.direction, Mathf.Infinity);
+
+        if (t_rayhit.collider != null)
+        {
+
+            if (t_rayhit.collider.gameObject.tag == "ControlBox")
+            {
+                if(Input.GetMouseButtonDown(0))
+                { 
+                    t_rayhit.collider.gameObject.GetComponent<UIControlBar>().OnTouch(Input.mousePosition,TouchPhase.Began);
+                }
+                else
+                {
+                    t_rayhit.collider.gameObject.GetComponent<UIControlBar>().OnTouch(Input.mousePosition, TouchPhase.Moved);
+                }
+            }
+
+            if (t_rayhit.collider.gameObject.tag == "ShootButton")
+            {
+                if (Input.GetMouseButton(0))
+                {
+                    t_rayhit.collider.gameObject.GetComponent<UIShootButton>().PlayerFireWeapon(TouchPhase.Began);
+                }
+                else
+                {
+                    t_rayhit.collider.gameObject.GetComponent<UIShootButton>().PlayerFireWeapon(TouchPhase.Ended);
+                }
+            }
+        }
     }
 
     void CheckInput()
@@ -80,32 +148,19 @@ public class Game : MonoBehaviour {
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.U))
+        if(Input.GetKeyDown(KeyCode.X))
         {
-            PlayerManager.m_Instance.ChangeMuzzle(AssetManager.m_Instance.GetPrefab("BasicMuzzle"));
-        }
-
-        if (Input.GetKeyDown(KeyCode.J))
-        {
-            PlayerManager.m_Instance.ChangeMuzzle(AssetManager.m_Instance.GetPrefab("RedBeamMuzzle"));
-        }
-
-        if (Input.GetKeyDown(KeyCode.M))
-        {
-            PlayerManager.m_Instance.ChangeMuzzle(AssetManager.m_Instance.GetPrefab("BlueMuzzle"));
-        }
-
-        if (Input.GetKeyDown(KeyCode.N))
-        {
-            PlayerManager.m_Instance.ChangeMuzzle(AssetManager.m_Instance.GetPrefab("GreenMuzzle"));
+            if(PlayerManager.m_Instance.m_Player != null)
+                PlayerManager.m_Instance.m_Player.TakeDamage(10.0f);
         }
 
 
-
-        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+        if (Input.GetKeyDown(KeyCode.L))
         {
-
+            EnemyManager.m_Instance.SpawnSpecialEnemy();
         }
+
+
     }
 
     void DebugStuff()

@@ -21,12 +21,11 @@ public class UIElement : MonoBehaviour {
         m_spriterenderer = gameObject.GetComponent<SpriteRenderer>();
         m_spriterenderer.sortingLayerName = "UI";
         gameObject.layer = 5;
-        gameObject.tag = "UI";
     }
 
-	void Start ()
+	protected void Start ()
     {
-	
+	    
 	}
 
     public void SetScale(float p_ScaleFactor)

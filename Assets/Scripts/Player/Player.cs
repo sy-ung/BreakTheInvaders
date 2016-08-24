@@ -16,6 +16,11 @@ public class Player : MonoBehaviour {
         set { m_currentcontrolmode = value; }
     }
 
+    private float m_health;
+    public float m_Health
+    {
+        get { return m_health; }
+    }
 
     private SpriteRenderer m_spriterenderer;
     public SpriteRenderer m_SpriteRenderer
@@ -60,6 +65,21 @@ public class Player : MonoBehaviour {
     private Vector2 m_previousmousepos;
 
     private Muzzle m_muzzle;
+    public Muzzle m_Muzzle
+    {
+        get { return m_muzzle; }
+    }
+
+    private HealthBar m_healthbox;
+    private float m_healthdisplaytime;
+    private float m_healthdisplaytimer;
+    private bool m_showhealth;
+
+    private bool m_alive;
+    public bool m_Alive
+    {
+        get { return m_alive; }
+    }
 
     private void Initialize()
     {
@@ -71,6 +91,7 @@ public class Player : MonoBehaviour {
         m_rigidbody2D.mass = 1;
         m_rigidbody2D.freezeRotation = true;
         m_rigidbody2D.collisionDetectionMode = CollisionDetectionMode2D.Discrete;
+        m_rigidbody2D.isKinematic = true;
 
         //This is to calculate the scale of the player paddle in propotion to the screen size
         float t_AspectRatio = (float)Camera.main.pixelHeight / (float)Camera.main.pixelWidth;
@@ -88,11 +109,17 @@ public class Player : MonoBehaviour {
 
         transform.position = new Vector2(0, m_startingline);
 
-
-
         m_newposition = transform.position;
 
         gameObject.layer = 14;
+
+        m_health = 100.0f;
+
+        m_healthdisplaytime = 2.0f;
+
+        m_showhealth = true;
+
+        m_alive = true;
     }
     
     void Awake()
@@ -121,18 +148,27 @@ public class Player : MonoBehaviour {
         SetPlayerScale(1);
 
 
-        SpawnBarrel(AssetManager.m_Instance.GetPrefab("RedBeamMuzzle"));
+        SpawnBarrel(AssetManager.m_Instance.GetPrefab("GreenMuzzle"));
+
+        m_healthbox = Instantiate(AssetManager.m_Instance.GetPrefab("HealthBar")).GetComponentInChildren<HealthBar>();
+        m_healthbox.HideHealth();
+
+
+
         //t_mf.transform.parent = transform;
     }
 
     public void SpawnBarrel(GameObject p_NewMuzzle)
     {
-        if(m_muzzle !=null)
-        {
-            m_muzzle.DestroyMuzzle();
+        if (p_NewMuzzle != m_muzzle)
+        { 
+            if(m_muzzle !=null)
+            {
+                m_muzzle.DestroyMuzzle();
+            }
+            m_muzzle = Instantiate(p_NewMuzzle).GetComponent<Muzzle>();
+            m_muzzle.transform.SetParent(transform);
         }
-        m_muzzle = Instantiate(p_NewMuzzle).GetComponent<Muzzle>();
-        m_muzzle.transform.SetParent(transform);
     }
 
     public void ChangePlayerSprite(Sprite p_NewPlayerSprite)
@@ -158,9 +194,12 @@ public class Player : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
-
-        MoveCheck();
-        ScreenBoundryCheck();
+        if(m_alive)
+        { 
+            MoveCheck();
+            ScreenBoundryCheck();
+            HealthCheck();
+        }
 
         switch (m_currentcontrolmode)
         {
@@ -175,9 +214,38 @@ public class Player : MonoBehaviour {
                 break;
         }
         m_rigidbody2D.velocity = Vector2.zero;
-
 	}
 
+    void HealthCheck()
+    {
+        if(m_health <= 0)
+        {
+            Death();
+            return;
+        }
+
+        if (m_health <= 50)
+        { 
+            m_healthbox.ShowHealth();
+            m_showhealth = true;
+        }
+        else
+        { 
+            if (m_showhealth)
+            { 
+                if(m_healthdisplaytimer < m_healthdisplaytime)
+                {
+                    m_healthbox.ShowHealth();
+                    m_healthdisplaytimer += Time.deltaTime;
+                }
+                else
+                {
+                    m_healthbox.HideHealth();
+                    m_showhealth = false;
+                }
+            }
+        }
+    }
 
     private void MoveCheck()
     {
@@ -293,11 +361,27 @@ public class Player : MonoBehaviour {
 
     public void OnCollisionEnter2D(Collision2D p_Collision)
     {
-        if(p_Collision.collider.tag == "PowerUp")
-        {
-            p_Collision.gameObject.GetComponent<PowerUp>().ApplyMuzzlePowerUp();
-        }
+        if (!m_alive)
+            return;
     }
 
+    public void TakeDamage(float p_Damage)
+    {
+        m_health -= p_Damage;
+        m_healthdisplaytimer = 0;
+        m_showhealth = true;
+    }
+
+    void Death()
+    {
+        m_alive = false;
+        (Instantiate(AssetManager.m_Instance.GetPrefab("PlayerDeathParticle"), transform.position, Quaternion.identity) as GameObject).GetComponent<ParticleSystem>().startColor = m_spriterenderer.color;
+        m_muzzle.DestroyMuzzle();
+        BallManager.m_Instance.m_PlayerBall.Death();
+
+        m_healthbox.Death();
+
+        Destroy(gameObject);
+    }
 
 }

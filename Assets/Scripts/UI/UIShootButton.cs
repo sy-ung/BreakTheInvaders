@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class UIShootButton : UIElement {
@@ -16,11 +17,14 @@ public class UIShootButton : UIElement {
         Initialize();
 
         m_circlecollider2D.radius = m_spriterenderer.bounds.size.x/2;
-        m_circlecollider2D.isTrigger = true;
-
         m_rigidbody.isKinematic = true;
 
         SetScale(1.5f);
+
+        m_player = PlayerManager.m_Instance.m_Player;
+
+        gameObject.tag = "ShootButton";
+
     }
 
     void Initialize()
@@ -37,38 +41,27 @@ public class UIShootButton : UIElement {
     // Update is called once per frame
     void Update()
     {
-        InputCheck();
     }
 
-    void InputCheck()
+    public void PlayerFireWeapon(TouchPhase p_Phase)
     {
-        if (Input.touchCount > 0)
+        if (p_Phase == TouchPhase.Began || p_Phase == TouchPhase.Stationary)
         {
-            for (int i = 0; i < Input.touchCount; i++)
-            {
-                Ray t_raycast = Camera.main.ScreenPointToRay(Input.GetTouch(i).position);
-                RaycastHit2D t_rayhit = Physics2D.Raycast(t_raycast.origin, t_raycast.direction, Mathf.Infinity);
+            m_spriterenderer.color = Color.red;
+            m_player.SetMuzzleToFire(true);
+        }
 
-                if (t_rayhit)
-                {
-
-                    if (t_rayhit.collider.gameObject == gameObject)
-                    {
-                        if (Input.GetTouch(i).phase == TouchPhase.Began)
-                        {
-                            m_player.SetMuzzleToFire(true);
-                        }
-                        
-                        if (Input.GetTouch(i).phase == TouchPhase.Ended)
-                        {
-                            m_player.SetMuzzleToFire(false);
-                        }
-                        
-                    }
-                }
-            }
+        if (p_Phase == TouchPhase.Ended)
+        {
+            m_spriterenderer.color = Color.white;
+            m_player.SetMuzzleToFire(false);
         }
     }
 
+
+    void DebugStuff(string p_Message)
+    {
+        GameObject.FindGameObjectWithTag("DebugBox").GetComponent<Text>().text = p_Message;
+    }
 
 }

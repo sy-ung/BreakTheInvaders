@@ -13,14 +13,15 @@ class UIControlBar : UIElement {
     void Awake()
     {
         base.Awake();
+
         Initialize();
 
         m_boxcollider2D.size = m_spriterenderer.bounds.size;
-        m_boxcollider2D.isTrigger = true;
         m_rigidbody.isKinematic = true;
         m_player = PlayerManager.m_Instance.m_Player;
         SetScale(1);
 
+        gameObject.tag = "ControlBox";
     }
 
     void Initialize()
@@ -29,39 +30,21 @@ class UIControlBar : UIElement {
         m_boxcollider2D = gameObject.GetComponent<BoxCollider2D>();
     }
 
-	// Use this for initialization
-	void Start ()
-    {
-        
-    }
-	
 	// Update is called once per frame
 	void Update () {
-        InputCheck();
-	}
 
-    void InputCheck()
+    }
+
+    public void OnTouch(Vector3 p_TouchScreenPosition, TouchPhase p_Phase)
     {
-        if (Input.touchCount > 0)
-        {
-            for (int i = 0; i < Input.touchCount; i++)
-            {
-                Ray t_raycast = Camera.main.ScreenPointToRay(Input.GetTouch(i).position);
-                RaycastHit2D t_rayhit = Physics2D.Raycast(t_raycast.origin, t_raycast.direction, Mathf.Infinity);
+        if(p_Phase == TouchPhase.Began)
+            m_previoustouchposition = Camera.main.ScreenToWorldPoint(p_TouchScreenPosition);
 
-                if (t_rayhit)
-                {
-
-                    if (t_rayhit.collider.gameObject == gameObject)
-                    {
-                        if(Input.GetTouch(i).phase == TouchPhase.Began)
-                            m_previoustouchposition = Camera.main.ScreenToWorldPoint(Input.GetTouch(i).position);
-
-                        MovePlayer(Input.GetTouch(i).position);
-                    }
-                }
-            }
-        }
+        MovePlayer(p_TouchScreenPosition);
+    }
+    void DebugStuff(string p_Message)
+    {
+        GameObject.FindGameObjectWithTag("DebugBox").GetComponent<Text>().text = p_Message;
     }
 
     void MovePlayer(Vector2 p_TouchScreenCoord)

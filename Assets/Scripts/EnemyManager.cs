@@ -51,6 +51,14 @@ public class EnemyManager : MonoBehaviour {
         
     }
 
+    public void SpawnSpecialEnemy()
+    {
+        Vector2 t_screensize = Camera.main.GetComponent<ResolutionFix>().m_ScreenSizeWorldPoint;
+        Enemy t_specialenemy = Instantiate(AssetManager.m_Instance.GetPrefab("EnemyTypeSpecial")).GetComponent<Enemy>();
+        t_specialenemy.transform.position = new Vector2(-t_screensize.x - t_screensize.x / 2, t_screensize.y - (t_specialenemy.GetComponent<SpriteRenderer>().bounds.size.y * 2));
+    }
+
+
     public void SpawnSquad(string p_EnemyPrefabName, int p_Rows, int p_Coloumns)
     {
         EnemySquad t_es = new GameObject("EnemySquad").AddComponent<EnemySquad>();

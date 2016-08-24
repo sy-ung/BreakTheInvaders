@@ -17,6 +17,7 @@ public class RedBeamMuzzle : Muzzle {
     {
         base.Start();
         SpawnBeam();
+        SetMaxAmmoCount(-1);
     }
 
     // Update is called once per frame
@@ -44,8 +45,10 @@ public class RedBeamMuzzle : Muzzle {
 
     public override void DestroyMuzzle()
     {
-
-        Destroy(m_currentbeam.gameObject);
+        if(m_currentbeam!=null)
+        { 
+            Destroy(m_currentbeam.gameObject);
+        }
         base.DestroyMuzzle();
     }
 }

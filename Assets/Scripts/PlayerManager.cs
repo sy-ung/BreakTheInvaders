@@ -63,6 +63,11 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
+    public void DamagePlayer(float p_Damage)
+    {
+        m_player.TakeDamage(p_Damage);
+    }
+
 	// Use this for initialization
 	void Start () {
 	

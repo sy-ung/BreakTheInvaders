@@ -20,12 +20,16 @@ public class GreenMuzzle : Muzzle {
     void Start()
     {
         base.Start();
+        SetMaxAmmoCount(9);
     }
 
     // Update is called once per frame
     void Update()
     {
         //base.Update();
+        if (m_currentammocount <= 0)
+            return;
+        
         if(m_StartFiring)
         {
             if(m_currentspawnedprojectile == null)
@@ -41,6 +45,8 @@ public class GreenMuzzle : Muzzle {
                 {
                     m_currentspawnedprojectile.Launch(30f);
                     m_currentspawnedprojectile = null;
+                    m_currentammocount--;
+                    m_ammobar.EjectCurrentAmmo();
                 }
                 else
                 {

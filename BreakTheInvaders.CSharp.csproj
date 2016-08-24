@@ -63,6 +63,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\AmmoBar\Ammo.cs" />
+    <Compile Include="Assets\Scripts\AmmoBar\AmmoBar.cs" />
+    <Compile Include="Assets\Scripts\AmmoBar\Infinity.cs" />
+    <Compile Include="Assets\Scripts\AmmoBar\NoAmmo.cs" />
     <Compile Include="Assets\Scripts\AssetManager.cs" />
     <Compile Include="Assets\Scripts\BackgroundManager.cs" />
     <Compile Include="Assets\Scripts\Backgrounds\Background.cs" />
@@ -74,13 +78,28 @@
     <Compile Include="Assets\Scripts\Ball\RedBall.cs" />
     <Compile Include="Assets\Scripts\BallManager.cs" />
     <Compile Include="Assets\Scripts\Bullet.cs" />
+    <Compile Include="Assets\Scripts\Death.cs" />
+    <Compile Include="Assets\Scripts\Enemies\Bullets\EnemyBullet.cs" />
+    <Compile Include="Assets\Scripts\Enemies\Bullets\EnemyBullet1.cs" />
+    <Compile Include="Assets\Scripts\Enemies\Bullets\EnemyBullet2.cs" />
+    <Compile Include="Assets\Scripts\Enemies\Bullets\EnemyBullet3.cs" />
+    <Compile Include="Assets\Scripts\Enemies\Bullets\EnemyBullet4.cs" />
+    <Compile Include="Assets\Scripts\Enemies\Bullets\EnemyBullet5.cs" />
+    <Compile Include="Assets\Scripts\Enemies\Bullets\EnemyBullet6.cs" />
+    <Compile Include="Assets\Scripts\Enemies\Bullets\EnemyBullet7.cs" />
     <Compile Include="Assets\Scripts\Enemies\Enemy.cs" />
-    <Compile Include="Assets\Scripts\Enemies\EnemyBullet.cs" />
     <Compile Include="Assets\Scripts\Enemies\EnemySquad.cs" />
-    <Compile Include="Assets\Scripts\Enemies\EnemyType1.cs" />
-    <Compile Include="Assets\Scripts\EnemyDeath.cs" />
+    <Compile Include="Assets\Scripts\Enemies\Types\EnemyType1.cs" />
+    <Compile Include="Assets\Scripts\Enemies\Types\EnemyType2.cs" />
+    <Compile Include="Assets\Scripts\Enemies\Types\EnemyType3.cs" />
+    <Compile Include="Assets\Scripts\Enemies\Types\EnemyType4.cs" />
+    <Compile Include="Assets\Scripts\Enemies\Types\EnemyType5.cs" />
+    <Compile Include="Assets\Scripts\Enemies\Types\EnemyType6.cs" />
+    <Compile Include="Assets\Scripts\Enemies\Types\EnemyType7.cs" />
+    <Compile Include="Assets\Scripts\Enemies\Types\EnemyTypeSpecial.cs" />
     <Compile Include="Assets\Scripts\EnemyManager.cs" />
     <Compile Include="Assets\Scripts\Explosion.cs" />
+    <Compile Include="Assets\Scripts\HealthBar.cs" />
     <Compile Include="Assets\Scripts\Muzzle.cs" />
     <Compile Include="Assets\Scripts\Player\BasicBullet.cs" />
     <Compile Include="Assets\Scripts\Player\BasicMuzzle.cs" />

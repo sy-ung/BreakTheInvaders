@@ -77,7 +77,7 @@ public class Enemy : MonoBehaviour {
     public Sprite m_MoveFrame;
     bool m_PlayFirstFrame;
 
-    Color m_currentcolor;
+    protected Color m_currentcolor;
 
     private float m_raylength;
 
@@ -97,6 +97,7 @@ public class Enemy : MonoBehaviour {
         m_rigidbody2D.isKinematic = true;
         m_rigidbody2D.freezeRotation = true;
         m_rigidbody2D.collisionDetectionMode = CollisionDetectionMode2D.Discrete;
+
         m_boundries = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, Screen.height));
         m_spriterenderer.sortingOrder = 2;
         m_raylength = Camera.main.GetComponent<ResolutionFix>().m_ScreenSizeWorldPoint.y * 2;
@@ -104,16 +105,12 @@ public class Enemy : MonoBehaviour {
 
         gameObject.layer = 9;
         gameObject.tag = "Enemy";
-    }
 
-    public void SetSprite(string p_NewSpriteName)
-    {
-        //When setting a new sprite, change the collision box size also
         m_boxcollider2D.size = new Vector2(m_spriterenderer.sprite.bounds.size.x, m_spriterenderer.sprite.bounds.size.y);
+
         Vector2 t_screensize = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, Screen.height));
         float t_scaleFactor = (m_spriterenderer.bounds.size.x / t_screensize.x) * 1.5f;
         SetScale(t_scaleFactor);
-        //transform.localScale = transform.localScale * t_scaleFactor;
     }
 
     public void SetScale(float p_ScaleFactor)
@@ -137,12 +134,14 @@ public class Enemy : MonoBehaviour {
 
         m_alive = true;
 
+
         CheckBoundry();
+
         if(!m_inboundsX || !m_inboundsY)
         {
             m_movementtimer = 0;
         }
-
+        
     }
 
     public void BecomeSoleSurvivor()
@@ -157,14 +156,17 @@ public class Enemy : MonoBehaviour {
     protected void Update()
     {
         MoveEnemyCheck();
-        FireBulletCheck();
 
-        FireBullet();
+        if(m_currentbullet != null)
+        { 
+            FireBulletCheck();
+            FireBullet();
+        }
     }
 
     protected void LateUpdate()
     {
-        if (m_stayinbounds && !m_movedown)
+        if (!m_movedown)
             CheckBoundry();
     }
 
@@ -229,9 +231,8 @@ public class Enemy : MonoBehaviour {
             m_inboundsY = false;
         }
 
-
-
-        { 
+        if (m_stayinbounds)
+        {
             if (!m_changedirection)
             {
                 if (transform.position.x + m_HalfSize.x > m_boundries.x - (m_HalfSize.x))
@@ -239,17 +240,17 @@ public class Enemy : MonoBehaviour {
                     m_CurrentEnemySquad.MoveSquadDown(true);
 
                 }
-
             }
             else if (m_changedirection)
             {
-                if (transform.position.x - m_HalfSize.x< -m_boundries.x + (m_HalfSize.x))
+                if (transform.position.x - m_HalfSize.x < -m_boundries.x + (m_HalfSize.x))
                 {
 
                     m_CurrentEnemySquad.MoveSquadDown(true);
                 }
             }
         }
+        
     }
 
     public void MoveDown()
@@ -258,9 +259,13 @@ public class Enemy : MonoBehaviour {
 
         transform.position += new Vector3(0, -(m_HalfSize.y * m_movementspeed.y), 0);
         m_movedown = false;
-        if (transform.position.y < PlayerManager.m_Instance.m_Player.GetTopYLine() + m_HalfSize.y * 2)
-        {
-            m_CurrentEnemySquad.KillAllInSquad();
+
+        if(PlayerManager.m_Instance.m_Player != null)
+        { 
+            if (transform.position.y < PlayerManager.m_Instance.m_Player.GetTopYLine() + m_HalfSize.y * 2)
+            {
+                m_CurrentEnemySquad.KillAllInSquad();
+            }
         }
     }
     public void ChangeDirection()
@@ -273,10 +278,8 @@ public class Enemy : MonoBehaviour {
 
     void OnCollisionEnter2D(Collision2D p_Collision)
     {
-        if(p_Collision.collider.gameObject.tag == "Enemy")
-        {
-            Physics2D.IgnoreCollision(m_boxcollider2D, p_Collision.collider);
-        }
+
+
     }
 
     public void Death()
@@ -287,20 +290,23 @@ public class Enemy : MonoBehaviour {
         { 
             if(transform.position.x + m_spriterenderer.bounds.size.x / 2 > -t_screen.x &&
                 transform.position.x - m_spriterenderer.bounds.size.x / 2 < t_screen.x) 
-            { 
-                GameObject t_explosion = Instantiate(m_deathparticle, transform.position, Quaternion.identity) as GameObject;
-                t_explosion.GetComponent<ParticleSystem>().startColor = m_currentcolor;
+                { 
+                    GameObject t_explosion = Instantiate(m_deathparticle, transform.position, Quaternion.identity) as GameObject;
+                    t_explosion.GetComponent<ParticleSystem>().startColor = m_spriterenderer.color;
 
-                m_alive = false;
+                    m_alive = false;
+                    
+                if(m_CurrentEnemySquad!=null)
+                { 
+                    m_CurrentEnemySquad.RemoveEnemyFromSquad(this);
 
-                m_CurrentEnemySquad.RemoveEnemyFromSquad(this);
-
-                if(!m_CurrentEnemySquad.m_IsSquadDead)
-                    m_CurrentEnemySquad.IncreaseSquadSpeed();
+                    if(!m_CurrentEnemySquad.m_IsSquadDead)
+                        m_CurrentEnemySquad.IncreaseSquadSpeed();
+                }
 
                 GameObject.FindGameObjectWithTag("pointblank").GetComponent<Game>().AddPoints(m_points);
-                Destroy(gameObject);
-            }
+                    Destroy(gameObject);
+                }
         }
     }
 
@@ -319,7 +325,7 @@ public class Enemy : MonoBehaviour {
     void FireBulletRayCastCheck()
     {
         
-        Vector2 t_origin = new Vector2(transform.position.x, transform.position.y - m_spriterenderer.bounds.size.y / 2);
+        Vector2 t_origin = new Vector2(transform.position.x, transform.position.y - (m_spriterenderer.bounds.size.y/1.99f));
         Vector2 t_direction = -Vector2.up;
 
         RaycastHit2D t_rayhit = Physics2D.Raycast(t_origin, t_direction, m_raylength);
@@ -342,6 +348,7 @@ public class Enemy : MonoBehaviour {
         }
         else
             m_cleartofire = true;
+
     }
 
     public void FireBullet()
@@ -351,7 +358,6 @@ public class Enemy : MonoBehaviour {
             Vector2 t_firedirection = -Vector3.up;
             Bullet t_bullet = Instantiate(m_currentbullet).GetComponent<Bullet>();
             t_bullet.transform.position = new Vector2(transform.position.x, transform.position.y - m_spriterenderer.bounds.size.y/2 - t_bullet.GetComponent<SpriteRenderer>().bounds.size.x / 2);
-            t_bullet.transform.rotation = Quaternion.FromToRotation(transform.right, t_firedirection);
             t_bullet.tag = "Bullet";
 
             m_firingtimer = 0;

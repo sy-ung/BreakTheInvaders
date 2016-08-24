@@ -29,7 +29,7 @@ public class Bullet : MonoBehaviour {
 
     protected bool m_alive = true;
 
-
+    protected float m_Damage;
 
     protected void Awake()
     {
@@ -61,18 +61,9 @@ public class Bullet : MonoBehaviour {
 
 
 	// Use this for initialization
-	protected void Start () {
-
-
+	protected void Start ()
+    {
         m_RigidBody2D.velocity = Vector3.up * m_speed;
-
-
-        if (BallManager.m_Instance.m_PlayerBall != null)
-            Physics2D.IgnoreCollision(m_boxcollider2D, BallManager.m_Instance.m_PlayerBall.GetComponent<Collider2D>());
-
-        if(PlayerManager.m_Instance.m_Player != null)
-            Physics2D.IgnoreCollision(m_boxcollider2D, PlayerManager.m_Instance.m_Player.GetComponent<Collider2D>());
-
         PlayMuzzleFlash();
 	}
 	
@@ -115,6 +106,7 @@ public class Bullet : MonoBehaviour {
 
     protected void OnCollisionEnter2D(Collision2D p_Collision)
     {
+        
         Destroy(gameObject);
     }
 }

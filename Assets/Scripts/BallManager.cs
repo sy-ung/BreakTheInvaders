@@ -52,7 +52,7 @@ public class BallManager : MonoBehaviour {
             m_playerball = FindObjectOfType<Ball>();
             if(m_playerball == null)
             {
-                m_playerball = Instantiate(AssetManager.m_Instance.GetPrefab("GreenBall")).GetComponent<Ball>();
+                m_playerball = Instantiate(AssetManager.m_Instance.GetPrefab("DefaultBall")).GetComponent<Ball>();
             }
         }
 

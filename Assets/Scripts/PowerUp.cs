@@ -29,7 +29,7 @@ public class PowerUp : MonoBehaviour {
 
         m_boxcollider2D.size = m_spriterenderer.bounds.size;
         m_screensize = Camera.main.GetComponent<ResolutionFix>().m_ScreenSizeWorldPoint;
-        m_speed = 0.0f;
+        m_speed = 10.0f;
     }
 
 	// Use this for initialization
@@ -39,7 +39,7 @@ public class PowerUp : MonoBehaviour {
         m_rigidbody2D.velocity = -Vector3.up * m_spriterenderer.bounds.size.x * m_speed;
         m_rigidbody2D.collisionDetectionMode = CollisionDetectionMode2D.Discrete;
         m_rigidbody2D.interpolation = RigidbodyInterpolation2D.Interpolate;
-        m_rigidbody2D.isKinematic = true;
+        m_rigidbody2D.isKinematic = false;
 
         m_spriterenderer.sortingLayerName = "PowerUp";
         gameObject.layer = 10;

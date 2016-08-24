@@ -16,7 +16,24 @@ public class Muzzle : MonoBehaviour {
     protected float m_firingrate = 0.1f;
     private float m_firingtimer = 0;
 
+    //if m_maxammocount is -1, it means inifinite ammo
+    protected int m_maxammocount;
+    public int m_MaxAmmoCount
+    {
+        get { return m_maxammocount; }
+    }
+
+    protected int m_currentammocount;
+    public int m_CurrentAmmoCount
+    {
+        get { return m_currentammocount; }
+    }
+
     public bool m_StartFiring;
+
+    protected AmmoBar m_ammobar;
+
+
 
     protected void Awake()
     {
@@ -41,8 +58,26 @@ public class Muzzle : MonoBehaviour {
         //m_mfprefab = AssetManager.m_Instance.GetPrefab("MuzzleFlashDefault");
 
         //m_currentbullet = AssetManager.m_Instance.GetPrefab("BulletGreen");
+        m_ammobar = Instantiate(AssetManager.m_Instance.GetPrefab("AmmoBar")).GetComponent<AmmoBar>();
 
     }
+
+    public void Reload()
+    {
+        if(m_MaxAmmoCount != -1)
+        { 
+            SetMaxAmmoCount(m_maxammocount);
+            m_ammobar.Reload();
+        }
+    }
+
+    //Set -1 for infinitammo
+    public void SetMaxAmmoCount(int p_MaxAmmoCount)
+    {
+        m_maxammocount = p_MaxAmmoCount;
+        m_currentammocount = m_maxammocount;
+    }
+
     public void SetScale(float p_ScaleMultiplier)
     {
         transform.localScale = new Vector3(1, 1, 0) * p_ScaleMultiplier;
@@ -67,6 +102,12 @@ public class Muzzle : MonoBehaviour {
         t_bullet.transform.rotation = Quaternion.FromToRotation(t_bullet.transform.right, t_firedirection);
 
 
+        if(m_maxammocount != -1)
+        {
+            m_currentammocount--;
+            m_ammobar.EjectCurrentAmmo();
+        }
+
         //Attach a particle system to player and let it play the muzzle flash
         //GameObject t_mf = Instantiate(m_mfprefab, transform.position, Quaternion.AngleAxis(-90, Vector3.right)) as GameObject;
         //t_mf.transform.parent = transform;
@@ -74,6 +115,13 @@ public class Muzzle : MonoBehaviour {
 
     public virtual void DestroyMuzzle() 
     {
+
+        if(!PlayerManager.m_Instance.m_Player.m_Alive)
+        {
+            (Instantiate(AssetManager.m_Instance.GetPrefab("MuzzleDeathParticle"), transform.position,Quaternion.Euler(new Vector3(-90,0,0))) as GameObject).GetComponent<ParticleSystem>().startColor = m_spriteRenderer.color;
+        }
+
+        Destroy(m_ammobar.gameObject);
         Destroy(gameObject);
     }
 
@@ -84,7 +132,10 @@ public class Muzzle : MonoBehaviour {
 
             if (m_StartFiring)
             {
-                FireProjectile();
+                if(m_currentammocount > 0 || m_MaxAmmoCount == -1)
+                { 
+                    FireProjectile();
+                }
                 m_firingtimer = 0;
             }
 

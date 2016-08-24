@@ -30,4 +30,10 @@ public class RedBall : Ball {
         base.OnCollisionEnter2D(p_Collision);
     }
 
+    public override void Death()
+    {
+        (Instantiate(AssetManager.m_Instance.GetPrefab("BallDeathParticle"), transform.position, Quaternion.identity) as GameObject).GetComponent<ParticleSystem>().startColor = Color.red;
+        base.Death();
+    }
+
 }

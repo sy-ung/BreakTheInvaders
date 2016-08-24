@@ -20,6 +20,7 @@ public class BlueBullet : Bullet {
         base.Start();
         gameObject.transform.localScale *= 2.5f;
         
+        
 	}
 	
 	// Update is called once per frame

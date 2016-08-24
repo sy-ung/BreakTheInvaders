@@ -31,6 +31,11 @@ public class Ball : MonoBehaviour {
 
     private Player m_player;
 
+    private GameObject m_balldeathparticle;
+
+    protected bool m_dospeedcheck;
+
+    private bool m_alive;
 
     private void Initialize()
     {
@@ -38,12 +43,10 @@ public class Ball : MonoBehaviour {
         m_rigidbody2D = gameObject.GetComponent<Rigidbody2D>();
         m_spriterenderer = gameObject.GetComponent<SpriteRenderer>();
         m_circlecollider2D = gameObject.GetComponent<CircleCollider2D>();
-
-
         m_rigidbody2D.gravityScale = 0;
         m_rigidbody2D.mass = 1;
         m_rigidbody2D.interpolation = RigidbodyInterpolation2D.Extrapolate;
-        m_rigidbody2D.collisionDetectionMode = CollisionDetectionMode2D.Discrete;
+        m_rigidbody2D.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
 
         // This is to make sure that the scale of the ball is compliant with the size of the paddle, on start of the game.
         Vector2 t_PlayerSize = PlayerManager.m_Instance.m_Player.m_PlayerSize;
@@ -62,6 +65,7 @@ public class Ball : MonoBehaviour {
 
         gameObject.layer = 12;
 
+        m_alive = true;
     }
 
 	// Use this for initialization
@@ -73,9 +77,10 @@ public class Ball : MonoBehaviour {
     protected void Start()
     {
         ScaleBall(0.75f);
-        m_defaultspeed = 10f;
+        m_defaultspeed = 10;
         gameObject.tag = "PlayerBall";
         m_spriterenderer.sortingLayerName = "Ball";
+        m_dospeedcheck = true;
     }
 
     public void LaunchBall()
@@ -125,27 +130,43 @@ public class Ball : MonoBehaviour {
             m_Direction = new Vector2(-m_Direction.x, m_Direction.y);
             //m_rigidbody2D.velocity = new Vector2(-m_rigidbody2D.velocity.x, m_rigidbody2D.velocity.y);
         }
+
+
     }
     // Update is called once per frame
     protected void Update()
     {
+        if (!m_alive)
+            return;
+
         ScreenBoundryCheck();
         m_StoredCurrentPosition = transform.position;
     }
 
     protected void LateUpdate()
     {
+        if (!m_alive)
+            return;
+
         transform.position = m_StoredCurrentPosition;
         m_rigidbody2D.velocity = m_Direction * m_defaultspeed;
-        SpeedCheck();
+
+        if(m_dospeedcheck)
+            SpeedCheck();
     }
 
     protected void OnCollisionEnter2D(Collision2D p_Collision)
     {
+
+        if (!m_alive)
+            return;
+
         if (p_Collision.collider.tag == "Player")
         {
             Player t_player = p_Collision.collider.gameObject.GetComponent<Player>();
             Vector2 t_playervelocity = t_player.m_Velocity;
+
+            t_player.m_Muzzle.Reload();
 
             if(t_playervelocity == Vector2.zero)
             {
@@ -161,6 +182,7 @@ public class Ball : MonoBehaviour {
         }
         if (p_Collision.collider.tag == "Enemy")
         {
+
             transform.position = m_StoredCurrentPosition;
             if (m_piercing)
             {
@@ -174,12 +196,13 @@ public class Ball : MonoBehaviour {
             p_Collision.collider.gameObject.GetComponent<Enemy>().Death();
         }
 
-        if(p_Collision.collider.tag == "PowerUp")
-        {
+        //if(p_Collision.collider.tag == "PowerUp")
+        //{
 
-            p_Collision.gameObject.GetComponent<PowerUp>().ApplyBallPowerUp();
-            m_rigidbody2D.velocity = m_Direction * m_defaultspeed;
-        }
+        //    p_Collision.gameObject.GetComponent<PowerUp>().ApplyBallPowerUp();
+        //    m_rigidbody2D.velocity = m_Direction * m_defaultspeed;
+        //}
+
     }
     
     //So it never slows down passed a certain speed
@@ -196,8 +219,10 @@ public class Ball : MonoBehaviour {
                 m_rigidbody2D.velocity = new Vector2(m_rigidbody2D.velocity.x, -m_defaultspeed);
             }
         }
-
     }
 
-
+    public virtual void Death()
+    {
+        Destroy(gameObject);
+    }
 }

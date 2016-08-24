@@ -123,22 +123,19 @@ public class EnemySquad : MonoBehaviour {
         Vector2 t_previousspawnPOS = t_origin;
 
         float t_paddingx = 0f;
-        float t_paddingy = 0.1f;
+        float t_paddingy = 0f;
 
         m_spawnedenemiescount = p_Rows * p_Columns;
-
-        Color t_currentcolor = new Color(Random.Range(0, 1.0f), Random.Range(0, 1.0f), Random.Range(0, 1.0f));
 
         for (int i = 0; i < p_Rows; i++)
         {
             for (int j = 0; j < p_Columns; j++)
             {
                 Enemy t_enemy = (Instantiate(t_EnemyPrefab)).GetComponent<Enemy>();
-                t_enemy.SetColor(t_currentcolor);
                 t_enemy.tag = "Enemy";
 
-                float t_posx = t_enemy.m_HalfSize.x * 2;
-                float t_posy = t_previousspawnPOS.y - ((t_enemy.m_HalfSize.y * 2) * i) - (i * t_paddingy);
+                float t_posx = t_enemy.m_HalfSize.x;
+                float t_posy = t_previousspawnPOS.y - ((t_enemy.m_HalfSize.y) * i) - (i * t_paddingy);
 
                 if (t_switchside)
                 {
@@ -251,6 +248,11 @@ public class EnemySquad : MonoBehaviour {
 
     public void RemoveEnemyFromSquad(Enemy p_DeadEnemy)
     {
+        if(m_enemies.Count == 1)
+        {
+            SpawnPowerUp();
+        }
+
         Destroy(p_DeadEnemy.gameObject);
         m_enemies.Remove(p_DeadEnemy);
         SquadCheck();
@@ -292,6 +294,31 @@ public class EnemySquad : MonoBehaviour {
         }
         Destroy(gameObject);
     }
+
+    void SpawnPowerUp()
+    {
+        if(m_enemies.Count == 1)
+        { 
+            int t_powerupchoice = Random.Range(1, 4);
+
+            if (t_powerupchoice == 1)
+            {
+                Instantiate(AssetManager.m_Instance.GetPrefab("BluePower"), m_enemies[0].transform.position, Quaternion.identity);
+            }
+
+            if (t_powerupchoice == 2)
+            {
+                Instantiate(AssetManager.m_Instance.GetPrefab("GreenPower"), m_enemies[0].transform.position, Quaternion.identity);
+            }
+
+            if (t_powerupchoice == 3)
+            {
+                Instantiate(AssetManager.m_Instance.GetPrefab("RedPower"), m_enemies[0].transform.position, Quaternion.identity);
+            }
+        }
+    }
+
+
 }
 
 
