@@ -34,7 +34,6 @@ public class PlayerManager : MonoBehaviour
                 return m_player;
             else
             {
-                Debug.Log("m_player is null at get m_Player");
                 return null;
             }
         }

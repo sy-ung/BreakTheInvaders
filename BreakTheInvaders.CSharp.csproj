@@ -119,7 +119,9 @@
     <Compile Include="Assets\Scripts\PowerUp\RedPowerUp.cs" />
     <Compile Include="Assets\Scripts\ResolutionFix.cs" />
     <Compile Include="Assets\Scripts\Scenes\Game.cs" />
+    <Compile Include="Assets\Scripts\Scenes\GameOver.cs" />
     <Compile Include="Assets\Scripts\Scenes\Menu.cs" />
+    <Compile Include="Assets\Scripts\Score.cs" />
     <Compile Include="Assets\Scripts\UI\UIControlBar.cs" />
     <Compile Include="Assets\Scripts\UI\UIControlWheel.cs" />
     <Compile Include="Assets\Scripts\UI\UIElement.cs" />

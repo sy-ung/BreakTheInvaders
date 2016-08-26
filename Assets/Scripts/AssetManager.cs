@@ -47,6 +47,8 @@ public class AssetManager : MonoBehaviour {
 
         //Prefabs
 
+        m_prefabs.Add("Score", Resources.Load<GameObject>("Prefabs/GameObjects/Score"));
+
         m_prefabs.Add("Player", Resources.Load<GameObject>("Prefabs/GameObjects/Player"));
         m_prefabs.Add("HealthBar", Resources.Load<GameObject>("Prefabs/GameObjects/HealthBox"));
         m_prefabs.Add("Ammo", Resources.Load<GameObject>("Prefabs/GameObjects/Bullets/Player/Ammo"));

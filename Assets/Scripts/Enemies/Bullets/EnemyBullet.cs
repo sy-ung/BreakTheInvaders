@@ -28,8 +28,6 @@ public class EnemyBullet : Bullet {
 
     protected void OnCollisionEnter2D(Collision2D p_Collision)
     {
-
-        Debug.Log(p_Collision.gameObject.name);
         base.OnCollisionEnter2D(p_Collision);
     }
 }

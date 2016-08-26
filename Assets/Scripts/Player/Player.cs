@@ -381,6 +381,8 @@ public class Player : MonoBehaviour {
 
         m_healthbox.Death();
 
+        GameObject.FindGameObjectWithTag("pointblank").GetComponent<Game>().m_GameOver = true;
+
         Destroy(gameObject);
     }
 

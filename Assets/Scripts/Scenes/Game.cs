@@ -1,16 +1,25 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class Game : MonoBehaviour {
 
     Vector2 Spawnpoint = new Vector2(0.0f, 0.0f);
 
     Text DebugText;
-    Text m_pointstext;
+
     private int m_points = 0;
 
     float m_spawnenemytime = 1.0f;
     float m_spawnenemytimer = 0;
+
+    float m_gameovertextdisplaytime;
+    float m_gameovertextdisplaytimer;
+    float m_gameoverscenetime;
+
+    public bool m_GameOver;
+
+    Score m_score;
 
     // Use this for initialization
     void Start () {
@@ -18,12 +27,31 @@ public class Game : MonoBehaviour {
         PlayerManager.m_Instance.RespawnPlayer();
         BallManager.m_Instance.RespawnBall(new Vector2(0,1));
 
+        Score t_score = FindObjectOfType<Score>();
+        if(t_score == null)
+            m_score = (Instantiate(AssetManager.m_Instance.GetPrefab("Score")) as GameObject).GetComponent<Score>();
+        else
+        { 
+            m_score = t_score;
+            m_score.NewGame();
+        }
+
+
         SetUpUI();
         //SpawnEnemies();
 
-        m_pointstext = GameObject.FindGameObjectWithTag("CurrentScoreText").GetComponent<Text>();
+
+        m_GameOver = false;
+
+        m_gameovertextdisplaytime = 2.0f;
+        m_gameovertextdisplaytimer = 0.0f;
+        m_gameoverscenetime = m_gameovertextdisplaytime + 1.75f;
     }
 
+    void Reset()
+    {
+
+    }
 
     void SetUpUI()
     {
@@ -35,6 +63,14 @@ public class Game : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
+
+        if (m_GameOver)
+        {
+            GameOver();
+            return;
+        }
+
+
         if(m_spawnenemytimer>m_spawnenemytime)
         {
             //SpawnEnemies();
@@ -47,6 +83,24 @@ public class Game : MonoBehaviour {
 
         CheckInput();
         MouseInput();
+
+    }
+
+
+
+    void GameOver()
+    {
+        
+        if(m_gameovertextdisplaytimer> m_gameovertextdisplaytime)
+        { 
+            GameObject.FindGameObjectWithTag("DebugBox").GetComponent<Text>().text = "GAME OVER";
+        }
+        m_gameovertextdisplaytimer += Time.deltaTime;
+
+        if(m_gameovertextdisplaytimer > m_gameoverscenetime)
+        {
+            SceneManager.LoadScene("GameOver", LoadSceneMode.Single);
+        }
 
     }
     void SpawnEnemies()
@@ -175,7 +229,6 @@ public class Game : MonoBehaviour {
 
     public void AddPoints(int p_Points)
     {
-        m_points += p_Points;
-        m_pointstext.text = m_points.ToString();
+        m_score.AddPoints(p_Points);
     }
 }

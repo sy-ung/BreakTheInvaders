@@ -74,6 +74,11 @@ public class Ball : MonoBehaviour {
         Initialize();
     }
 
+    void Reset()
+    {
+
+    }
+
     protected void Start()
     {
         ScaleBall(0.75f);
