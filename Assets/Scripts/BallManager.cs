@@ -31,7 +31,6 @@ public class BallManager : MonoBehaviour {
                 return m_playerball;
             else
             {
-                Debug.Log("m_playerball is null at get m_PlayerBall");
                 return null;
             }
         }
@@ -76,8 +75,6 @@ public class BallManager : MonoBehaviour {
             m_playerball.m_StoredCurrentPosition = t_storedposition;
 
         }
-        else
-            Debug.Log("m_playerball in BallManager.ChangeBall is null");
     }
    
 	// Use this for initialization

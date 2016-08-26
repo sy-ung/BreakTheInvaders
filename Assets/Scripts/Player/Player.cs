@@ -347,7 +347,6 @@ public class Player : MonoBehaviour {
         if (Input.touchCount > 0)
         { 
             Vector2 t_touchloc = Camera.main.ScreenToWorldPoint(Input.GetTouch(0).position);
-            Debug.Log(t_touchloc);
             t_touchloc = new Vector2(t_touchloc.x, m_startingline);
             m_newposition = t_touchloc;
             m_newrotation = Quaternion.identity;

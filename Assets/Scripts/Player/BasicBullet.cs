@@ -22,7 +22,6 @@ class BasicBullet : Bullet
 
     void OnCollisionEnter2D(Collision2D p_Collision)
     {
-        Debug.Log(p_Collision.gameObject.name);
         if (m_alive)
         {
             if (p_Collision.collider.tag == "Enemy")

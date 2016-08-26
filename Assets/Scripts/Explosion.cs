@@ -53,10 +53,6 @@ public class Explosion : MonoBehaviour {
             {
                 t_collisions[i].gameObject.GetComponent<Enemy>().Death();
             }
-            else
-            {
-                Debug.Log("NO ENEMIES");
-            }
         }
     }
 

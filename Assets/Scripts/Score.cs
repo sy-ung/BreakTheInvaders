@@ -42,7 +42,6 @@ public class Score : MonoBehaviour {
     public void NewGame()
     {
         Initialize();
-        Debug.Log("NEW GAME");
     }
     void Initialize()
     {
@@ -70,8 +69,6 @@ public class Score : MonoBehaviour {
     {
         return m_currentgamescore;
     }
-
-
 
     public void ResetCurrentScore()
     {
