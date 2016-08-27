@@ -82,7 +82,7 @@ public class Ball : MonoBehaviour {
     protected void Start()
     {
         ScaleBall(0.75f);
-        m_defaultspeed = 10;
+        m_defaultspeed = 8;
         gameObject.tag = "PlayerBall";
         m_spriterenderer.sortingLayerName = "Ball";
         m_dospeedcheck = true;

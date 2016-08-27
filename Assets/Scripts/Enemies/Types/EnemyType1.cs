@@ -18,8 +18,7 @@ public class EnemyType1 : Enemy {
         m_stayinbounds = true;
 
         m_currentbullet = AssetManager.m_Instance.GetPrefab("EnemyBullet1");
-        //m_firingrate = Random.Range(2.0f, 5f);
-        m_firingrate = 1;
+
 
         SetColor(new Color32(120,221,168,255));
     }

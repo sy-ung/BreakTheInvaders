@@ -106,7 +106,6 @@ public class Bullet : MonoBehaviour {
 
     protected void OnCollisionEnter2D(Collision2D p_Collision)
     {
-        
         Destroy(gameObject);
     }
 }

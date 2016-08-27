@@ -10,7 +10,7 @@ public class Game : MonoBehaviour {
 
     private int m_points = 0;
 
-    float m_spawnenemytime = 1.0f;
+    float m_spawnenemytime = 0.75f;
     float m_spawnenemytimer = 0;
 
     float m_gameovertextdisplaytime;
@@ -73,7 +73,7 @@ public class Game : MonoBehaviour {
 
         if(m_spawnenemytimer>m_spawnenemytime)
         {
-            //SpawnEnemies();
+            SpawnEnemies();
             m_spawnenemytimer = 0;
         }
         else
@@ -81,9 +81,9 @@ public class Game : MonoBehaviour {
             m_spawnenemytimer += Time.deltaTime;
         }
 
-        CheckInput();
-        MouseInput();
-
+        //CheckInput();
+        //MouseInput();
+        TouchInput();
     }
 
 

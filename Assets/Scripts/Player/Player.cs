@@ -148,11 +148,12 @@ public class Player : MonoBehaviour {
         SetPlayerScale(1);
 
 
-        SpawnBarrel(AssetManager.m_Instance.GetPrefab("GreenMuzzle"));
+        SpawnBarrel(AssetManager.m_Instance.GetPrefab("BasicMuzzle"));
 
         m_healthbox = Instantiate(AssetManager.m_Instance.GetPrefab("HealthBar")).GetComponentInChildren<HealthBar>();
         m_healthbox.HideHealth();
 
+        transform.localScale = new Vector2(transform.localScale.x / 1.25f, transform.localScale.y);
 
 
         //t_mf.transform.parent = transform;

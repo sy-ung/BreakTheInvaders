@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class GreenBall : Ball {
@@ -18,6 +19,7 @@ public class GreenBall : Ball {
 	// Update is called once per frame
 	void Update ()
     {
+        //CheckTouchInput();
         CheckMouseInput();
         base.Update();
         
@@ -25,15 +27,58 @@ public class GreenBall : Ball {
 
     void CheckTouchInput()
     {
+        if (Input.touchCount > 0)
+        {
+            for (int i = 0; i < Input.touchCount; i++)
+            {
+                Ray t_raycast = Camera.main.ScreenPointToRay(Input.GetTouch(i).position);
+                RaycastHit2D t_rayhit = Physics2D.Raycast(t_raycast.origin, t_raycast.direction, Mathf.Infinity);
 
+                if(t_rayhit.collider != null)
+                { 
+                    if (t_rayhit.collider.gameObject.tag != "ControlBox" && t_rayhit.collider.gameObject.tag != "ShootButton")
+                    {
+                        if (Input.GetTouch(i).phase == TouchPhase.Began)
+                        { 
+                            Vector2 t_touchpos = Camera.main.ScreenToWorldPoint(Input.GetTouch(i).position);
+                            m_Direction = (t_touchpos - (Vector2)transform.position).normalized;
+
+                        }
+                    }
+                }
+                else
+                {
+                    if (Input.GetTouch(i).phase == TouchPhase.Began)
+                    {
+                        Vector2 t_touchpos = Camera.main.ScreenToWorldPoint(Input.GetTouch(i).position);
+                        m_Direction = (t_touchpos - (Vector2)transform.position).normalized;
+                    }
+                }
+
+            }
+        }
     }
 
     void CheckMouseInput()
     {
         if(Input.GetMouseButtonDown(0))
         {
-            Vector2 t_touchpos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            m_Direction = (t_touchpos - (Vector2)transform.position).normalized;
+            Ray t_raycast = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit2D t_rayhit = Physics2D.Raycast(t_raycast.origin, t_raycast.direction, Mathf.Infinity);
+
+            if(t_rayhit.collider != null)
+            { 
+                if (t_rayhit.collider.gameObject.tag != "ControlBox" && t_rayhit.collider.gameObject.tag != "ShootButton")
+                { 
+                    Vector2 t_touchpos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                    m_Direction = (t_touchpos - (Vector2)transform.position).normalized;
+                }
+            }
+            else
+            {
+                Vector2 t_touchpos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                m_Direction = (t_touchpos - (Vector2)transform.position).normalized;
+            }
         }
     }
 

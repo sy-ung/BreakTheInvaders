@@ -47,7 +47,8 @@ public class EnemyManager : MonoBehaviour {
     public void SpawnSquad()
     {
         EnemySquad t_es = new GameObject("ENEMY SQUAD").AddComponent<EnemySquad>();
-        t_es.CreateSquad("EnemyType1", Random.Range(2,5), Random.Range(2, 6));
+        int t_randenemy = Random.Range(1, 8);
+        t_es.CreateSquad("EnemyType" + t_randenemy, Random.Range(2,5), Random.Range(2, 6));
         
     }
 

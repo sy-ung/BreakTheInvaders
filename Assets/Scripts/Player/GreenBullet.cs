@@ -13,7 +13,7 @@ public class GreenBullet : Bullet {
     void Awake()
     {
         base.Awake();
-        m_speed = 10.0f;
+        m_speed = 13.0f;
         m_lifetime = 10.0f;
 
 

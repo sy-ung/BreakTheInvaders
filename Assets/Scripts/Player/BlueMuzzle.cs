@@ -14,7 +14,7 @@ public class BlueMuzzle : Muzzle {
     void Start()
     {
         base.Start();
-        SetMaxAmmoCount(5);
+        SetMaxAmmoCount(9);
     }
 
     // Update is called once per frame

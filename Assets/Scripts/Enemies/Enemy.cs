@@ -111,6 +111,8 @@ public class Enemy : MonoBehaviour {
         Vector2 t_screensize = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, Screen.height));
         float t_scaleFactor = (m_spriterenderer.bounds.size.x / t_screensize.x) * 1.5f;
         SetScale(t_scaleFactor);
+
+        m_firingrate = Random.Range(5.0f, 15f);
     }
 
     public void SetScale(float p_ScaleFactor)
