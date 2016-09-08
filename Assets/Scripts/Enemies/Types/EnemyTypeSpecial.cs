@@ -11,8 +11,7 @@ public class EnemyTypeSpecial : Enemy {
 
     void Initialize()
     {
-        m_movementspeed = new Vector2(0.35f, 2.0f);
-        m_origmovementtimer = 0.75f;
+
         m_deathparticle = AssetManager.m_Instance.GetPrefab("EnemyDeathParticleSpecial");
         m_points = 100;
         m_firingrate = Random.Range(2.0f, 5f);
@@ -23,9 +22,6 @@ public class EnemyTypeSpecial : Enemy {
     {
         base.Start();
         m_stayinbounds = false;
-
-        if (transform.position.x > 0)
-            ChangeDirection();
 
     }
 
@@ -46,7 +42,7 @@ public class EnemyTypeSpecial : Enemy {
 
         if (m_InBoundsX)
         {
-            if (!m_changedirection)
+            if (!m_CurrentEnemySquad.m_ChangeDirection)
             {
                 if (transform.position.x - m_HalfSize.x > Camera.main.GetComponent<ResolutionFix>().m_ScreenSizeWorldPoint.x)
                 {
@@ -54,7 +50,7 @@ public class EnemyTypeSpecial : Enemy {
 
                 }
             }
-            else if (m_changedirection)
+            else if (m_CurrentEnemySquad.m_ChangeDirection)
             {
                 if (transform.position.x + m_HalfSize.x < -Camera.main.GetComponent<ResolutionFix>().m_ScreenSizeWorldPoint.x)
                 {

@@ -15,7 +15,8 @@ public class RedBeamBullet : Bullet {
 
     private float m_fullpowertimer;
     private float m_fullpowertimeinterval;
-    private float m_fullpowerlevel = 0;
+    private int m_fullpowerlevel = 0;
+
 
     void Awake()
     {
@@ -24,14 +25,15 @@ public class RedBeamBullet : Bullet {
         m_RigidBody2D.freezeRotation = true;
         m_speed = 0;
         m_animator = gameObject.GetComponent<Animator>();
-        
+        m_originalscale = m_newscale = transform.localScale;
+
     }
 
 	// Use this for initialization
 	void Start ()
     {
         base.Start();
-        m_originalscale = m_newscale = transform.localScale;
+
 
         m_fullpowertimeinterval = 1.0f;
         m_SpriteRenderer.sortingLayerName = "Beam";
@@ -42,12 +44,8 @@ public class RedBeamBullet : Bullet {
     {
         //base.Update();
         ScaleLerp();
-        //transform.position = new Vector2(m_Muzzle.transform.position.x, m_Muzzle.transform.position.y + m_SpriteRenderer.bounds.size.y / 2);
-        //Debug.Log("Activated: " + m_animator.GetBool("Activated"));
-        //Debug.Log("FullPower: " + m_animator.GetBool("FullPower"));
-        //Debug.Log("Deactivated: " + m_animator.GetBool("Deactivated"));
 
-        if(m_animator.GetBool("FullPower"))
+        if (m_animator.GetBool("FullPower"))
         {
             FullPowerExtenstion();
         }
@@ -62,6 +60,7 @@ public class RedBeamBullet : Bullet {
         {
             
         }
+
     }
 
     void LateUpdate()
@@ -114,6 +113,8 @@ public class RedBeamBullet : Bullet {
     {
         m_newscale = new Vector2(m_originalscale.x * p_ScaleFactorMultiplier.x, m_originalscale.y * p_ScaleFactorMultiplier.y);
         m_interpstep = p_InterpStep;
+
+
     }
 
     public void IncreaseScale(Vector2 p_DeltaScaleFactorMultiplier, float p_InterStep)
@@ -130,14 +131,16 @@ public class RedBeamBullet : Bullet {
 
     public void StartAnimFinished()
     {
+        
         m_animator.SetBool("FullPower", true);
         SetNewScale(new Vector2(5, 10), 0.25f);
-
         m_animator.SetBool("Activated", false);
+        PlayFullPowerSounds();
     }
 
     public void FullPowerExtenstion()
     {
+
         if (m_fullpowerlevel < 3)
         {
             m_fullpowertimer += Time.deltaTime;
@@ -150,6 +153,7 @@ public class RedBeamBullet : Bullet {
                     m_animator.speed *= 1.25f;
 
                 m_fullpowerlevel++;
+                PlayFullPowerSounds();
             }
         }
     }
@@ -186,8 +190,11 @@ public class RedBeamBullet : Bullet {
         if (m_animator.GetBool("Deactivated"))
             m_animator.SetBool("Deactivated", false);
 
+        
         SetNewScale(new Vector2(2, 10), 0.075f);
+
     }
+
 
     public void DeactivateBeam()
     {
@@ -208,4 +215,99 @@ public class RedBeamBullet : Bullet {
         m_animator.SetBool("Deactivated", true);
     }
 
+    public void PlayActivatedSound()
+    {
+
+        if(m_animator.GetBool("Activated"))
+        { 
+            float  t_soundcliplength = GameAudioManager.m_Instance.GetSoundClip("BeamFireChargeUp").length;
+            GameAudioManager.m_Instance.PlaySound("BeamFireChargeUp", false, t_soundcliplength / m_animator.GetCurrentAnimatorStateInfo(0).length);
+            GameAudioManager.m_Instance.StopSound("BeamFireChargeDown");
+        }
+        //if (m_audiosource.isPlaying)
+        //{ 
+        //    if (m_audiosource.clip != m_BeamSounds[0])
+        //        m_audiosource.Stop();
+        //}
+
+        //if (!m_audiosource.isPlaying)
+        //{ 
+        //    m_audiosource.loop = false;
+        //    float t_pitch = m_BeamSounds[0].length / m_animator.GetCurrentAnimatorStateInfo(0).length;
+        //    m_audiosource.pitch = t_pitch;
+        //    m_audiosource.clip = m_BeamSounds[0];
+        //    m_audiosource.Play();
+        //}
+
+    }
+
+    public void PlayFullPowerSounds()
+    {
+
+        if(m_fullpowerlevel == 1)
+            GameAudioManager.m_Instance.PlaySound("BeamFire1", true, 1.0f);
+        else if (m_fullpowerlevel == 2)
+        {
+            GameAudioManager.m_Instance.StopSound("BeamFire1");
+            GameAudioManager.m_Instance.PlaySound("BeamFire2", true, 1.0f);
+        }
+        else if (m_fullpowerlevel == 3)
+        {
+            GameAudioManager.m_Instance.StopSound("BeamFire2");
+            GameAudioManager.m_Instance.PlaySound("BeamFire3", true, 1.0f);
+        }
+
+        //if (!m_audiosource.loop)
+        //{
+        //    if (m_audiosource.isPlaying)
+        //        m_audiosource.Stop();
+        //    m_audiosource.loop = true;
+        //    m_audiosource.pitch = 1;
+        //}
+
+        //if(m_audiosource.clip != m_BeamSounds[m_fullpowerlevel])
+        //{ 
+        //    m_audiosource.clip = m_BeamSounds[m_fullpowerlevel];
+        //    m_audiosource.Play();
+        //}
+    }
+
+    public void PlayDeactivatedSound()
+    {
+        if(m_animator.GetBool("Deactivated"))
+        { 
+            GameAudioManager.m_Instance.StopSound("BeamFire1");
+            GameAudioManager.m_Instance.StopSound("BeamFire2");
+            GameAudioManager.m_Instance.StopSound("BeamFire3");
+            GameAudioManager.m_Instance.StopSound("BeamFireChargeUp");
+
+            float  t_length = GameAudioManager.m_Instance.GetSoundClip("BeamFireChargeDown").length;
+            GameAudioManager.m_Instance.PlaySound("BeamFireChargeDown", false, t_length / m_animator.GetCurrentAnimatorStateInfo(0).length);
+        }
+
+        //if (m_audiosource.isPlaying)
+        //{
+        //    if (m_audiosource.clip != m_BeamSounds[4])
+        //        m_audiosource.Stop();
+        //}
+
+        //if (!m_audiosource.isPlaying)
+        //{
+        //    m_audiosource.loop = false;
+        //    float t_pitch = m_BeamSounds[4].length / m_animator.GetCurrentAnimatorStateInfo(0).length;
+        //    m_audiosource.pitch = t_pitch;
+        //    m_audiosource.clip = m_BeamSounds[4];
+        //    m_audiosource.Play();
+        //}
+    }
+
+    public void StopAllSounds()
+    {
+        GameAudioManager.m_Instance.StopSound("BeamFire1");
+        GameAudioManager.m_Instance.StopSound("BeamFire2");
+        GameAudioManager.m_Instance.StopSound("BeamFire3");
+        GameAudioManager.m_Instance.StopSound("BeamFireChargeUp");
+        GameAudioManager.m_Instance.StopSound("BeamFireChargeDown");
+
+    }
 }

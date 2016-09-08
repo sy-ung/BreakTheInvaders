@@ -5,9 +5,10 @@ public class BlueBullet : Bullet {
 
     private Animator m_animator;
 
+
     void Awake()
     {
-        m_speed = 5.0f;
+        m_speed = 2.0f;
         m_lifetime = 10.0f;
         base.Awake();
 
@@ -45,8 +46,9 @@ public class BlueBullet : Bullet {
 
     public void StartAnimFinished()
     {
-        m_RigidBody2D.velocity *= 3.0f;
+        m_RigidBody2D.velocity *= 7.0f;
         m_animator.SetBool("InFlight", true);
+        GameAudioManager.m_Instance.PlaySound("BlueBulletBoost",false,1.0f);
     }
 
 }

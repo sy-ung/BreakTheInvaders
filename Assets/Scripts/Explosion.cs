@@ -7,6 +7,9 @@ public class Explosion : MonoBehaviour {
     private CircleCollider2D m_circlecollider2D;
     private SpriteRenderer m_spriterenderer;
 
+    [SerializeField]
+    string m_AudioClipName;
+
     void Awake()
     {
         m_rigidbody = gameObject.GetComponent<Rigidbody2D>();
@@ -36,7 +39,7 @@ public class Explosion : MonoBehaviour {
 	// Use this for initialization
 	void Start ()
     {
-           
+        Explode();
 	}
 	
 	// Update is called once per frame
@@ -46,12 +49,17 @@ public class Explosion : MonoBehaviour {
 
     public void Explode()
     {
-        Collider2D[] t_collisions = Physics2D.OverlapCircleAll(transform.position, m_circlecollider2D.radius, 1 << LayerMask.NameToLayer("Enemy"));
-        for(int i = 0;i<t_collisions.Length;i++)
-        {
-            if(t_collisions[i].gameObject.tag == "Enemy")
+
+        GameAudioManager.m_Instance.PlaySound(m_AudioClipName, false, 1.0f);
+        if(m_circlecollider2D!=null)
+        { 
+            Collider2D[] t_collisions = Physics2D.OverlapCircleAll(transform.position, m_circlecollider2D.radius, 1 << LayerMask.NameToLayer("Enemy"));
+            for(int i = 0;i<t_collisions.Length;i++)
             {
-                t_collisions[i].gameObject.GetComponent<Enemy>().Death();
+                if(t_collisions[i].gameObject.tag == "Enemy")
+                {
+                    t_collisions[i].gameObject.GetComponent<Enemy>().Death();
+                }
             }
         }
     }

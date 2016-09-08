@@ -14,7 +14,7 @@ public class Muzzle : MonoBehaviour {
 
 
     protected float m_firingrate = 0.1f;
-    private float m_firingtimer = 0;
+    protected float m_firingtimer = 0;
 
     //if m_maxammocount is -1, it means inifinite ammo
     protected int m_maxammocount;
@@ -33,7 +33,7 @@ public class Muzzle : MonoBehaviour {
 
     protected AmmoBar m_ammobar;
 
-
+    protected string[] m_soundClipName;
 
     protected void Awake()
     {
@@ -62,12 +62,14 @@ public class Muzzle : MonoBehaviour {
 
     }
 
-    public void Reload()
+    public  void Reload()
     {
         if(m_MaxAmmoCount != -1)
         { 
             SetMaxAmmoCount(m_maxammocount);
-            m_ammobar.Reload();
+
+            if(m_ammobar!=null)
+                m_ammobar.Reload();
         }
     }
 
@@ -101,12 +103,13 @@ public class Muzzle : MonoBehaviour {
 
         t_bullet.transform.rotation = Quaternion.FromToRotation(t_bullet.transform.right, t_firedirection);
 
-
         if(m_maxammocount != -1)
         {
             m_currentammocount--;
             m_ammobar.EjectCurrentAmmo();
         }
+
+        
 
         //Attach a particle system to player and let it play the muzzle flash
         //GameObject t_mf = Instantiate(m_mfprefab, transform.position, Quaternion.AngleAxis(-90, Vector3.right)) as GameObject;
@@ -120,8 +123,8 @@ public class Muzzle : MonoBehaviour {
         {
             (Instantiate(AssetManager.m_Instance.GetPrefab("MuzzleDeathParticle"), transform.position,Quaternion.Euler(new Vector3(-90,0,0))) as GameObject).GetComponent<ParticleSystem>().startColor = m_spriteRenderer.color;
         }
-
-        Destroy(m_ammobar.gameObject);
+        if(m_ammobar!= null)
+            m_ammobar.Death();
         Destroy(gameObject);
     }
 
@@ -132,9 +135,10 @@ public class Muzzle : MonoBehaviour {
 
             if (m_StartFiring)
             {
-                if(m_currentammocount > 0 || m_MaxAmmoCount == -1)
-                { 
+                if (m_currentammocount > 0 || m_MaxAmmoCount == -1)
+                {
                     FireProjectile();
+                    PlayWeaponFireSounds();
                 }
                 m_firingtimer = 0;
             }
@@ -145,4 +149,15 @@ public class Muzzle : MonoBehaviour {
             m_firingtimer += Time.deltaTime;
         }
     }
+
+
+    void PlayWeaponFireSounds()
+    {
+        //m_audiosource.PlayOneShot(m_WeaponFireSounds[Random.Range(0, m_WeaponFireSounds.Length)]);
+
+        GameAudioManager.m_Instance.PlaySound(m_soundClipName[Random.Range(0,m_soundClipName.Length)], false, 1.0f);
+    }
+
+
+
 }

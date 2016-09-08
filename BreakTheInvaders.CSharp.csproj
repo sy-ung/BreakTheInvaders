@@ -88,6 +88,8 @@
     <Compile Include="Assets\Scripts\Enemies\Bullets\EnemyBullet6.cs" />
     <Compile Include="Assets\Scripts\Enemies\Bullets\EnemyBullet7.cs" />
     <Compile Include="Assets\Scripts\Enemies\Enemy.cs" />
+    <Compile Include="Assets\Scripts\Enemies\EnemyDeath.cs" />
+    <Compile Include="Assets\Scripts\Enemies\EnemySpecialDeath.cs" />
     <Compile Include="Assets\Scripts\Enemies\EnemySquad.cs" />
     <Compile Include="Assets\Scripts\Enemies\Types\EnemyType1.cs" />
     <Compile Include="Assets\Scripts\Enemies\Types\EnemyType2.cs" />
@@ -99,6 +101,8 @@
     <Compile Include="Assets\Scripts\Enemies\Types\EnemyTypeSpecial.cs" />
     <Compile Include="Assets\Scripts\EnemyManager.cs" />
     <Compile Include="Assets\Scripts\Explosion.cs" />
+    <Compile Include="Assets\Scripts\GameAudioManager.cs" />
+    <Compile Include="Assets\Scripts\GenericBehaviour\LerpingBehaviour.cs" />
     <Compile Include="Assets\Scripts\HealthBar.cs" />
     <Compile Include="Assets\Scripts\Muzzle.cs" />
     <Compile Include="Assets\Scripts\Player\BasicBullet.cs" />
@@ -109,6 +113,7 @@
     <Compile Include="Assets\Scripts\Player\GreenMuzzle.cs" />
     <Compile Include="Assets\Scripts\Player\MuzzleFlash.cs" />
     <Compile Include="Assets\Scripts\Player\Player.cs" />
+    <Compile Include="Assets\Scripts\Player\PlayerDeath.cs" />
     <Compile Include="Assets\Scripts\Player\RedBeamBullet.cs" />
     <Compile Include="Assets\Scripts\Player\RedBeamMuzzle.cs" />
     <Compile Include="Assets\Scripts\PlayerManager.cs" />
@@ -122,6 +127,7 @@
     <Compile Include="Assets\Scripts\Scenes\GameOver.cs" />
     <Compile Include="Assets\Scripts\Scenes\Menu.cs" />
     <Compile Include="Assets\Scripts\Score.cs" />
+    <Compile Include="Assets\Scripts\SoundClip.cs" />
     <Compile Include="Assets\Scripts\UI\UIControlBar.cs" />
     <Compile Include="Assets\Scripts\UI\UIControlWheel.cs" />
     <Compile Include="Assets\Scripts\UI\UIElement.cs" />

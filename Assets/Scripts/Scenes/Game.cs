@@ -27,6 +27,7 @@ public class Game : MonoBehaviour {
         PlayerManager.m_Instance.RespawnPlayer();
         BallManager.m_Instance.RespawnBall(new Vector2(0,1));
 
+        
         Score t_score = FindObjectOfType<Score>();
         if(t_score == null)
             m_score = (Instantiate(AssetManager.m_Instance.GetPrefab("Score")) as GameObject).GetComponent<Score>();
@@ -73,7 +74,7 @@ public class Game : MonoBehaviour {
 
         if(m_spawnenemytimer>m_spawnenemytime)
         {
-            SpawnEnemies();
+            //SpawnEnemies();
             m_spawnenemytimer = 0;
         }
         else
@@ -81,7 +82,7 @@ public class Game : MonoBehaviour {
             m_spawnenemytimer += Time.deltaTime;
         }
 
-        //CheckInput();
+        CheckInput();
         //MouseInput();
         TouchInput();
     }
@@ -189,11 +190,23 @@ public class Game : MonoBehaviour {
             PlayerManager.m_Instance.m_Player.MovePlayer(new Vector3(0.5f, 0));
         }
 
-        if(Input.GetKeyDown(KeyCode.P))
+        if(Input.GetKey(KeyCode.P))
         {
             SpawnEnemies();
         }
-        if(Input.GetKeyDown(KeyCode.O))
+
+        if(Input.GetKeyDown(KeyCode.H))
+        {
+            SpawnPowerUp();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Y))
+        {
+            BallManager.m_Instance.ChangeBall(AssetManager.m_Instance.GetPrefab("DefaultBall"));
+        }
+
+
+        if (Input.GetKeyDown(KeyCode.O))
         {
             EnemySquad[] t_squads = FindObjectsOfType<EnemySquad>();
             for(int i = 0; i < t_squads.Length ;i++)
@@ -230,5 +243,27 @@ public class Game : MonoBehaviour {
     public void AddPoints(int p_Points)
     {
         m_score.AddPoints(p_Points);
+    }
+
+    void SpawnPowerUp()
+    {
+
+        int t_powerupchoice = Random.Range(1, 4);
+
+        if (t_powerupchoice == 1)
+        {
+            Instantiate(AssetManager.m_Instance.GetPrefab("BluePower"), new Vector2(0,3), Quaternion.identity);
+        }
+
+        if (t_powerupchoice == 2)
+        {
+            Instantiate(AssetManager.m_Instance.GetPrefab("GreenPower"),new Vector2(0,3), Quaternion.identity);
+        }
+
+        if (t_powerupchoice == 3)
+        {
+            Instantiate(AssetManager.m_Instance.GetPrefab("RedPower"), new Vector2(0, 3), Quaternion.identity);
+        }
+
     }
 }

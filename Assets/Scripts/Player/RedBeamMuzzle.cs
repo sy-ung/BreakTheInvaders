@@ -32,13 +32,10 @@ public class RedBeamMuzzle : Muzzle {
     {
         Vector2 t_firedirection = Vector3.up;
 
-        //BallBullet t_bullet = (new GameObject("BallBullet").AddComponent<BallBullet>());
         GameObject t_beam = Instantiate(m_currentBullet) as GameObject;
         m_currentbeam = t_beam.GetComponent<RedBeamBullet>();
         m_currentbeam.m_Muzzle = this;
 
-        //Vector2 t_startPosition = (Vector2)transform.position;
-        //t_beam.transform.position = t_startPosition;
         t_beam.transform.localScale /= 1.5f;
 
     }
@@ -46,7 +43,8 @@ public class RedBeamMuzzle : Muzzle {
     public override void DestroyMuzzle()
     {
         if(m_currentbeam!=null)
-        { 
+        {
+            m_currentbeam.StopAllSounds();
             Destroy(m_currentbeam.gameObject);
         }
         base.DestroyMuzzle();

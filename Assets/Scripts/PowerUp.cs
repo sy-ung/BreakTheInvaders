@@ -85,11 +85,13 @@ public class PowerUp : MonoBehaviour {
         if (p_Collision.collider.tag == "Player")
         {
             ApplyMuzzlePowerUp();
+            GameAudioManager.m_Instance.PlaySound("PowerUpHitPlayer", false, 1.0f);
         }
 
         if (p_Collision.collider.tag == "PlayerBall")
         {
             ApplyBallPowerUp();
+            GameAudioManager.m_Instance.PlaySound("PowerUpHitBall", false, 1.0f);
         }
     }
 

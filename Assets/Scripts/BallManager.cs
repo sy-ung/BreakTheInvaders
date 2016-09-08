@@ -51,12 +51,12 @@ public class BallManager : MonoBehaviour {
             m_playerball = FindObjectOfType<Ball>();
             if(m_playerball == null)
             {
-                m_playerball = Instantiate(AssetManager.m_Instance.GetPrefab("DefaultBall")).GetComponent<Ball>();
+                m_playerball = Instantiate(AssetManager.m_Instance.GetPrefab("RedBall")).GetComponent<Ball>();
             }
         }
 
         m_playerball.transform.position = new Vector3(p_Position.x, p_Position.y, 0);
-        m_playerball.LaunchBall();
+        //m_playerball.LaunchBall();
 
     }
     public void ChangeBall(GameObject p_NewBall)
@@ -65,13 +65,13 @@ public class BallManager : MonoBehaviour {
         {
             GameObject t_newball = Instantiate(p_NewBall, m_playerball.transform.position, m_playerball.transform.rotation) as GameObject;
 
-            Vector2 t_direction = m_playerball.m_Direction;
+            Vector2 t_direction = m_playerball.m_RigidBody2D.velocity.normalized;
             Vector2 t_storedposition = m_playerball.m_StoredCurrentPosition;
 
-            Destroy(m_playerball.gameObject);
+            m_playerball.DestroyBall();
 
             m_playerball = t_newball.GetComponent<Ball>();
-            m_playerball.m_Direction = t_direction;
+            //m_playerball.m_Direction = t_direction;
             m_playerball.m_StoredCurrentPosition = t_storedposition;
 
         }

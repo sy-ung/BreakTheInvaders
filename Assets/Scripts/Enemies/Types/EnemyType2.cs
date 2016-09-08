@@ -12,8 +12,7 @@ public class EnemyType2 : Enemy {
 
     void Initialize()
     {
-        m_movementspeed = new Vector2(0.75f, 2.0f);
-        m_origmovementtimer = 0.75f;
+
         m_deathparticle = AssetManager.m_Instance.GetPrefab("EnemyDeathParticle2");
         m_points = 100;
         m_stayinbounds = true;
@@ -21,8 +20,9 @@ public class EnemyType2 : Enemy {
         m_currentbullet = AssetManager.m_Instance.GetPrefab("EnemyBullet2");
         m_firingrate = 1.0f;
 
-        SetScale(1.0f);
         SetColor(new Color32(64,109,241,255));
+
+        m_firesoundname = "Enemy2Fire";
     }
 
 	// Use this for initialization

@@ -11,14 +11,13 @@ public class EnemyType1 : Enemy {
 
     void Initialize()
     {
-        m_movementspeed = new Vector2(0.75f, 2.0f);
-        m_origmovementtimer = 0.75f;
         m_deathparticle = AssetManager.m_Instance.GetPrefab("EnemyDeathParticle1");
         m_points = 100;
         m_stayinbounds = true;
 
         m_currentbullet = AssetManager.m_Instance.GetPrefab("EnemyBullet1");
 
+        m_firesoundname = "Enemy1Fire";
 
         SetColor(new Color32(120,221,168,255));
     }

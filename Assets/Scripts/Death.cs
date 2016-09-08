@@ -5,25 +5,33 @@ public class Death : MonoBehaviour {
 
     private ParticleSystem m_particlesystem;
 
-    void Awake()
+
+    protected string[] m_DeathsoundClipName;
+
+    protected void Awake()
     {
         Initialize();
     }
+
     void Initialize()
     {
-        //m_particlesystem = gameObject.AddComponent<ParticleSystem>();
         m_particlesystem = GetComponent<ParticleSystem>();
+
     }
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    protected void Start ()
+    {
         m_particlesystem.loop = false;
         m_particlesystem.Play();
-	    
+
+        if(m_DeathsoundClipName != null)
+            GameAudioManager.m_Instance.PlaySound(m_DeathsoundClipName[Random.Range(0, m_DeathsoundClipName.Length)],false,1.0f);
 	}
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    protected void Update ()
+    {
         if (!m_particlesystem.IsAlive())
         {
             DeathFinished();

@@ -19,6 +19,36 @@ public class EnemySquad : MonoBehaviour {
 
     private bool m_inplay = false;
 
+    private float m_movementtime;
+    private float m_movementtimer;
+
+    private string[] m_movementsounds;
+
+    public bool m_MoveSquadDown;
+
+    private bool m_changedirection;
+    public bool m_ChangeDirection
+    {
+        get { return m_changedirection; }
+    }
+
+    private bool m_playframe;
+    public bool m_PlayFrame
+    {
+        get { return m_playframe; }
+    }
+
+    private Vector2 m_movementspeed;
+
+    private bool m_playaudiomove1;
+
+    void Awake()
+    {
+        m_movementsounds = new string[3] { "EnemyMove1", "EnemyMove2", "EnemySpecialMove" };
+        m_movementtime = 0.05f;
+        m_movementspeed = new Vector2(1f, 0.5f);
+        m_playaudiomove1 = true;
+    }
 
     // Use this for initialization
     void Start () {
@@ -29,8 +59,26 @@ public class EnemySquad : MonoBehaviour {
 	void Update ()
     {
         if (!m_inplay)
+        { 
             SquadBoundryCheck();
+        }
+        else
+        {
+            m_movementtimer += Time.deltaTime;
+            if (m_movementtimer > m_movementtime)
+            {
+                if (!m_MoveSquadDown)
+                    MoveSquad();
+                else
+                    MoveSquadDown();
 
+                m_playframe = true;
+
+                m_movementtimer = 0;
+            }
+            else
+                m_playframe = false;
+        }
     }
     void LateUpdate()
     {
@@ -75,20 +123,22 @@ public class EnemySquad : MonoBehaviour {
         { 
             if (!m_squadinboundsX)
             {
-                MoveSquad(true);
+                MoveSquad();
             }
 
             if (!m_squadinboundsY)
             {
-                MoveSquadDown(true);
+                MoveSquadDown();
+            }
+
+            if (m_squadinboundsX && m_squadinboundsY)
+            {
+                m_inplay = true;
+                ResetSquadSpeed();
             }
         }
 
-        if (m_squadinboundsX && m_squadinboundsY)
-        {
-            m_inplay = true;
-            ResetSquadSpeed();
-        }
+
     }
 
     //When creating a squad, they will always originally move to the right, use ChangeDirection on enemy to get it moveing to the left
@@ -108,21 +158,27 @@ public class EnemySquad : MonoBehaviour {
         {
             if (Random.Range(0, 2) == 0)
             {
-                t_origin = new Vector2(Random.Range(-t_screensize.x * 2.0f, -t_screensize.x * 1.5f), t_origin.y);
+                t_origin = new Vector2(Random.Range(-t_screensize.x * 2.0f, -t_screensize.x * 2.0f), t_origin.y);
             }
             else
             {
-                t_origin = new Vector2(Random.Range(t_screensize.x * 1.5f, t_screensize.x * 2.0f), t_origin.y);
+                t_origin = new Vector2(Random.Range(t_screensize.x * 2.0f, t_screensize.x * 2.0f), t_origin.y);
             }
         }
         else
             t_origin = new Vector2(Random.Range(-t_screensize.x * 2.0f, t_screensize.x * 2.0f), t_origin.y);
 
+        //Set squad transform to starting spawn point
+        transform.position = t_origin;
+
+        if (t_origin.x > 0)
+            ChangeDirection();
+
 
         Vector2 t_currentspawnPOS;
-        Vector2 t_previousspawnPOS = t_origin;
+        Vector2 t_previousspawnPOS = Vector2.zero;
 
-        float t_paddingx = 0f;
+        float t_paddingx = 0.01f;
         float t_paddingy = 0f;
 
         m_spawnedenemiescount = p_Rows * p_Columns;
@@ -134,8 +190,12 @@ public class EnemySquad : MonoBehaviour {
                 Enemy t_enemy = (Instantiate(t_EnemyPrefab)).GetComponent<Enemy>();
                 t_enemy.tag = "Enemy";
 
-                float t_posx = t_enemy.m_HalfSize.x;
-                float t_posy = t_previousspawnPOS.y - ((t_enemy.m_HalfSize.y) * i) - (i * t_paddingy);
+                t_enemy.transform.SetParent(transform);
+
+                float t_posx = t_enemy.GetComponent<SpriteRenderer>().bounds.size.x;
+
+
+                float t_posy = t_previousspawnPOS.y - ((t_enemy.GetComponent<SpriteRenderer>().bounds.size.y) * i) - (i * t_paddingy);
 
                 if (t_switchside)
                 {
@@ -148,7 +208,7 @@ public class EnemySquad : MonoBehaviour {
                     t_switchside = true;
                 }
 
-                t_enemy.transform.position = t_currentspawnPOS;
+                t_enemy.transform.localPosition = t_currentspawnPOS;
                 t_previousspawnPOS = new Vector2(t_currentspawnPOS.x, t_previousspawnPOS.y);
 
 
@@ -157,93 +217,89 @@ public class EnemySquad : MonoBehaviour {
                     t_enemy.m_SoleSurvivor = true;
                 }
 
-                if (t_origin.x > 0)
-                    t_enemy.ChangeDirection();
-
                 t_enemy.m_CurrentEnemySquad = this;
                 m_enemies.Add(t_enemy);
-               
-                
+
+
             }
 
-            t_previousspawnPOS = new Vector2(t_origin.x, t_previousspawnPOS.y);
+            t_previousspawnPOS = new Vector2(0, t_previousspawnPOS.y);
         }
+        transform.localScale *= 0.5f;
     }
 
-    public void MoveSquadDown(bool p_Value)
+    public void MoveSquadDown()
     {
-        for (int i = 0; i < m_enemies.Count; i++)
-        {
-            if (m_killall)
-                break;
-            else
-            {
-                m_enemies[i].m_movedown = p_Value;
-            }
-        }
+        //for (int i = 0; i < m_enemies.Count; i++)
+        //{
+        //    if (m_killall)
+        //        break;
+        //    else
+        //    {
+        //        m_enemies[i].m_movedown = p_Value;
+        //    }
+        //}
+
+        if (m_inplay)
+            PlayMoveAudio();
+
+        transform.position += new Vector3(0, -m_enemies[0].m_HalfSize.y * m_movementspeed.y);
+        m_MoveSquadDown = false;
+        ChangeDirection();
     }
 
-    public void MoveSquad(bool p_Value)
+    public void MoveSquad()
     {
-        for (int i = 0; i < m_enemies.Count; i++)
+        //for (int i = 0; i < m_enemies.Count; i++)
+        //{
+        //    if (m_killall)
+        //        break;
+        //    else
+        //    {
+        //        m_enemies[i].m_move = p_Value;
+        //        m_enemies[i].MoveEnemy();
+        //    }
+        //}
+        if(m_ChangeDirection)
+            transform.position += new Vector3(-m_enemies[0].m_HalfSize.x * m_movementspeed.x, 0);
+        else
+            transform.position += new Vector3(m_enemies[0].m_HalfSize.x * m_movementspeed.x, 0);
+
+        if (m_inplay)
+            PlayMoveAudio();
+
+    }
+
+    void PlayMoveAudio()
+    {
+        if(m_playaudiomove1)
+        { 
+            GameAudioManager.m_Instance.PlaySound("EnemyMove1", false, 1);
+            m_playaudiomove1 = false;
+        }
+        else
         {
-            if (m_killall)
-                break;
-            else
-            {
-                m_enemies[i].m_move = p_Value;
-            }
+            GameAudioManager.m_Instance.PlaySound("EnemyMove2", false, 1);
+            m_playaudiomove1 = true;
         }
     }
 
     public void ResetSquadSpeed()
     {
-        for (int i = 0; i < m_enemies.Count; i++)
-        {
-            if (m_killall)
-                break;
-            else
-            {
 
-                if (m_enemies.Count > 1)
-                {
-                    if (m_enemies[i].m_Alive)
-                    {
-                        m_enemies[i].ResetMovement();
-                    }
-                }
-                else
-                {
-                    m_enemies[i].BecomeSoleSurvivor();
-                }
-            }
-        }
     }
 
     public void IncreaseSquadSpeed()
     {
-        float t_newmovementtimer = (float)(m_enemies.Count - 1) / m_spawnedenemiescount;
-        for (int i = 0; i < m_enemies.Count; i++)
-        {
-            if (m_killall)
-                break;
-            else
-            {
-                
-                if (m_enemies.Count > 1)
-                {
-                    if(m_enemies[i].m_Alive)
-                    {
-                        m_enemies[i].m_movementtimer *= t_newmovementtimer;
-                        m_enemies[i].m_timer = m_enemies[i].m_movementtimer;
-                    }
-                }
-                else
-                {
-                    m_enemies[i].BecomeSoleSurvivor();
-                }
-            }
-        }
+
+    }
+
+    public void ChangeDirection()
+    {
+        if (m_changedirection)
+            m_changedirection = false;
+        else if (!m_changedirection)
+            m_changedirection = true;
     }
 
     public void RemoveEnemyFromSquad(Enemy p_DeadEnemy)
@@ -278,7 +334,7 @@ public class EnemySquad : MonoBehaviour {
 
         if (m_enemies.Count == 1)
         {
-            m_enemies[0].BecomeSoleSurvivor();
+
         }
 
         if (m_killall)
@@ -297,25 +353,24 @@ public class EnemySquad : MonoBehaviour {
 
     void SpawnPowerUp()
     {
-        if(m_enemies.Count == 1)
-        { 
-            int t_powerupchoice = Random.Range(1, 4);
 
-            if (t_powerupchoice == 1)
-            {
-                Instantiate(AssetManager.m_Instance.GetPrefab("BluePower"), m_enemies[0].transform.position, Quaternion.identity);
-            }
+        int t_powerupchoice = Random.Range(1, 4);
 
-            if (t_powerupchoice == 2)
-            {
-                Instantiate(AssetManager.m_Instance.GetPrefab("GreenPower"), m_enemies[0].transform.position, Quaternion.identity);
-            }
-
-            if (t_powerupchoice == 3)
-            {
-                Instantiate(AssetManager.m_Instance.GetPrefab("RedPower"), m_enemies[0].transform.position, Quaternion.identity);
-            }
+        if (t_powerupchoice == 1)
+        {
+            Instantiate(AssetManager.m_Instance.GetPrefab("BluePower"), m_enemies[0].transform.position, Quaternion.identity);
         }
+
+        if (t_powerupchoice == 2)
+        {
+            Instantiate(AssetManager.m_Instance.GetPrefab("GreenPower"), m_enemies[0].transform.position, Quaternion.identity);
+        }
+
+        if (t_powerupchoice == 3)
+        {
+            Instantiate(AssetManager.m_Instance.GetPrefab("RedPower"), m_enemies[0].transform.position, Quaternion.identity);
+        }
+        
     }
 
 

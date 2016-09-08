@@ -81,6 +81,7 @@ public class Player : MonoBehaviour {
         get { return m_alive; }
     }
 
+
     private void Initialize()
     {
 
@@ -120,6 +121,7 @@ public class Player : MonoBehaviour {
         m_showhealth = true;
 
         m_alive = true;
+
     }
     
     void Awake()
@@ -148,7 +150,7 @@ public class Player : MonoBehaviour {
         SetPlayerScale(1);
 
 
-        SpawnBarrel(AssetManager.m_Instance.GetPrefab("BasicMuzzle"));
+        SpawnBarrel(AssetManager.m_Instance.GetPrefab("GreenMuzzle"));
 
         m_healthbox = Instantiate(AssetManager.m_Instance.GetPrefab("HealthBar")).GetComponentInChildren<HealthBar>();
         m_healthbox.HideHealth();
@@ -161,16 +163,35 @@ public class Player : MonoBehaviour {
 
     public void SpawnBarrel(GameObject p_NewMuzzle)
     {
-        if (p_NewMuzzle != m_muzzle)
-        { 
-            if(m_muzzle !=null)
-            {
-                m_muzzle.DestroyMuzzle();
-            }
-            m_muzzle = Instantiate(p_NewMuzzle).GetComponent<Muzzle>();
-            m_muzzle.transform.SetParent(transform);
+        if(m_muzzle == null)
+        {
+            CreateBarrel(p_NewMuzzle);
         }
+        else
+        {
+            if(p_NewMuzzle.name != m_muzzle.name)
+            {
+                CreateBarrel(p_NewMuzzle);
+            }
+            else
+            {
+                m_muzzle.Reload();
+            }
+        }
+        
     }
+
+    void CreateBarrel(GameObject p_NewMuzzle)
+    {
+        if (m_muzzle != null)
+        {
+            m_muzzle.DestroyMuzzle();
+        }
+        m_muzzle = Instantiate(p_NewMuzzle).GetComponent<Muzzle>();
+        m_muzzle.transform.SetParent(transform);
+        m_muzzle.name = p_NewMuzzle.name;
+    }
+
 
     public void ChangePlayerSprite(Sprite p_NewPlayerSprite)
     {
@@ -363,6 +384,7 @@ public class Player : MonoBehaviour {
     {
         if (!m_alive)
             return;
+
     }
 
     public void TakeDamage(float p_Damage)
