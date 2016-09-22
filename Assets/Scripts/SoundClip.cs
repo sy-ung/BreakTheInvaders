@@ -4,18 +4,19 @@ using System.Collections;
 public class SoundClip : MonoBehaviour {
 
     // Use this for initialization
-    AudioSource m_audiosource;
+    public AudioSource m_audiosource;
     public string m_Key;
     void Awake()
     {
         m_audiosource = gameObject.AddComponent<AudioSource>();
     }
 
-    public void LoadClip(string p_Key, AudioClip p_NewAudioClip, bool p_Loop, float p_Pitch)
+    public void LoadClip(string p_Key, AudioClip p_NewAudioClip, bool p_Loop, float p_Pitch, float p_Volume)
     {
         m_audiosource.clip = p_NewAudioClip;
         m_audiosource.loop = p_Loop;
         m_audiosource.pitch = p_Pitch;
+        m_audiosource.volume = p_Volume;
         m_Key = p_Key;
     }
 

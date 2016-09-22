@@ -49,6 +49,7 @@ public class Bullet : MonoBehaviour {
         m_rigidbody2D.isKinematic = false;
 
         m_boxcollider2D.size = m_spriterenderer.bounds.size;
+        m_boxcollider2D.isTrigger = true;
 
         m_timer = 0;
 
@@ -104,7 +105,7 @@ public class Bullet : MonoBehaviour {
 
     }
 
-    protected void OnCollisionEnter2D(Collision2D p_Collision)
+    protected void OnTriggerEnter2D(Collider2D p_Collider)
     {
         Destroy(gameObject);
     }

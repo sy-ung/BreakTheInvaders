@@ -13,7 +13,7 @@ public class GameAudioManager : MonoBehaviour {
     private static Dictionary<string,List<SoundClip>> m_currentsoundsplaying;
 
 
-    int m_MaxAllowedSounds = 2;
+    int m_MaxAllowedSounds = 1;
 
     public static GameAudioManager m_Instance
     {
@@ -40,6 +40,8 @@ public class GameAudioManager : MonoBehaviour {
 
         m_currentsoundsplaying = new Dictionary<string, List<SoundClip>>();
 
+        DontDestroyOnLoad(gameObject);
+
         LoadSoundAssets();
     }
 
@@ -55,10 +57,11 @@ public class GameAudioManager : MonoBehaviour {
 
         m_AudioClips.Add("EnemyMove1", Resources.Load<AudioClip>("Audio/EnemyMovement/Move1"));
         m_AudioClips.Add("EnemyMove2", Resources.Load<AudioClip>("Audio/EnemyMovement/Move2"));
-        m_AudioClips.Add("EnemySpecialMove", Resources.Load<AudioClip>("Audio/EnemyMovement/SpecialMovement"));
+        m_AudioClips.Add("EnemyMoveSpecial", Resources.Load<AudioClip>("Audio/EnemyMovement/MoveSpecial"));
 
-        m_AudioClips.Add("PlayerHit", Resources.Load<AudioClip>("Audio/PlayerHit/PlayerHit"));
- 
+        m_AudioClips.Add("PlayerHit", Resources.Load<AudioClip>("Audio/Player/PlayerHit"));
+        m_AudioClips.Add("PlayerHeal", Resources.Load<AudioClip>("Audio/Player/PlayerHeal"));
+
         m_AudioClips.Add("PowerUpHitPlayer", Resources.Load<AudioClip>("Audio/PowerUpHit/PlayerPowerUpHit"));
         m_AudioClips.Add("PowerUpHitBall", Resources.Load<AudioClip>("Audio/PowerUpHit/BallPowerUpHit"));
 
@@ -86,6 +89,8 @@ public class GameAudioManager : MonoBehaviour {
 
         m_AudioClips.Add("GreenMuzzleCharge", Resources.Load<AudioClip>("Audio/WeaponFire/Player/Green/ChargeLoop"));
         m_AudioClips.Add("GreenMuzzleLaunch", Resources.Load<AudioClip>("Audio/WeaponFire/Player/Green/Launch"));
+
+        m_AudioClips.Add("Reload", Resources.Load<AudioClip>("Audio/WeaponFire/Player/Reload"));
     }
 
     public AudioClip GetSoundClip(string p_Name)
@@ -105,39 +110,47 @@ public class GameAudioManager : MonoBehaviour {
     {
 	}
 
-    public void PlaySound(string p_SoundName, bool p_Loop, float p_Pitch)
+    public void PlaySound(string p_SoundName, bool p_Loop, float p_Pitch, bool p_Important)
     {
         if(!m_currentsoundsplaying.ContainsKey(p_SoundName))
         {
             m_currentsoundsplaying.Add(p_SoundName, new List<SoundClip>());
         }
 
-        if (m_currentsoundsplaying[p_SoundName].Count < m_MaxAllowedSounds)
+        if (m_currentsoundsplaying[p_SoundName].Count >= m_MaxAllowedSounds)
         {
-            SoundClip t_newSound = new GameObject("Soundclip_" + p_SoundName).AddComponent<SoundClip>();
-            t_newSound.LoadClip(p_SoundName, GetSoundClip(p_SoundName), p_Loop, p_Pitch);
-            m_currentsoundsplaying[p_SoundName].Add(t_newSound);
+            Destroy(m_currentsoundsplaying[p_SoundName][0].gameObject);
+            SoundFinished(p_SoundName);
         }
+
+        SoundClip t_newSound = new GameObject("Soundclip_" + p_SoundName).AddComponent<SoundClip>();
+
+        float t_volume = 1.0f;
+        if(!p_Important)
+        {
+            t_volume = 0.175f;
+        }
+
+        t_newSound.LoadClip(p_SoundName, GetSoundClip(p_SoundName), p_Loop, p_Pitch, t_volume);
+
+        m_currentsoundsplaying[p_SoundName].Add(t_newSound);
+        
     }
 
     public void SoundFinished(string p_SoundName)
     {
-        int t_index = m_currentsoundsplaying[p_SoundName].Count;
         m_currentsoundsplaying[p_SoundName].RemoveAt(0);
     }
 
     public void StopSound(string p_SoundName)
     {
         int t_index = 0;
-
         if (m_currentsoundsplaying.ContainsKey(p_SoundName))
             t_index = m_currentsoundsplaying[p_SoundName].Count;
 
         if (t_index>0)
         {
             m_currentsoundsplaying[p_SoundName][0].StopPlaying();
-            //Destroy(m_currentsoundsplaying[p_SoundName][t_index - 1].gameObject);
-            //SoundFinished(p_SoundName);
         }
     }
 

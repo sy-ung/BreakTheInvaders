@@ -51,7 +51,7 @@ public class AssetManager : MonoBehaviour {
 
         m_prefabs.Add("Player", Resources.Load<GameObject>("Prefabs/GameObjects/Player"));
         m_prefabs.Add("HealthBar", Resources.Load<GameObject>("Prefabs/GameObjects/HealthBox"));
-        m_prefabs.Add("Ammo", Resources.Load<GameObject>("Prefabs/GameObjects/Bullets/Player/Ammo"));
+
         m_prefabs.Add("AmmoBar", Resources.Load<GameObject>("Prefabs/GameObjects/Bullets/Player/AmmoBar"));
         m_prefabs.Add("InfinitySign", Resources.Load<GameObject>("Prefabs/Gameobjects/Bullets/Player/InfinitySign"));
         m_prefabs.Add("NoAmmoSign", Resources.Load<GameObject>("Prefabs/Gameobjects/Bullets/Player/NoAmmoSign"));
@@ -60,8 +60,10 @@ public class AssetManager : MonoBehaviour {
         m_prefabs.Add("DefaultBall", Resources.Load<GameObject>("Prefabs/GameObjects/Balls/DefaultBall"));
         m_prefabs.Add("GreenBall", Resources.Load<GameObject>("Prefabs/GameObjects/Balls/GreenBall"));
         m_prefabs.Add("BlueBall", Resources.Load<GameObject>("Prefabs/Gameobjects/Balls/BlueBall"));
+
         m_prefabs.Add("RedBall", Resources.Load<GameObject>("Prefabs/GameObjects/Balls/RedBall"));
         m_prefabs.Add("BallDeathParticle", Resources.Load<GameObject>("Prefabs/Particles/BallDeathParticle/BallDeathParticle"));
+
 
         m_prefabs.Add("RedPower", Resources.Load<GameObject>("Prefabs/GameObjects/PowerUps/RedPowerUp"));
         m_prefabs.Add("GreenPower", Resources.Load<GameObject>("Prefabs/GameObjects/PowerUps/GreenPowerUp"));
@@ -86,20 +88,24 @@ public class AssetManager : MonoBehaviour {
         m_prefabs.Add("BasicMuzzle", Resources.Load<GameObject>("Prefabs/Gameobjects/Muzzles/BasicMuzzle"));
         m_prefabs.Add("BulletDefault", Resources.Load<GameObject>("Prefabs/GameObjects/Bullets/Player/BulletBasic"));
         m_prefabs.Add("BulletDefaultExplosion", Resources.Load<GameObject>("Prefabs/Gameobjects/Bullets/Player/BulletBasicExplosion"));
+        m_prefabs.Add("BasicAmmoIcon", Resources.Load<GameObject>("Prefabs/GameObjects/Bullets/Player/BasicAmmo"));
 
         m_prefabs.Add("BlueMuzzle", Resources.Load<GameObject>("Prefabs/Gameobjects/Muzzles/BlueMuzzle"));
         m_prefabs.Add("BulletBlue", Resources.Load<GameObject>("Prefabs/GameObjects/Bullets/Player/BulletBlue"));
         m_prefabs.Add("BulletBlueExplosion", Resources.Load<GameObject>("Prefabs/GameObjects/Bullets/Player/BulletBlueExplosion"));
+        m_prefabs.Add("BlueAmmoIcon", Resources.Load<GameObject>("Prefabs/GameObjects/Bullets/Player/BlueAmmo"));
 
         m_prefabs.Add("GreenMuzzle", Resources.Load<GameObject>("Prefabs/Gameobjects/Muzzles/GreenMuzzle"));
         m_prefabs.Add("BulletGreen", Resources.Load<GameObject>("Prefabs/GameObjects/Bullets/Player/BulletGreen"));
         m_prefabs.Add("BulletGreenExplosion", Resources.Load<GameObject>("Prefabs/GameObjects/Bullets/Player/BulletGreenExplosion"));
+        m_prefabs.Add("GreenAmmoIcon", Resources.Load<GameObject>("Prefabs/GameObjects/Bullets/Player/GreenAmmo"));
 
         m_prefabs.Add("MuzzleDeathParticle", Resources.Load<GameObject>("Prefabs/Particles/MuzzleDeathParticle/MuzzleDeathParticle"));
 
 
         m_prefabs.Add("RedBeamMuzzle", Resources.Load<GameObject>("Prefabs/Gameobjects/Muzzles/RedBeamMuzzle"));
         m_prefabs.Add("BulletRedBeam", Resources.Load<GameObject>("Prefabs/Gameobjects/Bullets/Player/BulletRedBeam"));
+        m_prefabs.Add("RedBeamAmmoIcon", Resources.Load<GameObject>("Prefabs/GameObjects/Bullets/Player/RedBeamAmmo"));
 
         m_prefabs.Add("EnemyDeathParticle1", Resources.Load<GameObject>("Prefabs/Particles/EnemyDeathParticles/DeathParticle1/EnemyDeathParticle1"));
         m_prefabs.Add("EnemyDeathParticle2", Resources.Load<GameObject>("Prefabs/Particles/EnemyDeathParticles/DeathParticle2/EnemyDeathParticle2"));
@@ -120,6 +126,9 @@ public class AssetManager : MonoBehaviour {
         m_prefabs.Add("EnemyBullet5", Resources.Load<GameObject>("Prefabs/GameObjects/Bullets/Enemy/EnemyBullet5"));
         m_prefabs.Add("EnemyBullet6", Resources.Load<GameObject>("Prefabs/GameObjects/Bullets/Enemy/EnemyBullet6"));
         m_prefabs.Add("EnemyBullet7", Resources.Load<GameObject>("Prefabs/GameObjects/Bullets/Enemy/EnemyBullet7"));
+
+
+        m_prefabs.Add("StarsBackground", Resources.Load<GameObject>("Prefabs/Backgrounds/Stars"));
 
 
     }

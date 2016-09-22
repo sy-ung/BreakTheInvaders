@@ -15,7 +15,9 @@ public class BlueMuzzle : Muzzle {
     void Start()
     {
         base.Start();
-        SetMaxAmmoCount(9);
+        m_firingrate = 0.2f;
+        SetMaxAmmoCount(10);
+        m_ammobar.m_ammoprefab = AssetManager.m_Instance.GetPrefab("BlueAmmoIcon");
 
     }
 

@@ -58,16 +58,7 @@ public class EnemyTypeSpecial : Enemy {
                 }
             }
         }
-
-
-        Debug.Log(m_InBoundsX);
-        
-        
-
-    }
-
-
-
+   }
     void LateUpdate()
     {
         base.LateUpdate();
@@ -76,5 +67,10 @@ public class EnemyTypeSpecial : Enemy {
     public void Death()
     {
         base.Death();
+    }
+
+    public override void SpawnPowerUp()
+    {
+        Instantiate(AssetManager.m_Instance.GetPrefab("RedPower"), transform.position, Quaternion.identity);
     }
 }

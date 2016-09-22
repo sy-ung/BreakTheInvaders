@@ -25,6 +25,11 @@ public class Score : MonoBehaviour {
    
 
     int m_currentgamescore;
+    public int m_CurrentGameScore
+    {
+        get { return m_currentgamescore; }
+    }
+
     int m_currentplace;
 
     string m_savepath;
@@ -33,9 +38,12 @@ public class Score : MonoBehaviour {
     float m_rankflashtimer = 0;
     bool m_flashoOn;
 
+    float m_ratioscale = 0.03f;
+
     void Awake()
     {
-        m_savepath = "Assets/Resources/SavedData/scores.dat";
+        //m_savepath = "Assets/Resources/SavedData/scores.dat";
+        m_savepath = Application.persistentDataPath + "scores.dat";
         DontDestroyOnLoad(gameObject);
     }
 
@@ -51,6 +59,11 @@ public class Score : MonoBehaviour {
         ReadScoreFromFile();
         m_hiscoretext = GameObject.FindGameObjectWithTag("HiScoreText").GetComponent<Text>();
         m_hiscoretext.text = m_scoredata.m_TopTen[0].ToString();
+    }
+
+    void AdjustFontSize()
+    {
+        
     }
 
 

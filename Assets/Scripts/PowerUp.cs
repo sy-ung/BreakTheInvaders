@@ -45,6 +45,8 @@ public class PowerUp : MonoBehaviour {
         gameObject.layer = 10;
         gameObject.tag = "PowerUp";
 
+        m_boxcollider2D.isTrigger = true;
+
     }
 	
 	// Update is called once per frame
@@ -80,30 +82,26 @@ public class PowerUp : MonoBehaviour {
 
     }
 
-    public void OnCollisionEnter2D(Collision2D p_Collision)
+    void OnTriggerEnter2D(Collider2D p_Collider)
     {
-        if (p_Collision.collider.tag == "Player")
-        {
-            ApplyMuzzlePowerUp();
-            GameAudioManager.m_Instance.PlaySound("PowerUpHitPlayer", false, 1.0f);
-        }
-
-        if (p_Collision.collider.tag == "PlayerBall")
-        {
+        if (p_Collider.tag == "Player")
+            ApplyMuzzlePowerUp(p_Collider);
+        else if(p_Collider.tag == "PlayerBall")
             ApplyBallPowerUp();
-            GameAudioManager.m_Instance.PlaySound("PowerUpHitBall", false, 1.0f);
-        }
+    
     }
 
-    public void ApplyMuzzlePowerUp()
+    public void ApplyMuzzlePowerUp(Collider2D p_PlayerCollider)
     {
-        PlayerManager.m_Instance.ChangeMuzzle(m_muzzlepowerup);
+        p_PlayerCollider.GetComponent<Player>().ApplyMuzzlePowerUp(m_muzzlepowerup);
+        GameAudioManager.m_Instance.PlaySound("PowerUpHitPlayer", false, 1.0f,true);
         Destroy(gameObject);
     }
 
     public void ApplyBallPowerUp()
     {
-        BallManager.m_Instance.ChangeBall(m_ballpowerup);
+        BallManager.m_Instance.ApplyPowerUp(m_ballpowerup);
+        GameAudioManager.m_Instance.PlaySound("PowerUpHitBall", false, 1.0f,true);
         Destroy(gameObject);
     }
 }

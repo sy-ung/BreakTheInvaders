@@ -59,17 +59,25 @@ public class Muzzle : MonoBehaviour {
 
         //m_currentbullet = AssetManager.m_Instance.GetPrefab("BulletGreen");
         m_ammobar = Instantiate(AssetManager.m_Instance.GetPrefab("AmmoBar")).GetComponent<AmmoBar>();
+        m_ammobar.transform.SetParent(transform);
+        m_ammobar.transform.localScale = new Vector2(3, 1.75f);
+        m_ammobar.transform.localPosition = new Vector2(-m_spriteRenderer.bounds.size.y * 9, -m_spriteRenderer.bounds.size.y * 9);
 
     }
 
     public  void Reload()
     {
         if(m_MaxAmmoCount != -1)
-        { 
+        {
+            if (m_currentammocount != m_maxammocount)
+                GameAudioManager.m_Instance.PlaySound("Reload", false, 1.0f,true);
+
             SetMaxAmmoCount(m_maxammocount);
 
             if(m_ammobar!=null)
                 m_ammobar.Reload();
+
+
         }
     }
 
@@ -155,7 +163,7 @@ public class Muzzle : MonoBehaviour {
     {
         //m_audiosource.PlayOneShot(m_WeaponFireSounds[Random.Range(0, m_WeaponFireSounds.Length)]);
 
-        GameAudioManager.m_Instance.PlaySound(m_soundClipName[Random.Range(0,m_soundClipName.Length)], false, 1.0f);
+        GameAudioManager.m_Instance.PlaySound(m_soundClipName[Random.Range(0,m_soundClipName.Length)], false, 1.0f,false);
     }
 
 

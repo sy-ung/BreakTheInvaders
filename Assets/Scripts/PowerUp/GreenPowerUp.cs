@@ -22,11 +22,7 @@ public class GreenPowerUp : PowerUp {
     {
         base.Update();
     }
-	
-    void OnCollisionEnter2D(Collision2D p_Collision)
-    {
-        base.OnCollisionEnter2D(p_Collision);
-    }
+
 
 
 }

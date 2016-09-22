@@ -10,36 +10,29 @@ public class Game : MonoBehaviour {
 
     private int m_points = 0;
 
-    float m_spawnenemytime = 0.75f;
+    float m_spawnenemytime = 1.0f;
     float m_spawnenemytimer = 0;
 
     float m_gameovertextdisplaytime;
     float m_gameovertextdisplaytimer;
     float m_gameoverscenetime;
 
+    float m_increasedifficultyscore;
+    float m_difficultyinterval;
+
+    int m_difficultylevel = 1;
+
     public bool m_GameOver;
+
+    int m_numenemysquad = 4;
+    int m_maxenemysquad = 10;
 
     Score m_score;
 
     // Use this for initialization
-    void Start () {
-
-        PlayerManager.m_Instance.RespawnPlayer();
-        BallManager.m_Instance.RespawnBall(new Vector2(0,1));
-
-        
-        Score t_score = FindObjectOfType<Score>();
-        if(t_score == null)
-            m_score = (Instantiate(AssetManager.m_Instance.GetPrefab("Score")) as GameObject).GetComponent<Score>();
-        else
-        { 
-            m_score = t_score;
-            m_score.NewGame();
-        }
-
-
-        SetUpUI();
-        //SpawnEnemies();
+    void Start ()
+    {
+        InitEverything();
 
 
         m_GameOver = false;
@@ -47,6 +40,42 @@ public class Game : MonoBehaviour {
         m_gameovertextdisplaytime = 2.0f;
         m_gameovertextdisplaytimer = 0.0f;
         m_gameoverscenetime = m_gameovertextdisplaytime + 1.75f;
+
+        m_difficultyinterval = 3000;
+        
+
+        m_increasedifficultyscore = m_score.m_CurrentGameScore + m_difficultyinterval;
+    }
+
+    void InitEverything()
+    {
+        PlayerManager.m_Instance.RespawnPlayer();
+        BallManager.m_Instance.RespawnBall(new Vector2(0, 1));
+
+        Score t_score = FindObjectOfType<Score>();
+        if (t_score == null)
+            m_score = (Instantiate(AssetManager.m_Instance.GetPrefab("Score")) as GameObject).GetComponent<Score>();
+        else
+        {
+            m_score = t_score;
+            m_score.NewGame();
+        }
+        SetUpUI();
+
+        
+        BackgroundManager.m_Instance.AddNewBackground("StarsBackground");
+        BackgroundManager.m_Instance.GetBackground(0).ScrollDown();
+    }
+
+    void IncreaseDifficulty()
+    {
+        m_spawnenemytime *= 0.9f;
+
+        if(m_numenemysquad < m_maxenemysquad)
+            ++m_numenemysquad;
+
+        m_difficultyinterval *= 1.25f;
+        ++m_difficultylevel;
     }
 
     void Reset()
@@ -56,7 +85,6 @@ public class Game : MonoBehaviour {
 
     void SetUpUI()
     {
-        //UIManager.m_Instance.AddUIElementToScreen("ControlWheel", UIManager.ScreenAnchor.LOWER_LEFT, new Vector2(0, 0));
         UIManager.m_Instance.AddUIElementToScreen("ControlBar", UIManager.ScreenAnchor.LOWER_LEFT, new Vector2(0,0.05f));
         UIManager.m_Instance.AddUIElementToScreen("ShootButton", UIManager.ScreenAnchor.LOWER_RIGHT, new Vector2(0,0.05f));
     }
@@ -71,10 +99,20 @@ public class Game : MonoBehaviour {
             return;
         }
 
+        if(m_score.m_CurrentGameScore > m_increasedifficultyscore)
+        {
+            IncreaseDifficulty();
+            m_increasedifficultyscore = m_score.m_CurrentGameScore + m_difficultyinterval;
+        }
 
         if(m_spawnenemytimer>m_spawnenemytime)
         {
-            //SpawnEnemies();
+            EnemySquad[] t_squads = FindObjectsOfType<EnemySquad>();
+
+            if(t_squads.Length < m_numenemysquad)
+            { 
+                SpawnEnemies();
+            }
             m_spawnenemytimer = 0;
         }
         else
@@ -106,8 +144,13 @@ public class Game : MonoBehaviour {
     }
     void SpawnEnemies()
     {
-        //EnemyManager.m_Instance.SpawnEnemies(5, 5, "BlueEnemy)
-        EnemyManager.m_Instance.SpawnSquad();
+        int m_specialchance = Random.Range(0, 25);
+        if(m_specialchance == 4)
+            EnemyManager.m_Instance.SpawnSpecialEnemy();
+        else
+        {
+            EnemyManager.m_Instance.SpawnSquad(m_difficultylevel);
+        }
     }
 
     void TouchInput()
@@ -190,44 +233,14 @@ public class Game : MonoBehaviour {
             PlayerManager.m_Instance.m_Player.MovePlayer(new Vector3(0.5f, 0));
         }
 
-        if(Input.GetKey(KeyCode.P))
-        {
-            SpawnEnemies();
-        }
-
-        if(Input.GetKeyDown(KeyCode.H))
-        {
-            SpawnPowerUp();
-        }
-
-        if (Input.GetKeyDown(KeyCode.Y))
-        {
-            BallManager.m_Instance.ChangeBall(AssetManager.m_Instance.GetPrefab("DefaultBall"));
-        }
-
-
-        if (Input.GetKeyDown(KeyCode.O))
-        {
-            EnemySquad[] t_squads = FindObjectsOfType<EnemySquad>();
-            for(int i = 0; i < t_squads.Length ;i++)
-            {
-                t_squads[i].KillAllInSquad();
-            }
-        }
-
         if(Input.GetKeyDown(KeyCode.X))
         {
-            if(PlayerManager.m_Instance.m_Player != null)
-                PlayerManager.m_Instance.m_Player.TakeDamage(10.0f);
+            PlayerManager.m_Instance.m_Player.TakeDamage(10.0f);
         }
-
-
-        if (Input.GetKeyDown(KeyCode.L))
+        if (Input.GetKeyDown(KeyCode.Z))
         {
-            EnemyManager.m_Instance.SpawnSpecialEnemy();
+            PlayerManager.m_Instance.m_Player.Heal(10.0f);
         }
-
-
     }
 
     void DebugStuff()

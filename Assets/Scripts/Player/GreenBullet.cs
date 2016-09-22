@@ -43,15 +43,15 @@ public class GreenBullet : Bullet {
         }
 	}
 
-    void OnCollisionEnter2D(Collision2D p_Collision)
+    void OnTriggerEnter2D(Collider2D p_Collider)
     {
         if (m_alive)
         {
-            if (p_Collision.collider.tag == "Enemy")
+            if (p_Collider.tag == "Enemy")
             {
-                GameObject t_explosion = Instantiate(AssetManager.m_Instance.GetPrefab("BulletGreenExplosion"), p_Collision.collider.gameObject.transform.position, Quaternion.identity) as GameObject;
+                GameObject t_explosion = Instantiate(AssetManager.m_Instance.GetPrefab("BulletGreenExplosion"), p_Collider.gameObject.transform.position, Quaternion.identity) as GameObject;
                 t_explosion.transform.localScale *= 2;
-                p_Collision.collider.GetComponent<Enemy>().Death();
+                p_Collider.GetComponent<Enemy>().Death();
                 m_RigidBody2D.velocity = Vector3.up * m_speed;
                 //base.OnCollisionEnter2D(p_Collision);
             }

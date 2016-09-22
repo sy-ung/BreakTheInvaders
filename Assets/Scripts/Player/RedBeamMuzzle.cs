@@ -18,6 +18,7 @@ public class RedBeamMuzzle : Muzzle {
         base.Start();
         SpawnBeam();
         SetMaxAmmoCount(-1);
+        m_ammobar.m_ammoprefab = AssetManager.m_Instance.GetPrefab("RedBeamAmmoIcon");
     }
 
     // Update is called once per frame

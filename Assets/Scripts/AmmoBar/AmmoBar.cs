@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public class AmmoBar : MonoBehaviour {
 
 
-    private GameObject m_ammoprefab;
+    public GameObject m_ammoprefab;
     private Infinity m_infinitysign;
     private NoAmmo m_noammosign;
 
@@ -19,18 +19,16 @@ public class AmmoBar : MonoBehaviour {
 
     void Awake()
     {
-        m_ammoprefab = AssetManager.m_Instance.GetPrefab("Ammo");
         m_player = PlayerManager.m_Instance.m_Player;
         m_numofammocheck = 8;
         m_maxammodisplay = 9;
         m_transparencyscale = (1.0f - ((float)m_numofammocheck / (float)m_maxammodisplay)) / 1.0f;
     }
 
+
 	void Start ()
     {
-
         DisplayAmmo();
-        transform.localScale = new Vector2(transform.localScale.x * 0.75f, transform.localScale.y * 0.5f);
 	}
 
     public void Reload()
@@ -92,21 +90,19 @@ public class AmmoBar : MonoBehaviour {
     {
         LoadNewAmmo();
         m_infinitysign = Instantiate(AssetManager.m_Instance.GetPrefab("InfinitySign")).GetComponent<Infinity>();
-        m_infinitysign.transform.SetParent(transform);
-
-        Vector2 t_infinitysignbounds = m_infinitysign.GetComponent<SpriteRenderer>().bounds.size;
-        float t_localstartliney = (m_player.GetComponent<SpriteRenderer>().bounds.size.y / 2) - m_ammoprefab.GetComponent<SpriteRenderer>().bounds.size.y / 2;
-        m_infinitysign.transform.localPosition = new Vector2(m_player.GetComponent<SpriteRenderer>().bounds.size.x + t_infinitysignbounds.x * 2, t_localstartliney);
-
-        m_infinitysign.m_NewLocalPosition = new Vector2(t_infinitysignbounds.x, t_localstartliney);
+        m_infinitysign.transform.SetParent(m_ammunition[0].transform);
+        m_infinitysign.transform.localScale = new Vector2(0.5f, 0.5f);
+        m_infinitysign.transform.localPosition = new Vector2(m_player.m_SpriteRenderer.bounds.size.x / 3.5f, 0);
     }
 
     void DisplayNoAmmo()
     {
         LoadNewAmmo();
         m_noammosign = Instantiate(AssetManager.m_Instance.GetPrefab("NoAmmoSign")).GetComponent<NoAmmo>();
-        m_noammosign.transform.SetParent(transform);
+        m_noammosign.transform.SetParent(m_ammunition[0].transform);
+        m_noammosign.transform.localScale = new Vector2(1.25f, 1.25f);
         m_noammosign.m_ammoref = m_ammunition[0].GetComponent<Ammo>();
+        //m_noammosign.transform.localPosition;
     }
 
     void ClearAmmo()
@@ -181,13 +177,15 @@ public class AmmoBar : MonoBehaviour {
 
         GameObject t_ammo = Instantiate(m_ammoprefab);
         Vector2 t_ammobounds = t_ammo.GetComponent<SpriteRenderer>().bounds.size;
+        //t_ammo.transform.localScale = new Vector2(5, 5);
 
         float t_localstartliney = (m_player.GetComponent<SpriteRenderer>().bounds.size.y / 2) - (t_ammobounds.y / 2);
 
         t_ammo.transform.SetParent(transform);
 
 
-        t_ammo.GetComponent<Ammo>().m_NewLocalPosition = new Vector2((t_ammobounds.x) * m_ammunition.Count, t_localstartliney);
+
+        t_ammo.GetComponent<Ammo>().m_NewLocalPosition = new Vector2((2 * t_ammobounds.x) * m_ammunition.Count, t_localstartliney);
         t_ammo.transform.localPosition = new Vector2((t_ammobounds.x) * (m_maxammodisplay + 1), t_localstartliney);
 
 
@@ -221,10 +219,6 @@ public class AmmoBar : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
-        if(m_ammunition.Count != 0)
-        { 
-            transform.position = new Vector2(m_player.transform.position.x - (m_player.m_SpriteRenderer.bounds.size.x / 2 - m_ammunition[0].GetComponent<SpriteRenderer>().bounds.size.x/2), m_player.transform.position.y - m_player.m_SpriteRenderer.bounds.size.y * 1.5f);
-        }
     }
 
 

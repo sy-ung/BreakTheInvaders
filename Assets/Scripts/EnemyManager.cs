@@ -44,26 +44,24 @@ public class EnemyManager : MonoBehaviour {
 	}
 
     //Will spawn a random enemy squad at random sizes
-    public void SpawnSquad()
+    public void SpawnSquad(float p_DifficultyLevel)
     {
         EnemySquad t_es = new GameObject("ENEMY SQUAD").AddComponent<EnemySquad>();
         int t_randenemy = Random.Range(1, 8);
-        t_es.CreateSquad("EnemyType" + t_randenemy, Random.Range(2, 5), Random.Range(2, 6));
-        
+        t_es.CreateSquad("EnemyType" + t_randenemy, Random.Range(2, 5), Random.Range(2, 6), p_DifficultyLevel);
     }
 
     public void SpawnSpecialEnemy()
     {
-        Vector2 t_screensize = Camera.main.GetComponent<ResolutionFix>().m_ScreenSizeWorldPoint;
-        Enemy t_specialenemy = Instantiate(AssetManager.m_Instance.GetPrefab("EnemyTypeSpecial")).GetComponent<Enemy>();
-        t_specialenemy.transform.position = new Vector2(-t_screensize.x - t_screensize.x / 2, t_screensize.y - (t_specialenemy.GetComponent<SpriteRenderer>().bounds.size.y * 2));
+        EnemySquad t_es = new GameObject("ENEMY SQUAD").AddComponent<EnemySquad>();
+        t_es.CreateSpecialEnemy();
     }
 
 
-    public void SpawnSquad(string p_EnemyPrefabName, int p_Rows, int p_Coloumns)
+    public void SpawnSquad(string p_EnemyPrefabName, int p_Rows, int p_Coloumns, float p_DifficultyLevel)
     {
         EnemySquad t_es = new GameObject("EnemySquad").AddComponent<EnemySquad>();
-        t_es.CreateSquad(p_EnemyPrefabName, p_Rows, p_Coloumns);
+        t_es.CreateSquad(p_EnemyPrefabName, p_Rows, p_Coloumns, p_DifficultyLevel);
     }
 
 

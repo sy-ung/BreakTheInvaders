@@ -20,6 +20,7 @@ public class EnemySquad : MonoBehaviour {
     private bool m_inplay = false;
 
     private float m_movementtime;
+    private float m_origmovementtime;
     private float m_movementtimer;
 
     private string[] m_movementsounds;
@@ -42,22 +43,41 @@ public class EnemySquad : MonoBehaviour {
 
     private bool m_playaudiomove1;
 
+    private float m_firingratefactor;
+
+    //If it ever moves wierd and doesnt move onto the screen, it will destroy it self;
+    private float m_notinplaytimer;
+    private float m_notinplaytime = 3.0f;
+
+    private bool m_specialsquad;
+
     void Awake()
     {
-        m_movementsounds = new string[3] { "EnemyMove1", "EnemyMove2", "EnemySpecialMove" };
-        m_movementtime = 0.05f;
-        m_movementspeed = new Vector2(1f, 0.5f);
+        m_movementsounds = new string[3] { "EnemyMove1", "EnemyMove2", "EnemyMoveSpecial" };
         m_playaudiomove1 = true;
+        m_movementspeed = new Vector2(1f, 2f);
     }
 
+    public void DifficultyFactor(float p_Factor)
+    {
+        m_movementtime = 1.0f / p_Factor;
+        m_origmovementtime = m_movementtime;
+        m_firingratefactor = p_Factor;
+        m_movementspeed = new Vector2(m_movementspeed.x, m_movementspeed.y * (p_Factor / 4));
+    }
+
+    
+
     // Use this for initialization
-    void Start () {
+    void Start ()
+    {
 	
 	}
 	
 	// Update is called once per frame
 	void Update ()
     {
+        
         if (!m_inplay)
         { 
             SquadBoundryCheck();
@@ -123,50 +143,108 @@ public class EnemySquad : MonoBehaviour {
         { 
             if (!m_squadinboundsX)
             {
-                MoveSquad();
+                MoveSquadToXBound();
             }
 
             if (!m_squadinboundsY)
             {
-                MoveSquadDown();
+                MoveSquadToYBound();
             }
 
             if (m_squadinboundsX && m_squadinboundsY)
             {
                 m_inplay = true;
-                ResetSquadSpeed();
+            }
+
+            if (m_notinplaytimer > m_notinplaytime)
+            { 
+                Destroy(gameObject);
+            }
+            else
+            {
+                m_notinplaytimer += Time.deltaTime;
             }
         }
 
 
     }
+    public void CreateSpecialEnemy()
+    {
+        Vector2 t_screensize = Camera.main.GetComponent<ResolutionFix>().m_ScreenSizeWorldPoint;
+        Enemy t_special = Instantiate(AssetManager.m_Instance.GetPrefab("EnemyTypeSpecial")).GetComponent<Enemy>();
+
+        Vector2 t_bounds = t_special.GetComponent<SpriteRenderer>().bounds.size;
+
+        int t_whichside = Random.Range(0, 2);
+        Vector2 t_origin;
+        if (t_whichside == 1)
+        {
+            t_origin = new Vector2(-t_screensize.x - t_bounds.x/2, t_screensize.y);
+        }
+        else
+        {
+            t_origin = new Vector2(t_screensize.x + t_bounds.x / 2, t_screensize.y);
+        }
+        transform.position = t_origin;
+        t_special.transform.SetParent(transform);
+        t_special.transform.localPosition = new Vector2(0, 0);
+        t_special.m_CurrentEnemySquad = this;
+        m_enemies.Add(t_special);
+
+        if (t_origin.x > 0)
+            ChangeDirection();
+
+        m_specialsquad = true;
+
+        m_movementspeed = new Vector2(0.5f, 0.0f);
+        m_movementtime = 0.125f;
+
+    }
 
     //When creating a squad, they will always originally move to the right, use ChangeDirection on enemy to get it moveing to the left
-    public void CreateSquad(string p_EnemyPrefabName, int p_Rows, int p_Columns)
+    public void CreateSquad(string p_EnemyPrefabName, int p_Rows, int p_Columns, float p_DifficultyLevel)
     {
+        DifficultyFactor(p_DifficultyLevel);
+
         Vector2 t_screensize = Camera.main.GetComponent<ResolutionFix>().m_ScreenSizeWorldPoint;
 
         GameObject t_EnemyPrefab = AssetManager.m_Instance.GetPrefab(p_EnemyPrefabName);
 
-        bool t_switchside = false;
+        Vector2 t_enemybounds = t_EnemyPrefab.GetComponent<SpriteRenderer>().bounds.size;
 
 
 
-        Vector2 t_origin = new Vector2(0, Random.Range(0 + t_screensize.y/2, t_screensize.y * 2.0f));
 
-        if (t_origin.y < t_screensize.y)
+        Vector2 t_origin;
+
+        int t_area = Random.Range(0,3);
+        //Left side
+        if (t_area == 0)
         {
-            if (Random.Range(0, 2) == 0)
-            {
-                t_origin = new Vector2(Random.Range(-t_screensize.x * 2.0f, -t_screensize.x * 2.0f), t_origin.y);
-            }
-            else
-            {
-                t_origin = new Vector2(Random.Range(t_screensize.x * 2.0f, t_screensize.x * 2.0f), t_origin.y);
-            }
+            t_origin = new Vector2
+                (
+                -t_screensize.x - (p_Columns/2) * (t_enemybounds.x/2),
+                Random.Range(t_screensize.y - (t_screensize.y/2), t_screensize.y - t_enemybounds.y)
+                );
         }
+        //Right Side
+        else if(t_area == 1)
+        {
+            t_origin = new Vector2
+                (
+                t_screensize.x + (p_Columns / 2) * (t_enemybounds.x / 2),
+                Random.Range(t_screensize.y - (t_screensize.y / 2), t_screensize.y - t_enemybounds.y)
+                );
+        }
+        //Above
         else
-            t_origin = new Vector2(Random.Range(-t_screensize.x * 2.0f, t_screensize.x * 2.0f), t_origin.y);
+        {
+            t_origin = new Vector2
+                (
+                Random.Range((-t_screensize.x + (t_enemybounds.x * p_Columns)), (t_screensize.x - (t_enemybounds.x * p_Columns))),
+                t_screensize.y + (t_enemybounds.y * p_Rows)
+                );
+        }
 
         //Set squad transform to starting spawn point
         transform.position = t_origin;
@@ -183,6 +261,7 @@ public class EnemySquad : MonoBehaviour {
 
         m_spawnedenemiescount = p_Rows * p_Columns;
 
+        bool t_switchside = false;
         for (int i = 0; i < p_Rows; i++)
         {
             for (int j = 0; j < p_Columns; j++)
@@ -220,6 +299,10 @@ public class EnemySquad : MonoBehaviour {
                 t_enemy.m_CurrentEnemySquad = this;
                 m_enemies.Add(t_enemy);
 
+                
+
+                t_enemy.m_FiringRateFactor = m_firingratefactor;
+
 
             }
 
@@ -228,17 +311,21 @@ public class EnemySquad : MonoBehaviour {
         transform.localScale *= 0.5f;
     }
 
+    void MoveSquadToXBound()
+    {
+        if (m_ChangeDirection)
+            transform.position += new Vector3(-m_enemies[0].m_HalfSize.x, 0);
+        else
+            transform.position += new Vector3(m_enemies[0].m_HalfSize.x, 0);
+    }
+
+    void MoveSquadToYBound()
+    {
+        transform.position += new Vector3(0, -m_enemies[0].m_HalfSize.y);
+    }
+
     public void MoveSquadDown()
     {
-        //for (int i = 0; i < m_enemies.Count; i++)
-        //{
-        //    if (m_killall)
-        //        break;
-        //    else
-        //    {
-        //        m_enemies[i].m_movedown = p_Value;
-        //    }
-        //}
 
         if (m_inplay)
             PlayMoveAudio();
@@ -250,16 +337,7 @@ public class EnemySquad : MonoBehaviour {
 
     public void MoveSquad()
     {
-        //for (int i = 0; i < m_enemies.Count; i++)
-        //{
-        //    if (m_killall)
-        //        break;
-        //    else
-        //    {
-        //        m_enemies[i].m_move = p_Value;
-        //        m_enemies[i].MoveEnemy();
-        //    }
-        //}
+
         if(m_ChangeDirection)
             transform.position += new Vector3(-m_enemies[0].m_HalfSize.x * m_movementspeed.x, 0);
         else
@@ -272,26 +350,23 @@ public class EnemySquad : MonoBehaviour {
 
     void PlayMoveAudio()
     {
-        if(m_playaudiomove1)
-        { 
-            GameAudioManager.m_Instance.PlaySound("EnemyMove1", false, 1);
-            m_playaudiomove1 = false;
+        if (m_specialsquad)
+        {
+            GameAudioManager.m_Instance.PlaySound(m_movementsounds[2], false, 1,true);
         }
         else
         {
-            GameAudioManager.m_Instance.PlaySound("EnemyMove2", false, 1);
-            m_playaudiomove1 = true;
+            if (m_playaudiomove1)
+            {
+                GameAudioManager.m_Instance.PlaySound(m_movementsounds[0], false, 1,false);
+                m_playaudiomove1 = false;
+            }
+            else
+            {
+                GameAudioManager.m_Instance.PlaySound(m_movementsounds[1], false, 1,false);
+                m_playaudiomove1 = true;
+            }
         }
-    }
-
-    public void ResetSquadSpeed()
-    {
-
-    }
-
-    public void IncreaseSquadSpeed()
-    {
-
     }
 
     public void ChangeDirection()
@@ -304,13 +379,19 @@ public class EnemySquad : MonoBehaviour {
 
     public void RemoveEnemyFromSquad(Enemy p_DeadEnemy)
     {
-        if(m_enemies.Count == 1)
-        {
-            SpawnPowerUp();
-        }
 
         Destroy(p_DeadEnemy.gameObject);
         m_enemies.Remove(p_DeadEnemy);
+
+        float t_factor = ((float)m_enemies.Count / (float)m_spawnedenemiescount);
+
+        if (t_factor > 0.25f)
+        {
+            m_movementtime = m_origmovementtime * t_factor;
+        }
+
+
+
         SquadCheck();
     }
 
@@ -351,27 +432,7 @@ public class EnemySquad : MonoBehaviour {
         Destroy(gameObject);
     }
 
-    void SpawnPowerUp()
-    {
 
-        int t_powerupchoice = Random.Range(1, 4);
-
-        if (t_powerupchoice == 1)
-        {
-            Instantiate(AssetManager.m_Instance.GetPrefab("BluePower"), m_enemies[0].transform.position, Quaternion.identity);
-        }
-
-        if (t_powerupchoice == 2)
-        {
-            Instantiate(AssetManager.m_Instance.GetPrefab("GreenPower"), m_enemies[0].transform.position, Quaternion.identity);
-        }
-
-        if (t_powerupchoice == 3)
-        {
-            Instantiate(AssetManager.m_Instance.GetPrefab("RedPower"), m_enemies[0].transform.position, Quaternion.identity);
-        }
-        
-    }
 
 
 }

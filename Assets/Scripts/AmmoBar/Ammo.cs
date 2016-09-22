@@ -28,6 +28,7 @@ public class Ammo : MonoBehaviour {
         m_rigidbody2D.isKinematic = false;
         m_rigidbody2D.gravityScale = 0;
         m_spriterenderer.sortingLayerName = "UI";
+        m_spriterenderer.sortingOrder = 0;
         transform.localScale = new Vector2(2, 2);
         m_spriterenderer.color = new Color(1, 1, 1, 0);
 	}
@@ -35,10 +36,10 @@ public class Ammo : MonoBehaviour {
     public void Eject()
     {
         gameObject.transform.SetParent(null);
-        m_rigidbody2D.gravityScale = 1;
+        m_rigidbody2D.gravityScale = 0;
 
-        Vector2 m_randomejectvector = new Vector2(Random.Range(-1.0f,-0.3f), Random.Range(0.25f, 1.0f));
-        m_rigidbody2D.AddForce(m_randomejectvector.normalized * 300);
+        Vector2 m_randomejectvector = new Vector2(Random.Range(-1.0f,-0.3f), Random.Range(-0.2f, 0.1f));
+        m_rigidbody2D.AddForce(m_randomejectvector.normalized * 100);
         m_rigidbody2D.AddTorque(Random.Range(-3000.0f,3000.0f));
         m_spriterenderer.sprite = m_EmptyShell;
         m_ejected = true;

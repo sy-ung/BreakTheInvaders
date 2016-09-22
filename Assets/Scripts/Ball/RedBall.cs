@@ -8,7 +8,6 @@ public class RedBall : Ball {
     void Awake()
     {
         base.Awake();
-        m_piercing = true;
     }
 
     // Use this for initialization
@@ -30,20 +29,17 @@ public class RedBall : Ball {
         Vacuum();
     }
 
-    void OnCollisionEnter2D(Collision2D p_Collision)
+    public override void OnTriggerEnter2D(Collider2D p_Collider) 
     {
-        base.OnCollisionEnter2D(p_Collision);
-        if (p_Collision.collider.tag == "Enemy")
+        if (p_Collider.tag == "Enemy")
         {
-            
+            p_Collider.GetComponent<Enemy>().Death();
         }
-
-
-    }
-
-    void OnCollisionExit2D(Collision2D p_Collision)
-    {
-        base.OnCollisionExit2D(p_Collision);
+        else if (p_Collider.tag == "Player")
+        {
+            CheckCollision(p_Collider);
+            p_Collider.gameObject.GetComponent<Player>().m_Muzzle.Reload();
+        }
     }
 
     void Vacuum()
@@ -53,7 +49,7 @@ public class RedBall : Ball {
         for(int i = 0; i<t_enemies.Length;++i)
         {
             t_enemies[i].transform.SetParent(null);
-            t_enemies[i].GetComponent<LerpingBehaviour>().LerpToPosition(transform.position);
+            t_enemies[i].GetComponent<LerpingBehaviour>().LerpToGameObject(gameObject);
         }
 
         m_enemiessucked = t_enemies;

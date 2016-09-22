@@ -16,12 +16,6 @@ public class Player : MonoBehaviour {
         set { m_currentcontrolmode = value; }
     }
 
-    private float m_health;
-    public float m_Health
-    {
-        get { return m_health; }
-    }
-
     private SpriteRenderer m_spriterenderer;
     public SpriteRenderer m_SpriteRenderer
     {
@@ -70,24 +64,25 @@ public class Player : MonoBehaviour {
         get { return m_muzzle; }
     }
 
-    private HealthBar m_healthbox;
-    private float m_healthdisplaytime;
-    private float m_healthdisplaytimer;
-    private bool m_showhealth;
+    private HealthBar m_healthbar;
 
-    private bool m_alive;
-    public bool m_Alive
-    {
-        get { return m_alive; }
-    }
 
+    private bool m_muzzlepowerupactivated;
+    private float m_muzzlepoweruptimer;
+    private float m_muzzlepowerupduration;
+    private GameObject m_defaultmuzzle;
+
+    public bool m_Alive;
+
+    private Color m_defaultcolor;
 
     private void Initialize()
     {
 
 
         m_rigidbody2D.gravityScale = 0;
-        m_spriterenderer.color = new Color(0, 100, 25);
+        m_spriterenderer.color = m_defaultcolor = new Color(0, 100, 25);
+        
 
         m_rigidbody2D.mass = 1;
         m_rigidbody2D.freezeRotation = true;
@@ -105,6 +100,7 @@ public class Player : MonoBehaviour {
         m_playersizecheck = new Vector2(m_spriterenderer.bounds.size.x / 2, m_spriterenderer.bounds.size.y / 2);
 
         m_boxcollider2D.size = new Vector2(m_spriterenderer.sprite.bounds.size.x, m_spriterenderer.sprite.bounds.size.y);
+        m_boxcollider2D.isTrigger = true;
 
         m_startingline = -Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, Screen.height)).y + (m_playersizecheck.y * 25);
 
@@ -114,13 +110,12 @@ public class Player : MonoBehaviour {
 
         gameObject.layer = 14;
 
-        m_health = 100.0f;
 
-        m_healthdisplaytime = 2.0f;
+        m_Alive = true;
 
-        m_showhealth = true;
+        m_muzzlepowerupduration = 15.0f;
+        m_defaultmuzzle = AssetManager.m_Instance.GetPrefab("BasicMuzzle");
 
-        m_alive = true;
 
     }
     
@@ -150,10 +145,10 @@ public class Player : MonoBehaviour {
         SetPlayerScale(1);
 
 
-        SpawnBarrel(AssetManager.m_Instance.GetPrefab("GreenMuzzle"));
+        SpawnBarrel(m_defaultmuzzle);
 
-        m_healthbox = Instantiate(AssetManager.m_Instance.GetPrefab("HealthBar")).GetComponentInChildren<HealthBar>();
-        m_healthbox.HideHealth();
+        SpawnHealthBox();
+
 
         transform.localScale = new Vector2(transform.localScale.x / 1.25f, transform.localScale.y);
 
@@ -161,7 +156,45 @@ public class Player : MonoBehaviour {
         //t_mf.transform.parent = transform;
     }
 
-    public void SpawnBarrel(GameObject p_NewMuzzle)
+    void SpawnHealthBox()
+    {
+        GameObject t_healthBox = Instantiate(AssetManager.m_Instance.GetPrefab("HealthBar"));
+        m_healthbar = t_healthBox.GetComponentInChildren<HealthBar>();
+
+        t_healthBox.transform.SetParent(transform);
+        t_healthBox.transform.localScale = new Vector2(transform.localScale.x, transform.localScale.y / 1.25f);
+        t_healthBox.transform.localPosition = new Vector2(transform.position.x, m_spriterenderer.bounds.size.y * 10);
+    }
+
+    public void ApplyMuzzlePowerUp(GameObject p_NewMuzzle)
+    {
+        SpawnBarrel(p_NewMuzzle);
+        m_spriterenderer.color = m_muzzle.m_SpriteRenderer.color;
+        m_muzzlepoweruptimer = 0;
+        m_muzzlepowerupactivated = true;
+    }
+
+    void MuzzlePowerUpLife()
+    {
+        if(m_muzzlepoweruptimer>m_muzzlepowerupduration)
+        {
+            SpawnBarrel(m_defaultmuzzle,m_defaultcolor);
+            m_muzzlepoweruptimer = 0;
+            m_muzzlepowerupactivated = false;
+        }
+        else
+        {
+            m_muzzlepoweruptimer += Time.deltaTime;
+        }
+    }
+
+    void SpawnBarrel(GameObject p_NewMuzzle, Color p_NewColor)
+    {
+        m_spriterenderer.color = p_NewColor;
+        SpawnBarrel(p_NewMuzzle);
+    }
+
+    void SpawnBarrel(GameObject p_NewMuzzle)
     {
         if(m_muzzle == null)
         {
@@ -178,8 +211,9 @@ public class Player : MonoBehaviour {
                 m_muzzle.Reload();
             }
         }
-        
     }
+
+
 
     void CreateBarrel(GameObject p_NewMuzzle)
     {
@@ -216,12 +250,24 @@ public class Player : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
-        if(m_alive)
-        { 
+        if (m_Alive)
+        {
             MoveCheck();
             ScreenBoundryCheck();
-            HealthCheck();
+
+            if (m_muzzlepowerupactivated)
+                MuzzlePowerUpLife();
+
+            if(!m_healthbar.m_Alive)
+            {
+                Death();
+            }
+            
         }
+        else
+            return;
+
+
 
         switch (m_currentcontrolmode)
         {
@@ -235,53 +281,30 @@ public class Player : MonoBehaviour {
             default:
                 break;
         }
-        m_rigidbody2D.velocity = Vector2.zero;
 	}
 
-    void HealthCheck()
-    {
-        if(m_health <= 0)
-        {
-            Death();
-            return;
-        }
 
-        if (m_health <= 50)
-        { 
-            m_healthbox.ShowHealth();
-            m_showhealth = true;
-        }
-        else
-        { 
-            if (m_showhealth)
-            { 
-                if(m_healthdisplaytimer < m_healthdisplaytime)
-                {
-                    m_healthbox.ShowHealth();
-                    m_healthdisplaytimer += Time.deltaTime;
-                }
-                else
-                {
-                    m_healthbox.HideHealth();
-                    m_showhealth = false;
-                }
-            }
-        }
+    public void Heal(float p_Amount)
+    {
+        m_healthbar.Heal(p_Amount);
+    }
+    public void TakeDamage(float p_Damage)
+    {
+        m_healthbar.TakeDamage(p_Damage);
     }
 
     private void MoveCheck()
     {
-        if(m_newposition != (Vector2)transform.position)
+        Vector2 t_PreviousPosition = transform.position;
+        if (m_newposition != (Vector2)transform.position)
         {
-            Vector2 t_PreviousPosition = transform.position;
             transform.position = Vector2.Lerp(transform.position, m_newposition, 0.2f);
-            m_Velocity = ((Vector2)transform.position - t_PreviousPosition) / Time.deltaTime;
         }
         else
         {
             transform.position = m_newposition;
         }
-
+        m_Velocity = ((Vector2)transform.position - t_PreviousPosition) / Time.deltaTime;
 
         if (transform.position.y != m_startingline)
         {
@@ -294,8 +317,6 @@ public class Player : MonoBehaviour {
         {
             transform.rotation = Quaternion.Lerp(transform.rotation, m_newrotation, 0.25f);
         }
-
-
     }
 
     private void ScreenBoundryCheck()
@@ -319,6 +340,7 @@ public class Player : MonoBehaviour {
         return transform.position.y + m_playersizecheck.y;
     }
 
+    //This was for testing a new mechanic, Doesnt work well.
     private bool m_swinging = false;
     private float t_swingtimer = 0.20f;
     private float t_resettimer = 0.0f;
@@ -380,28 +402,16 @@ public class Player : MonoBehaviour {
         m_muzzle.m_StartFiring = p_value;
     }
 
-    public void OnCollisionEnter2D(Collision2D p_Collision)
-    {
-        if (!m_alive)
-            return;
+ 
 
-    }
-
-    public void TakeDamage(float p_Damage)
+    public void Death()
     {
-        m_health -= p_Damage;
-        m_healthdisplaytimer = 0;
-        m_showhealth = true;
-    }
-
-    void Death()
-    {
-        m_alive = false;
+        m_Alive = false;
         (Instantiate(AssetManager.m_Instance.GetPrefab("PlayerDeathParticle"), transform.position, Quaternion.identity) as GameObject).GetComponent<ParticleSystem>().startColor = m_spriterenderer.color;
-        m_muzzle.DestroyMuzzle();
-        BallManager.m_Instance.m_PlayerBall.Death();
 
-        m_healthbox.Death();
+        m_muzzle.DestroyMuzzle();
+        m_healthbar.Death();
+        BallManager.m_Instance.m_PlayerBall.Death();
 
         GameObject.FindGameObjectWithTag("pointblank").GetComponent<Game>().m_GameOver = true;
 

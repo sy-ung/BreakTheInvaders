@@ -4,30 +4,54 @@ using System.Collections;
 public class NoAmmo : MonoBehaviour {
 
     SpriteRenderer m_spriterenderer;
-    public Vector2 m_NewLocalPosition;
     public Ammo m_ammoref;
+
+    private float m_flashrate;
+    private float m_flashtimer;
+    private bool m_flashred;
 
     void Awake()
     {
         m_spriterenderer = GetComponent<SpriteRenderer>();
         m_spriterenderer.sortingLayerName = "UI";
         m_spriterenderer.sortingOrder = 1;
+        m_flashrate = 0.075f;
 
     }
 
 	// Use this for initialization
 	void Start ()
     {
-        transform.localScale = new Vector2(3f, 3f);
 	}
 	
 	// Update is called once per frame
 	void Update ()
     {
-        m_NewLocalPosition = m_ammoref.transform.localPosition;
-	    if((Vector2)transform.localPosition != m_NewLocalPosition)
-        {
-            transform.localPosition = Vector2.Lerp(transform.localPosition, m_NewLocalPosition, 0.33f);
-        }
+
+        Flash();
 	}
+    
+    void Flash()
+    {
+        if(m_flashtimer> m_flashrate)
+        {
+            if (m_flashred)
+            { 
+                m_spriterenderer.color = Color.white;
+                m_flashred = false;
+            }
+            else
+            { 
+                m_spriterenderer.color = Color.black;
+                m_flashred = true;
+            }
+            m_flashtimer = 0;
+        }
+        else
+        {
+            m_flashtimer += Time.deltaTime;
+        }
+    }
+
+    
 }

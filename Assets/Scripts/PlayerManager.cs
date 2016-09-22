@@ -44,10 +44,6 @@ public class PlayerManager : MonoBehaviour
     {
         
     }
-    public void ChangeMuzzle(GameObject p_NewMuzzle)
-    {
-        m_Player.SpawnBarrel(p_NewMuzzle);
-    }
 
     public void RespawnPlayer()
     {

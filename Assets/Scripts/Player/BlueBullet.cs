@@ -30,16 +30,16 @@ public class BlueBullet : Bullet {
         base.Update();
 	}
 
-    void OnCollisionEnter2D(Collision2D p_Collision)
+    void OnTriggerEnter2D(Collider2D p_Collider)
     {
         if (m_alive)
         {
-            if (p_Collision.collider.tag == "Enemy")
+            if (p_Collider.tag == "Enemy")
             {
-                Vector2 t_spawnpos = new Vector2(transform.position.x, p_Collision.collider.transform.position.y);
+                Vector2 t_spawnpos = new Vector2(transform.position.x, p_Collider.transform.position.y);
                 Instantiate(AssetManager.m_Instance.GetPrefab("BulletBlueExplosion"), t_spawnpos, Quaternion.identity);
                 //p_Collision.collider.GetComponent<Enemy>().Death();
-                base.OnCollisionEnter2D(p_Collision);
+                base.OnTriggerEnter2D(p_Collider);
             }
         }
     }
@@ -48,7 +48,7 @@ public class BlueBullet : Bullet {
     {
         m_RigidBody2D.velocity *= 7.0f;
         m_animator.SetBool("InFlight", true);
-        GameAudioManager.m_Instance.PlaySound("BlueBulletBoost",false,1.0f);
+        GameAudioManager.m_Instance.PlaySound("BlueBulletBoost",false,1.0f,false);
     }
 
 }

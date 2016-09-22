@@ -27,13 +27,12 @@ public class EnemyBullet : Bullet {
         base.Update();
     }
 
-    protected void OnCollisionEnter2D(Collision2D p_Collision)
+    protected void OnTriggerEnter2D(Collider2D p_Collider)
     {
-        if(p_Collision.gameObject.tag == "Player")
+        if(p_Collider.tag == "Player")
         {
-            
-            //p_Collision.gameObject.GetComponent<Player>().TakeDamage(m_Damage);
+            p_Collider.GetComponent<Player>().TakeDamage(m_Damage);
         }
-        base.OnCollisionEnter2D(p_Collision);
+        base.OnTriggerEnter2D(p_Collider);
     }
 }

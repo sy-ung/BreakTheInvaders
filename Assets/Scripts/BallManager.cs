@@ -4,6 +4,12 @@ public class BallManager : MonoBehaviour {
 
     private static BallManager m_instance;
 
+    private float m_poweruptimer;
+    private float m_powerupduration;
+    private bool m_powerupactivated;
+
+    private GameObject m_defaultball;
+
     //Creating the BallManager singleton and returning it
     public static BallManager m_Instance
     {
@@ -38,7 +44,8 @@ public class BallManager : MonoBehaviour {
 
     void Awake()
     {
-
+        m_powerupduration = 15f;
+        m_defaultball = AssetManager.m_Instance.GetPrefab("DefaultBall");
     }
 
 
@@ -51,31 +58,38 @@ public class BallManager : MonoBehaviour {
             m_playerball = FindObjectOfType<Ball>();
             if(m_playerball == null)
             {
-                m_playerball = Instantiate(AssetManager.m_Instance.GetPrefab("RedBall")).GetComponent<Ball>();
+                m_playerball = Instantiate(m_defaultball).GetComponent<Ball>();
+                m_playerball.StartLaunch();
             }
         }
 
         m_playerball.transform.position = new Vector3(p_Position.x, p_Position.y, 0);
-        //m_playerball.LaunchBall();
-
     }
-    public void ChangeBall(GameObject p_NewBall)
+
+    public void ApplyPowerUp(GameObject p_NewBall)
+    {
+        ChangeBall(p_NewBall);
+        m_powerupactivated = true;
+        m_poweruptimer = 0;
+    }
+
+    void ChangeBall(GameObject p_NewBall)
     {
         if (m_playerball != null)
         {
             GameObject t_newball = Instantiate(p_NewBall, m_playerball.transform.position, m_playerball.transform.rotation) as GameObject;
 
-            Vector2 t_direction = m_playerball.m_RigidBody2D.velocity.normalized;
-            Vector2 t_storedposition = m_playerball.m_StoredCurrentPosition;
+            Vector2 t_storedVelocity = m_playerball.m_CurrentVelocity;
 
             m_playerball.DestroyBall();
 
             m_playerball = t_newball.GetComponent<Ball>();
-            //m_playerball.m_Direction = t_direction;
-            m_playerball.m_StoredCurrentPosition = t_storedposition;
+            m_playerball.ChangeVelocity(t_storedVelocity);
 
         }
     }
+
+    
    
 	// Use this for initialization
 	void Start () {
@@ -83,7 +97,18 @@ public class BallManager : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
-	
+	void Update ()
+    {
+	    if(m_powerupactivated)
+        {
+            m_poweruptimer += Time.deltaTime;
+
+            if(m_poweruptimer>m_powerupduration)
+            {
+                ChangeBall(m_defaultball);
+                m_powerupactivated = false;
+                m_poweruptimer = 0;
+            }
+        }
 	}
 }

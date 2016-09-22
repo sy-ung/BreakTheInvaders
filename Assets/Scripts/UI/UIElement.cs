@@ -20,6 +20,7 @@ public class UIElement : MonoBehaviour {
     {
         m_spriterenderer = gameObject.GetComponent<SpriteRenderer>();
         m_spriterenderer.sortingLayerName = "UI";
+        m_spriterenderer.sortingOrder = 2;
         gameObject.layer = 5;
     }
 

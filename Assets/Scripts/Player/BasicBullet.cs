@@ -20,16 +20,16 @@ class BasicBullet : Bullet
         base.Update();
     }
 
-    void OnCollisionEnter2D(Collision2D p_Collision)
+    void OnTriggerEnter2D(Collider2D p_Collider)
     {
         if (m_alive)
         {
-            if (p_Collision.collider.tag == "Enemy")
+            if (p_Collider.tag == "Enemy")
             {
                 GameObject t_explosion = Instantiate(AssetManager.m_Instance.GetPrefab("BulletDefaultExplosion"), transform.position, Quaternion.identity) as GameObject;
                 t_explosion.transform.localScale *= 2.0f; 
-                p_Collision.collider.GetComponent<Enemy>().Death();
-                base.OnCollisionEnter2D(p_Collision);
+                p_Collider.GetComponent<Enemy>().Death();
+                base.OnTriggerEnter2D(p_Collider);
             }
         }
     }

@@ -50,7 +50,7 @@ public class Explosion : MonoBehaviour {
     public void Explode()
     {
 
-        GameAudioManager.m_Instance.PlaySound(m_AudioClipName, false, 1.0f);
+        GameAudioManager.m_Instance.PlaySound(m_AudioClipName, false, 1.0f,false);
         if(m_circlecollider2D!=null)
         { 
             Collider2D[] t_collisions = Physics2D.OverlapCircleAll(transform.position, m_circlecollider2D.radius, 1 << LayerMask.NameToLayer("Enemy"));

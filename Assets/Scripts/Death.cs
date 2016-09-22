@@ -3,7 +3,7 @@ using System.Collections;
 
 public class Death : MonoBehaviour {
 
-    private ParticleSystem m_particlesystem;
+    protected ParticleSystem m_particlesystem;
 
 
     protected string[] m_DeathsoundClipName;
@@ -26,7 +26,7 @@ public class Death : MonoBehaviour {
         m_particlesystem.Play();
 
         if(m_DeathsoundClipName != null)
-            GameAudioManager.m_Instance.PlaySound(m_DeathsoundClipName[Random.Range(0, m_DeathsoundClipName.Length)],false,1.0f);
+            GameAudioManager.m_Instance.PlaySound(m_DeathsoundClipName[Random.Range(0, m_DeathsoundClipName.Length)],false,1.0f,false);
 	}
 
     // Update is called once per frame

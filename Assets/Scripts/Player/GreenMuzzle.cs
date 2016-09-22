@@ -14,45 +14,62 @@ public class GreenMuzzle : Muzzle {
         m_currentBullet = AssetManager.m_Instance.GetPrefab("BulletGreen");
         m_spriteRenderer.color = Color.green;
         m_projectileready = false;
+
+        m_firingrate = 0.2f;
+        m_firingtimer = m_firingrate + 1;
     }
 
     // Use this for initialization
     void Start()
     {
         base.Start();
-        SetMaxAmmoCount(5);
+        SetMaxAmmoCount(7);
+        m_ammobar.m_ammoprefab = AssetManager.m_Instance.GetPrefab("GreenAmmoIcon");
     }
 
     // Update is called once per frame
     void Update()
     {
-        //base.Update();
         if (m_currentammocount <= 0)
             return;
-        
-        if(m_StartFiring)
+
+        if (m_StartFiring)
         {
-            if(m_currentspawnedprojectile == null)
-            {
-                SpawnProjectile();
-            }
-        }
-        else if(!m_StartFiring)
-        {
-            if(m_currentspawnedprojectile != null)
-            {
-                if(m_projectileready)
+
+            if(m_firingtimer > m_firingrate)
+            { 
+                if(m_currentspawnedprojectile == null)
                 {
-                    LaunchProjectile();
+                    SpawnProjectile();
                 }
-                else
+            }
+            else
+            {
+                m_firingtimer += Time.deltaTime;
+            }
+
+
+        }
+
+        if (!m_StartFiring)
+        {
+            m_firingtimer = m_firingrate + 1.0f;
+            if (m_currentspawnedprojectile != null)
+            {
                 {
                     Destroy(m_currentspawnedprojectile.gameObject);
                     GameAudioManager.m_Instance.StopSound("GreenMuzzleCharge");
                 }
             }
         }
-        
+
+
+        if (m_projectileready)
+        {
+            LaunchProjectile();
+            m_firingtimer = 0;
+        }
+
 
     }
 
@@ -64,7 +81,8 @@ public class GreenMuzzle : Muzzle {
         m_ammobar.EjectCurrentAmmo();
 
         GameAudioManager.m_Instance.StopSound("GreenMuzzleCharge");
-        GameAudioManager.m_Instance.PlaySound("GreenMuzzleLaunch", false, 1.0f);
+        GameAudioManager.m_Instance.PlaySound("GreenMuzzleLaunch", false, 1.0f,false);
+        m_projectileready = false;
     }
 
     void SpawnProjectile()
@@ -79,7 +97,7 @@ public class GreenMuzzle : Muzzle {
 
         m_currentspawnedprojectile.transform.rotation = Quaternion.FromToRotation(m_currentspawnedprojectile.transform.right, t_firedirection);
 
-        GameAudioManager.m_Instance.PlaySound("GreenMuzzleCharge", true, 1.0f);
+        GameAudioManager.m_Instance.PlaySound("GreenMuzzleCharge", true, 1.0f,false);
 
     }
 
@@ -89,7 +107,6 @@ public class GreenMuzzle : Muzzle {
         if (p_Value)
         {
             GameAudioManager.m_Instance.StopSound("GreenMuzzleCharge");
-            GameAudioManager.m_Instance.PlaySound("GreenMuzzleCharge", true, 1.5f);
         }
     }
 

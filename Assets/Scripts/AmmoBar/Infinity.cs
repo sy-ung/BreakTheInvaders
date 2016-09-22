@@ -11,8 +11,6 @@ public class Infinity : MonoBehaviour {
     bool m_show;
     float m_flashspeed;
 
-    public Vector2 m_NewLocalPosition;
-
     void Awake()
     {
         m_spriterenderer = GetComponent<SpriteRenderer>();
@@ -23,7 +21,6 @@ public class Infinity : MonoBehaviour {
 	// Use this for initialization
 	void Start ()
     {
-        transform.localScale = new Vector2(1.25f, 1.25f);
         m_spriterenderer.color = m_opaque;
         m_flashspeed = 0.7f;
 	}
@@ -31,11 +28,6 @@ public class Infinity : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
-
-        if((Vector2)transform.localPosition != m_NewLocalPosition)
-        {
-            transform.localPosition = Vector2.Lerp(transform.localPosition, m_NewLocalPosition,0.33f);
-        }
 
         if(m_show)
         { 
