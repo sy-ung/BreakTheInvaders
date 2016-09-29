@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using System.Collections;
+using System.Collections.Generic;
 using System;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
@@ -21,6 +21,8 @@ public class Score : MonoBehaviour {
     Text m_currentscoretext;
 
     ScoreData m_scoredata;
+
+    List<Text> m_scorestext = new List<Text>();
 
    
 
@@ -126,15 +128,33 @@ public class Score : MonoBehaviour {
         }
     }
 
+    public void ClearAll()
+    {
+        for (int i = 0; i < m_scoredata.m_TopTen.Length; i++)
+        {
+            m_scoredata.m_TopTen[i] = 0;
+        }
+
+        for(int i = 0;i<m_scorestext.Count;i++)
+        {
+            Destroy(m_scorestext[i].gameObject);
+        }
+        m_scorestext.Clear();
+        m_ranktext = null;
+        m_currentgamescore = 0;
+        ShowTopTen();
+    }
+
     public void ShowTopTen()
     {
         ShowCurrentScore();
         m_hiscorestext = GameObject.FindGameObjectWithTag("HighScores").GetComponent<Text>();
+        
 
         SortTopTen();
 
         Vector2 t_startPosition = m_hiscorestext.transform.position;
-        Font t_font = Resources.Load<Font>("Font/VCR_OSD_MONO_1.001");
+        Font t_font = Resources.Load<Font>("Font/dominojack");
         for (int i = 0;i < m_scoredata.m_TopTen.Length; i++)
         {
             Text t_newscore = new GameObject(i + " place").AddComponent<Text>();
@@ -142,13 +162,16 @@ public class Score : MonoBehaviour {
             t_newscore.font = t_font;
             t_newscore.fontSize = 25;
 
-            t_newscore.rectTransform.sizeDelta = new Vector2(100, t_newscore.fontSize);
-            t_newscore.rectTransform.anchoredPosition = new Vector2(0, -m_hiscorestext.rectTransform.rect.height + ( i * -t_newscore.rectTransform.rect.height));
+
+            t_newscore.rectTransform.sizeDelta = new Vector2(150, t_newscore.fontSize + 5);
+            t_newscore.rectTransform.anchoredPosition = new Vector2(0, -m_hiscorestext.rectTransform.rect.height/2 + ( i * -t_newscore.rectTransform.rect.height));
             t_newscore.alignment = TextAnchor.MiddleCenter;
 
             t_newscore.text = m_scoredata.m_TopTen[i].ToString();
+
+            m_scorestext.Add(t_newscore);
+
         }
-        FindRank();
     }
 
     void ShowCurrentScore()
@@ -182,7 +205,7 @@ public class Score : MonoBehaviour {
         }
     }
 
-    void FindRank()
+    public void FindRank()
     {
         m_ranktext = null;
         if (m_currentplace != -1)
@@ -217,12 +240,15 @@ public class Score : MonoBehaviour {
                 if (m_flashoOn)
                 {
                     m_currentscoretext.color = Color.red;
-                    m_ranktext.color = Color.red;
+                    if(m_ranktext!=null)
+                        m_ranktext.color = Color.red;
                 }
                 else
                 {
                     m_currentscoretext.color = Color.white;
-                    m_ranktext.color = Color.white;
+
+                    if (m_ranktext!=null)
+                        m_ranktext.color = Color.white;
                 }
             }
             else

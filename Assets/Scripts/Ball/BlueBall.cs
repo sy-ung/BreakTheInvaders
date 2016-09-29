@@ -31,6 +31,10 @@ public class BlueBall : Ball {
         {
             p_Collider.GetComponent<Enemy>().Death();
         }
+        else if(p_Collider.tag == "EnemyBullet")
+        {
+            Destroy(p_Collider.gameObject);
+        }
         else if(p_Collider.tag == "Player")
         {
             CheckCollision(p_Collider);

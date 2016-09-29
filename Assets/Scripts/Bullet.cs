@@ -16,7 +16,7 @@ public class Bullet : MonoBehaviour {
 
     private float m_timer;
 
-    protected float m_speed;
+    public float m_speed;
 
     public Rigidbody2D m_RigidBody2D
     {
@@ -65,7 +65,6 @@ public class Bullet : MonoBehaviour {
 	protected void Start ()
     {
         m_RigidBody2D.velocity = Vector3.up * m_speed;
-        PlayMuzzleFlash();
 	}
 	
 	// Update is called once per frame
@@ -98,11 +97,6 @@ public class Bullet : MonoBehaviour {
             { 
                 m_alive = false;
             }
-    }
-
-    void PlayMuzzleFlash()
-    {
-
     }
 
     protected void OnTriggerEnter2D(Collider2D p_Collider)

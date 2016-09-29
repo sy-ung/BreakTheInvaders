@@ -14,6 +14,10 @@ public class PowerUp : MonoBehaviour {
 
     protected float m_speed;
 
+    protected float m_volume;
+
+    protected PowerUpHighlight m_highlight;
+
     protected void Awake()
     {
         Initialize();
@@ -30,6 +34,18 @@ public class PowerUp : MonoBehaviour {
         m_boxcollider2D.size = m_spriterenderer.bounds.size;
         m_screensize = Camera.main.GetComponent<ResolutionFix>().m_ScreenSizeWorldPoint;
         m_speed = 10.0f;
+        SpawnHighlight();
+        
+    }
+
+    void SpawnHighlight()
+    {
+        GameObject t_highlight = Instantiate(AssetManager.m_Instance.GetPrefab("PowerHighlight"));
+        t_highlight.transform.SetParent(transform);
+        t_highlight.transform.localScale = new Vector3(1.35f, 1.35f, 0);
+        t_highlight.transform.localPosition = Vector2.zero;
+        m_highlight = t_highlight.GetComponent<PowerUpHighlight>();
+
     }
 
 	// Use this for initialization
@@ -46,6 +62,8 @@ public class PowerUp : MonoBehaviour {
         gameObject.tag = "PowerUp";
 
         m_boxcollider2D.isTrigger = true;
+
+        m_volume = 0.7f;
 
     }
 	
@@ -91,17 +109,23 @@ public class PowerUp : MonoBehaviour {
     
     }
 
-    public void ApplyMuzzlePowerUp(Collider2D p_PlayerCollider)
+    public virtual void ApplyMuzzlePowerUp(Collider2D p_PlayerCollider)
     {
-        p_PlayerCollider.GetComponent<Player>().ApplyMuzzlePowerUp(m_muzzlepowerup);
-        GameAudioManager.m_Instance.PlaySound("PowerUpHitPlayer", false, 1.0f,true);
-        Destroy(gameObject);
+        if(p_PlayerCollider.GetComponent<Player>().m_MuzzlePowerUpOverwritable)
+        { 
+            p_PlayerCollider.GetComponent<Player>().ApplyMuzzlePowerUp(m_muzzlepowerup);
+            GameAudioManager.m_Instance.PlaySound("PowerUpHitPlayer", false, 1.0f, m_volume);
+            Destroy(gameObject);
+        }
     }
 
-    public void ApplyBallPowerUp()
+    public virtual void ApplyBallPowerUp()
     {
-        BallManager.m_Instance.ApplyPowerUp(m_ballpowerup);
-        GameAudioManager.m_Instance.PlaySound("PowerUpHitBall", false, 1.0f,true);
-        Destroy(gameObject);
+        if(BallManager.m_Instance.m_BallPowerupOverwrite)
+        { 
+            BallManager.m_Instance.ApplyPowerUp(m_ballpowerup);
+            GameAudioManager.m_Instance.PlaySound("PowerUpHitBall", false, 1.0f, m_volume);
+            Destroy(gameObject);
+        }
     }
 }

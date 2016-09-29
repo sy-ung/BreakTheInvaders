@@ -19,7 +19,7 @@ public class EnemyType5 : Enemy {
         m_currentbullet = AssetManager.m_Instance.GetPrefab("EnemyBullet5");
         m_firingrate = Random.Range(2.0f, 5f);
 
-        SetColor(new Color32(188,51,55,255));
+        SetColor(new Color32(238,32,35,255));
 
         m_firesoundname = "Enemy5Fire";
     }

@@ -6,8 +6,6 @@ public class RedBeamBullet : Bullet {
     private Animator m_animator;
     private Vector2 m_newscale;
 
-    public RedBeamMuzzle m_Muzzle;
-
     private Vector2 m_originalscale;
     private float m_interpstep;
 
@@ -19,16 +17,23 @@ public class RedBeamBullet : Bullet {
 
     private float m_soundcliplength;
 
+    private float m_beamflashtimer;
+    private float m_beamflashrate;
+
+    private float m_volume;
+
+    public RedBeamMuzzle m_RedBeamMuzzle;
 
     void Awake()
     {
         base.Awake();
 
         m_RigidBody2D.freezeRotation = true;
-        m_speed = 0;
         m_animator = gameObject.GetComponent<Animator>();
         m_originalscale = m_newscale = transform.localScale;
+        m_beamflashrate = 0.01f;
 
+        m_volume = 0.5f;
     }
 
 	// Use this for initialization
@@ -44,32 +49,51 @@ public class RedBeamBullet : Bullet {
 	// Update is called once per frame
 	void Update ()
     {
-        //base.Update();
         ScaleLerp();
+
+        if (!m_alive)
+            FinishUp();
 
         if (m_animator.GetBool("FullPower"))
         {
             FullPowerExtenstion();
+
         }
         else
         {
             m_fullpowertimer = 0;
             m_animator.speed = 1;
             m_fullpowerlevel = 1;
+            m_SpriteRenderer.color = Color.white;
         }
 
-        if(m_fullpowerlevel>3)
+        if(m_animator.GetBool("Activated") || m_animator.GetBool("FullPower"))
         {
-            
+            CameraShake t_cs = Camera.main.GetComponent<CameraShake>();
+            t_cs.StartShake(0.005f,0.055f * m_fullpowerlevel);
         }
 
+        if(m_fullpowerlevel >=3)
+        {
+            BeamFlashing();
+        }
+    }
+
+    void FinishUp()
+    {
+        transform.position += new Vector3(0, 0.5f,0);
+        if (!m_animator.GetBool("Deactivated"))
+            Destroy(gameObject);
     }
 
     void LateUpdate()
     {
-        transform.position = new Vector2(m_Muzzle.transform.position.x, m_Muzzle.transform.position.y + m_SpriteRenderer.bounds.size.y / 2 + m_Muzzle.m_SpriteRenderer.bounds.size.y/2);
+        if(m_alive)
+            transform.position = (Vector2)m_RedBeamMuzzle.transform.position + new Vector2(0, m_SpriteRenderer.bounds.size.y / 2) + new Vector2(0, m_RedBeamMuzzle.m_SpriteRenderer.bounds.size.y / 2);
 
     }
+
+
 
     void ScaleLerp()
     {
@@ -89,6 +113,11 @@ public class RedBeamBullet : Bullet {
             {
                 p_Collider.GetComponent<Enemy>().Death();
             }
+            else if(p_Collider.tag == "EnemyBullet")
+            {
+                Destroy(p_Collider.gameObject);
+            }
+
         }
     }
 
@@ -100,9 +129,37 @@ public class RedBeamBullet : Bullet {
             {
                 p_Collider.GetComponent<Enemy>().Death();
             }
+            else if (p_Collider.tag == "EnemyBullet")
+            {
+                Destroy(p_Collider.gameObject);
+            }
+
+
         }
     }
+    
+    void BeamFlashing()
+    {
+        if(m_beamflashtimer>m_beamflashrate)
+        {
+            if (m_SpriteRenderer.color != Color.yellow)
+            {
+                IncreaseScale(new Vector2(1, 5),0.25f);
+                m_SpriteRenderer.color = Color.yellow;
+            }
+            else
+            {
+                IncreaseScale(new Vector2(-1, -5), 0.25f);
+                m_SpriteRenderer.color = Color.white;
+            }
 
+            m_beamflashtimer = 0;
+        }
+        else
+        {
+            m_beamflashtimer += Time.deltaTime;
+        }
+    }
 
 
     public void SetNewScale(float p_ScaleFactor, float p_InterStep)
@@ -119,9 +176,9 @@ public class RedBeamBullet : Bullet {
 
     }
 
-    public void IncreaseScale(Vector2 p_DeltaScaleFactorMultiplier, float p_InterStep)
+    public void IncreaseScale(Vector2 p_DeltaScale, float p_InterStep)
     {
-        m_newscale = new Vector2(m_newscale.x * p_DeltaScaleFactorMultiplier.x, m_newscale.y * p_DeltaScaleFactorMultiplier.y);
+        m_newscale = new Vector2(m_newscale.x + p_DeltaScale.x, m_newscale.y + p_DeltaScale.y);
         m_interpstep = p_InterStep;
     }
 
@@ -133,7 +190,6 @@ public class RedBeamBullet : Bullet {
 
     public void StartAnimFinished()
     {
-        
         m_animator.SetBool("FullPower", true);
         SetNewScale(new Vector2(5, 10), 0.25f);
         m_animator.SetBool("Activated", false);
@@ -151,8 +207,8 @@ public class RedBeamBullet : Bullet {
             {
                 m_fullpowertimer = 0;
 
-                    IncreaseScale(new Vector2(2.0f, 1), 0.5f);
-                    m_animator.speed *= 1.25f;
+                IncreaseScale(new Vector2(4.0f, 1), 0.5f);
+                m_animator.speed *= 1.25f;
 
                 m_fullpowerlevel++;
                 PlayFullPowerSounds();
@@ -173,6 +229,7 @@ public class RedBeamBullet : Bullet {
             if(!m_beamactivated)
             {
                 ActivateBeam();
+
             }
         }
         else
@@ -192,7 +249,6 @@ public class RedBeamBullet : Bullet {
         if (m_animator.GetBool("Deactivated"))
             m_animator.SetBool("Deactivated", false);
 
-        
         SetNewScale(new Vector2(2, 10), 0.075f);
 
     }
@@ -211,7 +267,7 @@ public class RedBeamBullet : Bullet {
         if (m_animator.GetBool("FullPower"))
         {
             m_animator.SetBool("FullPower", false);
-            SetNewScale(new Vector2(1, m_newscale.y), 0.1f);
+            SetNewScale(new Vector2(1, m_newscale.y), 0.25f);
 
         }
         m_animator.SetBool("Deactivated", true);
@@ -222,23 +278,9 @@ public class RedBeamBullet : Bullet {
 
         if(m_animator.GetBool("Activated"))
         { 
-            GameAudioManager.m_Instance.PlaySound("BeamFireChargeUp", false, m_soundcliplength / m_animator.GetCurrentAnimatorStateInfo(0).length,false);
+            GameAudioManager.m_Instance.PlaySound("BeamFireChargeUp", false, m_soundcliplength / m_animator.GetCurrentAnimatorStateInfo(0).length, m_volume);
             GameAudioManager.m_Instance.StopSound("BeamFireChargeDown");
         }
-        //if (m_audiosource.isPlaying)
-        //{ 
-        //    if (m_audiosource.clip != m_BeamSounds[0])
-        //        m_audiosource.Stop();
-        //}
-
-        //if (!m_audiosource.isPlaying)
-        //{ 
-        //    m_audiosource.loop = false;
-        //    float t_pitch = m_BeamSounds[0].length / m_animator.GetCurrentAnimatorStateInfo(0).length;
-        //    m_audiosource.pitch = t_pitch;
-        //    m_audiosource.clip = m_BeamSounds[0];
-        //    m_audiosource.Play();
-        //}
 
     }
 
@@ -246,31 +288,18 @@ public class RedBeamBullet : Bullet {
     {
 
         if(m_fullpowerlevel == 1)
-            GameAudioManager.m_Instance.PlaySound("BeamFire1", true, 1.0f,false);
+            GameAudioManager.m_Instance.PlaySound("BeamFire1", true, 1.0f, m_volume);
         else if (m_fullpowerlevel == 2)
         {
             GameAudioManager.m_Instance.StopSound("BeamFire1");
-            GameAudioManager.m_Instance.PlaySound("BeamFire2", true, 1.0f,false);
+            GameAudioManager.m_Instance.PlaySound("BeamFire2", true, 1.0f, m_volume);
         }
         else if (m_fullpowerlevel == 3)
         {
             GameAudioManager.m_Instance.StopSound("BeamFire2");
-            GameAudioManager.m_Instance.PlaySound("BeamFire3", true, 1.0f,false);
+            GameAudioManager.m_Instance.PlaySound("BeamFire3", true, 1.0f, m_volume);
         }
 
-        //if (!m_audiosource.loop)
-        //{
-        //    if (m_audiosource.isPlaying)
-        //        m_audiosource.Stop();
-        //    m_audiosource.loop = true;
-        //    m_audiosource.pitch = 1;
-        //}
-
-        //if(m_audiosource.clip != m_BeamSounds[m_fullpowerlevel])
-        //{ 
-        //    m_audiosource.clip = m_BeamSounds[m_fullpowerlevel];
-        //    m_audiosource.Play();
-        //}
     }
 
     public void PlayDeactivatedSound()
@@ -283,23 +312,9 @@ public class RedBeamBullet : Bullet {
             GameAudioManager.m_Instance.StopSound("BeamFireChargeUp");
 
             float  t_length = GameAudioManager.m_Instance.GetSoundClip("BeamFireChargeDown").length;
-            GameAudioManager.m_Instance.PlaySound("BeamFireChargeDown", false, t_length / m_animator.GetCurrentAnimatorStateInfo(0).length,false);
+            GameAudioManager.m_Instance.PlaySound("BeamFireChargeDown", false, t_length / m_animator.GetCurrentAnimatorStateInfo(0).length, m_volume);
         }
 
-        //if (m_audiosource.isPlaying)
-        //{
-        //    if (m_audiosource.clip != m_BeamSounds[4])
-        //        m_audiosource.Stop();
-        //}
-
-        //if (!m_audiosource.isPlaying)
-        //{
-        //    m_audiosource.loop = false;
-        //    float t_pitch = m_BeamSounds[4].length / m_animator.GetCurrentAnimatorStateInfo(0).length;
-        //    m_audiosource.pitch = t_pitch;
-        //    m_audiosource.clip = m_BeamSounds[4];
-        //    m_audiosource.Play();
-        //}
     }
 
     public void StopAllSounds()
@@ -310,5 +325,10 @@ public class RedBeamBullet : Bullet {
         GameAudioManager.m_Instance.StopSound("BeamFireChargeUp");
         GameAudioManager.m_Instance.StopSound("BeamFireChargeDown");
 
+    }
+    public void Expired()
+    {
+        DeactivateBeam();
+        m_alive = false;
     }
 }

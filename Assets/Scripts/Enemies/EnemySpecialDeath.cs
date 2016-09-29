@@ -16,7 +16,7 @@ public class EnemySpecialDeath : Death {
         m_particlesystem.Play();
 
         if (m_DeathsoundClipName != null)
-            GameAudioManager.m_Instance.PlaySound(m_DeathsoundClipName[Random.Range(0, m_DeathsoundClipName.Length)], false, 1.0f, true);
+            GameAudioManager.m_Instance.PlaySound(m_DeathsoundClipName[Random.Range(0, m_DeathsoundClipName.Length)], false, 1.0f, 1.0f);
     }
 
     // Update is called once per frame

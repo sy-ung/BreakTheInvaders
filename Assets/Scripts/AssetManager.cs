@@ -68,6 +68,7 @@ public class AssetManager : MonoBehaviour {
         m_prefabs.Add("RedPower", Resources.Load<GameObject>("Prefabs/GameObjects/PowerUps/RedPowerUp"));
         m_prefabs.Add("GreenPower", Resources.Load<GameObject>("Prefabs/GameObjects/PowerUps/GreenPowerUp"));
         m_prefabs.Add("BluePower", Resources.Load<GameObject>("Prefabs/GameObjects/PowerUps/BluePowerUp"));
+        m_prefabs.Add("PowerHighlight", Resources.Load<GameObject>("Prefabs/GameObjects/PowerUps/PowerUpHighlight"));
 
         m_prefabs.Add("EnemyType1", Resources.Load<GameObject>("Prefabs/GameObjects/Enemies/EnemyType1"));
         m_prefabs.Add("EnemyType2", Resources.Load<GameObject>("Prefabs/GameObjects/Enemies/EnemyType2"));

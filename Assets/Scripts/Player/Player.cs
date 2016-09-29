@@ -2,19 +2,7 @@
 
 
 public class Player : MonoBehaviour {
-    public enum ControlMode
-    {
-        DRAG,
-        BATTING,
-        SLINGSHOT
-    };
 
-    private ControlMode m_currentcontrolmode;
-    public ControlMode m_CurrentControlMode
-    {
-        get { return m_currentcontrolmode; }
-        set { m_currentcontrolmode = value; }
-    }
 
     private SpriteRenderer m_spriterenderer;
     public SpriteRenderer m_SpriteRenderer
@@ -50,9 +38,6 @@ public class Player : MonoBehaviour {
     private Rigidbody2D m_rigidbody2D;
     private Vector2 m_originalscale;
 
-    //Offsets for boundry check against player image
-    private Vector2 m_playersizecheck;
-    private Vector2 m_boundrysize;
 
     private float m_startingline;
 
@@ -71,10 +56,17 @@ public class Player : MonoBehaviour {
     private float m_muzzlepoweruptimer;
     private float m_muzzlepowerupduration;
     private GameObject m_defaultmuzzle;
+    private bool m_muzzlepowerupoverwrite;
+    public bool m_MuzzlePowerUpOverwritable
+    {
+        get { return m_muzzlepowerupoverwrite; }
+    }
 
     public bool m_Alive;
 
     private Color m_defaultcolor;
+
+    private Vector2 m_screensize;
 
     private void Initialize()
     {
@@ -89,20 +81,14 @@ public class Player : MonoBehaviour {
         m_rigidbody2D.collisionDetectionMode = CollisionDetectionMode2D.Discrete;
         m_rigidbody2D.isKinematic = true;
 
-        //This is to calculate the scale of the player paddle in propotion to the screen size
-        float t_AspectRatio = (float)Camera.main.pixelHeight / (float)Camera.main.pixelWidth;
-        m_originalscale = (transform.localScale * t_AspectRatio) / 4f;
-        transform.localScale = m_originalscale;
 
 
-        //Converting screen width and height to world points
-        m_boundrysize = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, Screen.height));
-        m_playersizecheck = new Vector2(m_spriterenderer.bounds.size.x / 2, m_spriterenderer.bounds.size.y / 2);
-
-        m_boxcollider2D.size = new Vector2(m_spriterenderer.sprite.bounds.size.x, m_spriterenderer.sprite.bounds.size.y);
+        m_boxcollider2D.size = new Vector2(m_spriterenderer.bounds.size.x, m_spriterenderer.bounds.size.y);
         m_boxcollider2D.isTrigger = true;
 
-        m_startingline = -Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, Screen.height)).y + (m_playersizecheck.y * 25);
+
+        Vector2 t_screensize = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, Screen.height));
+        m_startingline = -t_screensize.y + t_screensize.y / 1.65f;
 
         transform.position = new Vector2(0, m_startingline);
 
@@ -113,8 +99,16 @@ public class Player : MonoBehaviour {
 
         m_Alive = true;
 
-        m_muzzlepowerupduration = 15.0f;
+        m_muzzlepowerupduration = 7.0f;
         m_defaultmuzzle = AssetManager.m_Instance.GetPrefab("BasicMuzzle");
+
+        m_muzzlepowerupoverwrite = true;
+
+        m_spriterenderer.sortingLayerName = "Player";
+
+        m_newposition = transform.position;
+
+        m_screensize = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, Screen.height));
 
 
     }
@@ -124,6 +118,7 @@ public class Player : MonoBehaviour {
         m_rigidbody2D = gameObject.GetComponent<Rigidbody2D>();
         m_spriterenderer = gameObject.GetComponent<SpriteRenderer>();
         m_boxcollider2D = gameObject.GetComponent<BoxCollider2D>();
+        Initialize();
     }
 
     void ChangeSprite(Sprite p_NewSprite)
@@ -135,25 +130,10 @@ public class Player : MonoBehaviour {
 	// Use this for initialization
 	void Start ()
     {
-        Initialize();
 
-        m_spriterenderer.sortingLayerName = "Player";
-
-        m_newposition = transform.position;
-        m_currentcontrolmode = ControlMode.DRAG;
-        
-        SetPlayerScale(1);
-
-
+        transform.localScale = new Vector2(0.25f, 0.25f);
         SpawnBarrel(m_defaultmuzzle);
-
         SpawnHealthBox();
-
-
-        transform.localScale = new Vector2(transform.localScale.x / 1.25f, transform.localScale.y);
-
-
-        //t_mf.transform.parent = transform;
     }
 
     void SpawnHealthBox()
@@ -161,9 +141,18 @@ public class Player : MonoBehaviour {
         GameObject t_healthBox = Instantiate(AssetManager.m_Instance.GetPrefab("HealthBar"));
         m_healthbar = t_healthBox.GetComponentInChildren<HealthBar>();
 
-        t_healthBox.transform.SetParent(transform);
-        t_healthBox.transform.localScale = new Vector2(transform.localScale.x, transform.localScale.y / 1.25f);
-        t_healthBox.transform.localPosition = new Vector2(transform.position.x, m_spriterenderer.bounds.size.y * 10);
+        m_healthbar.ShowHealth();
+
+        t_healthBox.transform.localScale = new Vector2(1, 1);
+        t_healthBox.transform.position = new Vector2(0, transform.position.y +  t_healthBox.GetComponent<SpriteRenderer>().bounds.size.y * 0.25f);
+        m_healthbar.SetTargetTransform(transform);
+
+    }
+
+    public void ApplyMuzzlePowerUp(GameObject p_NewMuzzle, bool p_Overwritable)
+    {
+        m_muzzlepowerupoverwrite = p_Overwritable;
+        ApplyMuzzlePowerUp(p_NewMuzzle);
     }
 
     public void ApplyMuzzlePowerUp(GameObject p_NewMuzzle)
@@ -181,6 +170,7 @@ public class Player : MonoBehaviour {
             SpawnBarrel(m_defaultmuzzle,m_defaultcolor);
             m_muzzlepoweruptimer = 0;
             m_muzzlepowerupactivated = false;
+            m_muzzlepowerupoverwrite = true;
         }
         else
         {
@@ -222,8 +212,17 @@ public class Player : MonoBehaviour {
             m_muzzle.DestroyMuzzle();
         }
         m_muzzle = Instantiate(p_NewMuzzle).GetComponent<Muzzle>();
-        m_muzzle.transform.SetParent(transform);
+        m_muzzle.transform.localScale = transform.localScale;
+
+        m_muzzle.transform.position = new Vector2(transform.position.x, transform.position.y + m_spriterenderer.bounds.size.y / 2 + m_muzzle.GetComponent<SpriteRenderer>().bounds.size.y / 2);
         m_muzzle.name = p_NewMuzzle.name;
+
+        m_muzzle.ShowAmmo();
+
+
+        m_muzzle.transform.SetParent(transform);
+        m_muzzle.transform.localScale = new Vector2(1, 1);
+
     }
 
 
@@ -242,7 +241,6 @@ public class Player : MonoBehaviour {
     public void SetPlayerScale(float p_ScaleMultiplier)
     {
         transform.localScale *= p_ScaleMultiplier;
-        m_playersizecheck = m_spriterenderer.bounds.size / 2;
     }
 
     
@@ -258,10 +256,11 @@ public class Player : MonoBehaviour {
             if (m_muzzlepowerupactivated)
                 MuzzlePowerUpLife();
 
-            if(!m_healthbar.m_Alive)
-            {
-                Death();
-            }
+            if(m_healthbar!=null)
+                if(!m_healthbar.m_Alive)
+                {
+                    Death();
+                }
             
         }
         else
@@ -269,18 +268,7 @@ public class Player : MonoBehaviour {
 
 
 
-        switch (m_currentcontrolmode)
-        {
-            case ControlMode.BATTING:
-                BattingMode();
-                break;
-            case ControlMode.DRAG:
-                break;
-                DragMode();
-                break;
-            default:
-                break;
-        }
+
 	}
 
 
@@ -291,6 +279,8 @@ public class Player : MonoBehaviour {
     public void TakeDamage(float p_Damage)
     {
         m_healthbar.TakeDamage(p_Damage);
+        CameraShake t_cs = Camera.main.GetComponent<CameraShake>();
+        t_cs.StartShake(0.05f, 0.25f);
     }
 
     private void MoveCheck()
@@ -321,81 +311,16 @@ public class Player : MonoBehaviour {
 
     private void ScreenBoundryCheck()
     {
-        if(transform.position.y - m_playersizecheck.y < -m_boundrysize.y)
-            transform.position = new Vector2(transform.position.x, -m_boundrysize.y + m_playersizecheck.y);
 
-        else if (transform.position.y + m_playersizecheck.y > m_boundrysize.y)
-            transform.position = new Vector2(transform.position.x, m_boundrysize.y - m_playersizecheck.y);
-        
+        Vector2 t_playerbounds = GetComponent<SpriteRenderer>().bounds.size / 2;
 
-        if (transform.position.x - m_playersizecheck.x < -m_boundrysize.x)
-            transform.position = new Vector2(-m_boundrysize.x + m_playersizecheck.x, transform.position.y);
 
-        else if (transform.position.x + m_playersizecheck.x > m_boundrysize.x)
-            transform.position = new Vector2(m_boundrysize.x - m_playersizecheck.x, transform.position.y);
+        if (transform.position.x - t_playerbounds.x < -m_screensize.x)
+            transform.position = new Vector2(-m_screensize.x + t_playerbounds.x, transform.position.y);
+
+        else if (transform.position.x + t_playerbounds.x > m_screensize.x)
+            transform.position = new Vector2(m_screensize.x - t_playerbounds.x, transform.position.y);
      }
-
-    public float GetTopYLine()
-    {
-        return transform.position.y + m_playersizecheck.y;
-    }
-
-    //This was for testing a new mechanic, Doesnt work well.
-    private bool m_swinging = false;
-    private float t_swingtimer = 0.20f;
-    private float t_resettimer = 0.0f;
-    void BattingMode()
-    {
-        Vector2 t_mousepos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector2 t_direction = (t_mousepos - (Vector2)transform.position).normalized;
-        Vector2 t_distance = t_direction * m_playersizecheck.magnitude * 0.5f;
-        if (!m_swinging)
-        { 
-            //Keeping the paddle close to the mouse cursor
-            m_newposition = t_mousepos - t_distance * 2;
-
-            //Keeping the right of the paddle pointing towards the cursor
-            m_newrotation = Quaternion.FromToRotation(Vector3.right, t_direction);
-        }
-        else
-        {
-            t_resettimer += Time.deltaTime;
-            if(t_resettimer > t_swingtimer)
-            {
-                t_resettimer = 0.0f;
-                m_swinging = false;
-            }
-        }
-
-        if (Input.GetMouseButtonDown(0))
-        {
-            m_swinging = true;
-            transform.position = t_mousepos + t_distance * 2;
-            transform.rotation = Quaternion.FromToRotation(-Vector3.right, t_direction);
-            m_newrotation = transform.rotation;
-            m_newposition = transform.position;
-        }
-        
-
-
-    }
-
-    //Was for testing
-    void DragMode()
-    {
-        Vector2 t_mousepos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        t_mousepos = new Vector2(t_mousepos.x, m_startingline);
-        m_newposition = t_mousepos;
-        m_newrotation = Quaternion.identity;
-
-        if (Input.touchCount > 0)
-        { 
-            Vector2 t_touchloc = Camera.main.ScreenToWorldPoint(Input.GetTouch(0).position);
-            t_touchloc = new Vector2(t_touchloc.x, m_startingline);
-            m_newposition = t_touchloc;
-            m_newrotation = Quaternion.identity;
-        }
-    }
 
     public void SetMuzzleToFire(bool p_value)
     {

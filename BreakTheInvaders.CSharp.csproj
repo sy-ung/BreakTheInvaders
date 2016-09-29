@@ -78,6 +78,7 @@
     <Compile Include="Assets\Scripts\Ball\RedBall.cs" />
     <Compile Include="Assets\Scripts\BallManager.cs" />
     <Compile Include="Assets\Scripts\Bullet.cs" />
+    <Compile Include="Assets\Scripts\CameraShake.cs" />
     <Compile Include="Assets\Scripts\Death.cs" />
     <Compile Include="Assets\Scripts\Enemies\Bullets\EnemyBullet.cs" />
     <Compile Include="Assets\Scripts\Enemies\Bullets\EnemyBullet1.cs" />
@@ -105,6 +106,7 @@
     <Compile Include="Assets\Scripts\GenericBehaviour\LerpingBehaviour.cs" />
     <Compile Include="Assets\Scripts\HealthBar.cs" />
     <Compile Include="Assets\Scripts\Muzzle.cs" />
+    <Compile Include="Assets\Scripts\Pause.cs" />
     <Compile Include="Assets\Scripts\Player\BasicBullet.cs" />
     <Compile Include="Assets\Scripts\Player\BasicMuzzle.cs" />
     <Compile Include="Assets\Scripts\Player\BlueBullet.cs" />
@@ -120,10 +122,13 @@
     <Compile Include="Assets\Scripts\PowerUp.cs" />
     <Compile Include="Assets\Scripts\PowerUp\BluePowerUp.cs" />
     <Compile Include="Assets\Scripts\PowerUp\GreenPowerUp.cs" />
+    <Compile Include="Assets\Scripts\PowerUp\PowerUpHighlight.cs" />
     <Compile Include="Assets\Scripts\PowerUp\RedPowerUp.cs" />
     <Compile Include="Assets\Scripts\ResolutionFix.cs" />
+    <Compile Include="Assets\Scripts\Scenes\Credits.cs" />
     <Compile Include="Assets\Scripts\Scenes\Game.cs" />
     <Compile Include="Assets\Scripts\Scenes\GameOver.cs" />
+    <Compile Include="Assets\Scripts\Scenes\Help.cs" />
     <Compile Include="Assets\Scripts\Scenes\Menu.cs" />
     <Compile Include="Assets\Scripts\Score.cs" />
     <Compile Include="Assets\Scripts\SoundClip.cs" />

@@ -35,7 +35,9 @@ public class UIManager : MonoBehaviour {
 
     public void AddUIElementToScreen(string p_UIElementPrefabName, Vector2 p_Position)
     {
-        Instantiate(AssetManager.m_Instance.GetPrefab(p_UIElementPrefabName)).transform.position = p_Position;
+        GameObject t_element  = Instantiate(AssetManager.m_Instance.GetPrefab(p_UIElementPrefabName));
+        t_element.transform.position = p_Position;
+
     }
     
     //p_OffsetPrecent range is from 0.0 - 1.0 for 0 - 100 percent offset
@@ -90,7 +92,9 @@ public class UIManager : MonoBehaviour {
             default:
                 break;
         }
-        
+
+        t_NewElement.transform.SetParent(GameObject.FindGameObjectWithTag("Canvas").transform);
+      
     }
 
 

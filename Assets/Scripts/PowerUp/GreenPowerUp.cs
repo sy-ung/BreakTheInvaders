@@ -9,6 +9,8 @@ public class GreenPowerUp : PowerUp {
         m_muzzlepowerup = AssetManager.m_Instance.GetPrefab("GreenMuzzle");
         m_ballpowerup = AssetManager.m_Instance.GetPrefab("GreenBall");
         base.Awake();
+
+        m_highlight.SetHighlightColor(new Color32(0, 204, 0, 255));
     }
 
 

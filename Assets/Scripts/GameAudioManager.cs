@@ -12,6 +12,8 @@ public class GameAudioManager : MonoBehaviour {
 
     private static Dictionary<string,List<SoundClip>> m_currentsoundsplaying;
 
+    private static SoundClip m_currentmusicplaying;
+
 
     int m_MaxAllowedSounds = 1;
 
@@ -91,6 +93,8 @@ public class GameAudioManager : MonoBehaviour {
         m_AudioClips.Add("GreenMuzzleLaunch", Resources.Load<AudioClip>("Audio/WeaponFire/Player/Green/Launch"));
 
         m_AudioClips.Add("Reload", Resources.Load<AudioClip>("Audio/WeaponFire/Player/Reload"));
+
+        m_AudioClips.Add("TestMusic", Resources.Load<AudioClip>("Audio/TestMusic"));
     }
 
     public AudioClip GetSoundClip(string p_Name)
@@ -110,7 +114,13 @@ public class GameAudioManager : MonoBehaviour {
     {
 	}
 
-    public void PlaySound(string p_SoundName, bool p_Loop, float p_Pitch, bool p_Important)
+
+    public void FlushAllSoundsEffects()
+    {
+        m_currentsoundsplaying.Clear();
+    }
+
+    public void PlaySound(string p_SoundName, bool p_Loop, float p_Pitch, float p_Volume)
     {
         if(!m_currentsoundsplaying.ContainsKey(p_SoundName))
         {
@@ -125,16 +135,36 @@ public class GameAudioManager : MonoBehaviour {
 
         SoundClip t_newSound = new GameObject("Soundclip_" + p_SoundName).AddComponent<SoundClip>();
 
-        float t_volume = 1.0f;
-        if(!p_Important)
-        {
-            t_volume = 0.175f;
-        }
-
-        t_newSound.LoadClip(p_SoundName, GetSoundClip(p_SoundName), p_Loop, p_Pitch, t_volume);
+        t_newSound.LoadClip(p_SoundName, GetSoundClip(p_SoundName), p_Loop, p_Pitch, p_Volume);
 
         m_currentsoundsplaying[p_SoundName].Add(t_newSound);
         
+    }
+
+    public void PlayMusic(string p_MusicName)
+    {
+        GameObject t_musicobject = GameObject.FindGameObjectWithTag("music");
+
+        if (t_musicobject != null)
+        {
+            if (t_musicobject.GetComponent<SoundClip>().m_Key != p_MusicName)
+                Destroy(t_musicobject);
+            else
+            { 
+                m_currentmusicplaying = t_musicobject.GetComponent<SoundClip>();
+                return;
+            }
+        }
+
+        m_currentmusicplaying = new GameObject("Music_" + p_MusicName).AddComponent<SoundClip>();
+        m_currentmusicplaying.gameObject.tag = "music";
+        float t_volume = 0.5f;
+        m_currentmusicplaying.LoadClip(p_MusicName, GetSoundClip(p_MusicName), true, 1.0f, t_volume,true);
+        
+    }
+    public void StopMusic()
+    {
+        Destroy(m_currentmusicplaying.gameObject);
     }
 
     public void SoundFinished(string p_SoundName)
@@ -154,5 +184,15 @@ public class GameAudioManager : MonoBehaviour {
         }
     }
 
+    public void PauseMusic()
+    {
+        if(m_currentmusicplaying!=null)
+            m_currentmusicplaying.Pause();
+    }
+    public void ResumeMusic()
+    {
+        if (m_currentmusicplaying != null)
+            m_currentmusicplaying.Resume();
+    }
 
 }

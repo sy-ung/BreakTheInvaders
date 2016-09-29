@@ -13,21 +13,25 @@ public class Background : MonoBehaviour {
     private bool m_VerticalScrollUp;
     private bool m_VerticalScrollDown;
 
+    private float m_maxSpeed;
+    private float m_newscrollingspeed;
     private float m_ScrollingSpeed;
+    private float m_interpspeed;
 
     private int m_maxorder = 500;
 
     void Awake()
     {
         m_BackgroundMaterial = GetComponent<MeshRenderer>().material;
-        Resize();
-        m_ScrollingSpeed = 0.0075f;
+        gameObject.tag = "Background";
+        m_maxSpeed = 15.0f;
+
     }
 
-    void Resize()
+    public void Resize(int p_ScaleFactor)
     {
         float t_camsize = Camera.main.orthographicSize;
-        transform.localScale = new Vector2(1, 1) * (t_camsize * 2);
+        transform.localScale = new Vector2(1, 1) * (t_camsize * p_ScaleFactor);
     }
 
     // Use this for initialization
@@ -38,9 +42,7 @@ public class Background : MonoBehaviour {
 
     public void GoIntoLayer(int p_OrderLayer)
     {
-        Debug.Log("Moving into layer: " + p_OrderLayer);
         transform.position = new Vector3(0,0, m_maxorder - p_OrderLayer);
-        Debug.Log(transform.position);
     }
 	
 	// Update is called once per frame
@@ -73,6 +75,16 @@ public class Background : MonoBehaviour {
         m_HorizontalScrollRight = true;
     }
 
+    public void SetScrollingSpeed(float p_NewSpeed, float p_InterpSpeed)
+    {
+        m_interpspeed = p_InterpSpeed;
+        if (p_NewSpeed > m_maxSpeed)
+            m_newscrollingspeed = m_maxSpeed;
+        else
+            m_newscrollingspeed = p_NewSpeed;
+        
+    }
+
 
 
     void BackgroundMovement()
@@ -85,22 +97,25 @@ public class Background : MonoBehaviour {
             m_BackgroundMaterial.mainTextureOffset = new Vector2(m_BackgroundMaterial.mainTextureOffset.x, 0);
 
 
+        if (m_ScrollingSpeed != m_newscrollingspeed)
+            m_ScrollingSpeed = Mathf.Lerp(m_ScrollingSpeed, m_newscrollingspeed, m_interpspeed);
+
         if (m_HorizontalScrollLeft)
         {
-            m_BackgroundMaterial.mainTextureOffset += new Vector2(m_ScrollingSpeed, 0);
+            m_BackgroundMaterial.mainTextureOffset += new Vector2(m_ScrollingSpeed * Time.deltaTime, 0);
         }
         else if (m_HorizontalScrollRight)
         {
-            m_BackgroundMaterial.mainTextureOffset += new Vector2(-m_ScrollingSpeed, 0);
+            m_BackgroundMaterial.mainTextureOffset += new Vector2(-m_ScrollingSpeed * Time.deltaTime, 0);
         }
 
         if (m_VerticalScrollUp)
         {
-            m_BackgroundMaterial.mainTextureOffset += new Vector2(0, -m_ScrollingSpeed);
+            m_BackgroundMaterial.mainTextureOffset += new Vector2(0, -m_ScrollingSpeed * Time.deltaTime);
         }
         else if(m_VerticalScrollDown)
         {
-            m_BackgroundMaterial.mainTextureOffset += new Vector2(0, m_ScrollingSpeed);
+            m_BackgroundMaterial.mainTextureOffset += new Vector2(0, m_ScrollingSpeed * Time.deltaTime);
         }
     }
 

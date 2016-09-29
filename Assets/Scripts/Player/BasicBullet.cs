@@ -5,13 +5,13 @@ class BasicBullet : Bullet
     void Awake()
     {
         m_MuzzleFlash = AssetManager.m_Instance.GetPrefab("MuzzleFlashDefault");
-        m_speed = 7.0f;
+        m_speed = 27.0f;
         m_lifetime = 10.0f;
+        transform.localScale = new Vector2(0.3f, 1.25f);
         base.Awake();
     }
     void Start()
     {
-
         base.Start();
     }
 
@@ -26,9 +26,10 @@ class BasicBullet : Bullet
         {
             if (p_Collider.tag == "Enemy")
             {
-                GameObject t_explosion = Instantiate(AssetManager.m_Instance.GetPrefab("BulletDefaultExplosion"), transform.position, Quaternion.identity) as GameObject;
-                t_explosion.transform.localScale *= 2.0f; 
-                p_Collider.GetComponent<Enemy>().Death();
+                p_Collider.GetComponent<Enemy>().TakeDamaage(50.0f);
+                //GameObject t_explosion = Instantiate(AssetManager.m_Instance.GetPrefab("BulletDefaultExplosion"), transform.position, Quaternion.identity) as GameObject;
+                
+                //t_explosion.transform.localScale /= 4.0f;
                 base.OnTriggerEnter2D(p_Collider);
             }
         }

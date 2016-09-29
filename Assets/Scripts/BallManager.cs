@@ -10,6 +10,12 @@ public class BallManager : MonoBehaviour {
 
     private GameObject m_defaultball;
 
+    private bool m_ballpowerupoverwrite;
+    public bool m_BallPowerupOverwrite
+    {
+        get { return m_ballpowerupoverwrite; }
+    }
+
     //Creating the BallManager singleton and returning it
     public static BallManager m_Instance
     {
@@ -44,8 +50,9 @@ public class BallManager : MonoBehaviour {
 
     void Awake()
     {
-        m_powerupduration = 15f;
+        m_powerupduration = 7f;
         m_defaultball = AssetManager.m_Instance.GetPrefab("DefaultBall");
+        m_ballpowerupoverwrite = true;
     }
 
 
@@ -64,6 +71,12 @@ public class BallManager : MonoBehaviour {
         }
 
         m_playerball.transform.position = new Vector3(p_Position.x, p_Position.y, 0);
+    }
+
+    public void ApplyPowerUp(GameObject p_NewBall, bool p_Overwritable)
+    {
+        m_ballpowerupoverwrite = p_Overwritable;
+        ApplyPowerUp(p_NewBall);
     }
 
     public void ApplyPowerUp(GameObject p_NewBall)
@@ -108,6 +121,7 @@ public class BallManager : MonoBehaviour {
                 ChangeBall(m_defaultball);
                 m_powerupactivated = false;
                 m_poweruptimer = 0;
+                m_ballpowerupoverwrite = true;
             }
         }
 	}

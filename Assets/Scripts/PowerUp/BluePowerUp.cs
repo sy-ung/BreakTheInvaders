@@ -9,6 +9,8 @@ public class BluePowerUp : PowerUp
         m_ballpowerup = AssetManager.m_Instance.GetPrefab("BlueBall");
 
         base.Awake();
+
+        m_highlight.SetHighlightColor(Color.blue);
     }
 
 	// Use this for initialization

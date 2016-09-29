@@ -5,7 +5,6 @@ public class EnemyBullet : Bullet {
 
     protected void Awake()
     {
-        m_speed = -2.5f;
         m_lifetime = 6.0f;
         base.Awake();
 
@@ -18,6 +17,8 @@ public class EnemyBullet : Bullet {
     {
         base.Start();
         transform.localScale *= 2;
+
+        gameObject.tag = "EnemyBullet";
 
     }
 
@@ -32,7 +33,8 @@ public class EnemyBullet : Bullet {
         if(p_Collider.tag == "Player")
         {
             p_Collider.GetComponent<Player>().TakeDamage(m_Damage);
+            base.OnTriggerEnter2D(p_Collider);
         }
-        base.OnTriggerEnter2D(p_Collider);
+
     }
 }

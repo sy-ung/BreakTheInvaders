@@ -20,26 +20,31 @@ public class Ammo : MonoBehaviour {
     {
         m_rigidbody2D = GetComponent<Rigidbody2D>();
         m_spriterenderer = GetComponent<SpriteRenderer>();
+        m_rigidbody2D.gravityScale = 0;
     }
 
-	// Use this for initialization
-	void Start ()
+    void Initialize()
     {
         m_rigidbody2D.isKinematic = false;
         m_rigidbody2D.gravityScale = 0;
         m_spriterenderer.sortingLayerName = "UI";
         m_spriterenderer.sortingOrder = 0;
-        transform.localScale = new Vector2(2, 2);
         m_spriterenderer.color = new Color(1, 1, 1, 0);
+    }
+
+	// Use this for initialization
+	void Start ()
+    {
+
 	}
 
     public void Eject()
     {
         gameObject.transform.SetParent(null);
-        m_rigidbody2D.gravityScale = 0;
+
 
         Vector2 m_randomejectvector = new Vector2(Random.Range(-1.0f,-0.3f), Random.Range(-0.2f, 0.1f));
-        m_rigidbody2D.AddForce(m_randomejectvector.normalized * 100);
+        m_rigidbody2D.AddForce(m_randomejectvector.normalized * 500);
         m_rigidbody2D.AddTorque(Random.Range(-3000.0f,3000.0f));
         m_spriterenderer.sprite = m_EmptyShell;
         m_ejected = true;
@@ -54,6 +59,16 @@ public class Ammo : MonoBehaviour {
     {
         m_alpha = new Color(1, 1, 1, m_alpha.a + p_DeltaAlpha);
     }
+
+    public void MoveOneSpotDown()
+    {
+        m_NewLocalPosition = (Vector2)transform.localPosition - new Vector2(m_spriterenderer.bounds.size.x, 0);
+    }
+    public void MoveToSlot(int p_Slot)
+    {
+        m_NewLocalPosition = new Vector2(m_spriterenderer.bounds.size.x * p_Slot, 0);
+    }
+
 
 	// Update is called once per frame
 	void Update ()
@@ -74,6 +89,10 @@ public class Ammo : MonoBehaviour {
             if((Vector2)transform.localPosition != m_NewLocalPosition)
             {
                 transform.localPosition = Vector2.Lerp(transform.localPosition, m_NewLocalPosition, 0.33f);
+            }
+            else
+            {
+                transform.localPosition = m_NewLocalPosition;
             }
 
         }

@@ -20,7 +20,7 @@ public class EnemyType2 : Enemy {
         m_currentbullet = AssetManager.m_Instance.GetPrefab("EnemyBullet2");
         m_firingrate = 1.0f;
 
-        SetColor(new Color32(64,109,241,255));
+        SetColor(new Color32(100,255,102,255));
 
         m_firesoundname = "Enemy2Fire";
     }

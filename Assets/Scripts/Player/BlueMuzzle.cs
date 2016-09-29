@@ -9,16 +9,11 @@ public class BlueMuzzle : Muzzle {
         m_currentBullet = AssetManager.m_Instance.GetPrefab("BulletBlue");
         m_spriteRenderer.color = Color.blue;
         m_soundClipName = new string[1] { "BlueMuzzleFire" };
-    }
+        m_muzzleshakestrength = 0.05f;
 
-    // Use this for initialization
-    void Start()
-    {
-        base.Start();
         m_firingrate = 0.2f;
-        SetMaxAmmoCount(10);
+        SetMaxAmmoCount(12);
         m_ammobar.m_ammoprefab = AssetManager.m_Instance.GetPrefab("BlueAmmoIcon");
-
     }
 
     // Update is called once per frame

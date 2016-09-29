@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class Muzzle : MonoBehaviour {
@@ -14,6 +15,10 @@ public class Muzzle : MonoBehaviour {
 
 
     protected float m_firingrate = 0.1f;
+    public float m_FiringRate
+    {
+        get { return m_firingrate; }
+    }
     protected float m_firingtimer = 0;
 
     //if m_maxammocount is -1, it means inifinite ammo
@@ -35,42 +40,56 @@ public class Muzzle : MonoBehaviour {
 
     protected string[] m_soundClipName;
 
+    private float m_reloadmsgtimer;
+    private float m_reloadmsgrate;
+    private Text m_reloadmsg;
+
+    protected float m_muzzlevolume;
+
+    protected float m_muzzleshakestrength;
+
+    public float m_MuzzleVolume
+    {
+        get { return m_muzzlevolume; }
+    }
+
     protected void Awake()
     {
+        m_spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
         Initialize();
     }
 
-    void Initialize()
+    public void Initialize()
     {
-        m_spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
         m_firingtimer = m_firingrate;
-    }
-
-
-
-    // Use this for initialization
-    protected void Start() {
-        SetScale(1);
-        Player t_player = PlayerManager.m_Instance.m_Player;
-        transform.position = (Vector2)t_player.transform.position + new Vector2(0, t_player.m_PlayerSize.y / 2 + m_spriteRenderer.bounds.size.y / 2);
+        m_reloadmsgrate = 0.05f;
+        m_muzzlevolume = 0.5f;
+        m_muzzleshakestrength = 0.1f;
 
         m_spriteRenderer.sortingLayerName = "Player";
-        //m_mfprefab = AssetManager.m_Instance.GetPrefab("MuzzleFlashDefault");
 
-        //m_currentbullet = AssetManager.m_Instance.GetPrefab("BulletGreen");
+        m_reloadmsg = GameObject.FindGameObjectWithTag("DebugBox").GetComponent<Text>();
+        CreateAmmoBar();
+    }
+
+
+    void CreateAmmoBar()
+    {
+        Player t_player = PlayerManager.m_Instance.m_Player;
         m_ammobar = Instantiate(AssetManager.m_Instance.GetPrefab("AmmoBar")).GetComponent<AmmoBar>();
-        m_ammobar.transform.SetParent(transform);
-        m_ammobar.transform.localScale = new Vector2(3, 1.75f);
-        m_ammobar.transform.localPosition = new Vector2(-m_spriteRenderer.bounds.size.y * 9, -m_spriteRenderer.bounds.size.y * 9);
+
+        m_ammobar.AttachTo(t_player.gameObject);
+        m_ammobar.Resize(new Vector2(1, 1.1f));
+
 
     }
 
-    public  void Reload()
+    public void Reload()
     {
         if(m_MaxAmmoCount != -1)
         {
             if (m_currentammocount != m_maxammocount)
-                GameAudioManager.m_Instance.PlaySound("Reload", false, 1.0f,true);
+                GameAudioManager.m_Instance.PlaySound("Reload", false, 1.0f,1.0f);
 
             SetMaxAmmoCount(m_maxammocount);
 
@@ -87,29 +106,33 @@ public class Muzzle : MonoBehaviour {
         m_maxammocount = p_MaxAmmoCount;
         m_currentammocount = m_maxammocount;
     }
-
-    public void SetScale(float p_ScaleMultiplier)
-    {
-        transform.localScale = new Vector3(1, 1, 0) * p_ScaleMultiplier;
-    }
     // Update is called once per frame
     protected void Update()
     {
+
+
+
         CheckFire();
+
+        if(Game.m_GameStarted)
+        { 
+            if (m_currentammocount <= 0)
+                ShowReload();
+            else if(m_currentammocount > 0)
+                HideReload();
+        }
+
+
     }
 
     public void FireProjectile()
     {
         Vector2 t_firedirection = Vector3.up;
 
-        //BallBullet t_bullet = (new GameObject("BallBullet").AddComponent<BallBullet>());
-
         Bullet t_bullet = Instantiate(m_currentBullet).GetComponent<Bullet>();
 
         Vector2 t_startPosition = (Vector2)transform.position + (t_firedirection * (t_bullet.GetComponent<SpriteRenderer>().bounds.size.magnitude / 2));
         t_bullet.transform.position = t_startPosition;
-
-        t_bullet.transform.rotation = Quaternion.FromToRotation(t_bullet.transform.right, t_firedirection);
 
         if(m_maxammocount != -1)
         {
@@ -117,16 +140,24 @@ public class Muzzle : MonoBehaviour {
             m_ammobar.EjectCurrentAmmo();
         }
 
-        
 
-        //Attach a particle system to player and let it play the muzzle flash
-        //GameObject t_mf = Instantiate(m_mfprefab, transform.position, Quaternion.AngleAxis(-90, Vector3.right)) as GameObject;
-        //t_mf.transform.parent = transform;
+        CameraShake();
+
+    }
+
+    protected void CameraShake()
+    {
+        CameraShake t_cs = Camera.main.GetComponent<CameraShake>();
+
+        if (t_cs.m_Shaking)
+            t_cs.IntensifyShake(m_muzzleshakestrength);
+        else
+            t_cs.StartShake(0.1f, m_muzzleshakestrength);
     }
 
     public virtual void DestroyMuzzle() 
     {
-
+        HideReload();
         if(!PlayerManager.m_Instance.m_Player.m_Alive)
         {
             (Instantiate(AssetManager.m_Instance.GetPrefab("MuzzleDeathParticle"), transform.position,Quaternion.Euler(new Vector3(-90,0,0))) as GameObject).GetComponent<ParticleSystem>().startColor = m_spriteRenderer.color;
@@ -163,9 +194,50 @@ public class Muzzle : MonoBehaviour {
     {
         //m_audiosource.PlayOneShot(m_WeaponFireSounds[Random.Range(0, m_WeaponFireSounds.Length)]);
 
-        GameAudioManager.m_Instance.PlaySound(m_soundClipName[Random.Range(0,m_soundClipName.Length)], false, 1.0f,false);
+        GameAudioManager.m_Instance.PlaySound(m_soundClipName[Random.Range(0,m_soundClipName.Length)], false, 1.0f,0.7f);
     }
 
+    protected void HideReload()
+    {
+        if (m_reloadmsg.enabled)
+            m_reloadmsg.enabled = false;
+    }
 
+    protected void ShowReload()
+    {
+
+        if (!m_reloadmsg.enabled)
+        {
+            m_reloadmsg.fontSize = 35;
+            m_reloadmsg.enabled = true;
+        }
+
+        if (m_reloadmsg.text != "RELOAD")
+            m_reloadmsg.text = "RELOAD";
+
+        if(m_reloadmsgtimer>m_reloadmsgrate)
+        {
+            if (m_reloadmsg.color != Color.red)
+                m_reloadmsg.color = Color.red;
+            else
+                m_reloadmsg.color = Color.yellow;
+
+            m_reloadmsgtimer = 0;
+        }
+        else
+        {
+            m_reloadmsgtimer += Time.deltaTime;
+        }
+    }
+
+    public void ShowAmmo()
+    {
+        m_ammobar.DisplayAmmo();
+    }
+
+    public void RescaleAmmoBar(float p_ScaleMultiplier)
+    {
+        m_ammobar.transform.localScale *= p_ScaleMultiplier;
+    }
 
 }

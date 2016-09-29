@@ -48,13 +48,16 @@ public class UIShootButton : UIElement {
         if (p_Phase == TouchPhase.Began || p_Phase == TouchPhase.Stationary)
         {
             m_spriterenderer.color = Color.red;
-            m_player.SetMuzzleToFire(true);
+            if(m_player != null)
+                m_player.SetMuzzleToFire(true);
         }
 
         if (p_Phase == TouchPhase.Ended)
         {
             m_spriterenderer.color = Color.white;
-            m_player.SetMuzzleToFire(false);
+
+            if(m_player!= null)
+                m_player.SetMuzzleToFire(false);
         }
     }
 

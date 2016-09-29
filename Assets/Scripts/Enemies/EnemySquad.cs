@@ -51,11 +51,21 @@ public class EnemySquad : MonoBehaviour {
 
     private bool m_specialsquad;
 
+    private float m_volume;
+
+    private float m_difficultyfactor;
+    public float m_DifficultyFactor
+    {
+        get { return m_difficultyfactor; }
+    }
+
     void Awake()
     {
         m_movementsounds = new string[3] { "EnemyMove1", "EnemyMove2", "EnemyMoveSpecial" };
         m_playaudiomove1 = true;
-        m_movementspeed = new Vector2(1f, 2f);
+        m_movementspeed = new Vector2(1f, 3f);
+
+        m_volume = 0.3f;
     }
 
     public void DifficultyFactor(float p_Factor)
@@ -63,7 +73,8 @@ public class EnemySquad : MonoBehaviour {
         m_movementtime = 1.0f / p_Factor;
         m_origmovementtime = m_movementtime;
         m_firingratefactor = p_Factor;
-        m_movementspeed = new Vector2(m_movementspeed.x, m_movementspeed.y * (p_Factor / 4));
+        m_movementspeed = new Vector2(m_movementspeed.x, m_movementspeed.y);
+        m_difficultyfactor = p_Factor;
     }
 
     
@@ -206,6 +217,7 @@ public class EnemySquad : MonoBehaviour {
     {
         DifficultyFactor(p_DifficultyLevel);
 
+
         Vector2 t_screensize = Camera.main.GetComponent<ResolutionFix>().m_ScreenSizeWorldPoint;
 
         GameObject t_EnemyPrefab = AssetManager.m_Instance.GetPrefab(p_EnemyPrefabName);
@@ -256,8 +268,8 @@ public class EnemySquad : MonoBehaviour {
         Vector2 t_currentspawnPOS;
         Vector2 t_previousspawnPOS = Vector2.zero;
 
-        float t_paddingx = 0.01f;
-        float t_paddingy = 0f;
+        float t_paddingx = Random.Range(0.0f, 3.5f) / p_Columns;
+        float t_paddingy = Random.Range(0.0f, 2.5f) / p_Rows;
 
         m_spawnedenemiescount = p_Rows * p_Columns;
 
@@ -352,18 +364,18 @@ public class EnemySquad : MonoBehaviour {
     {
         if (m_specialsquad)
         {
-            GameAudioManager.m_Instance.PlaySound(m_movementsounds[2], false, 1,true);
+            GameAudioManager.m_Instance.PlaySound(m_movementsounds[2], false, 1, m_volume);
         }
         else
         {
             if (m_playaudiomove1)
             {
-                GameAudioManager.m_Instance.PlaySound(m_movementsounds[0], false, 1,false);
+                GameAudioManager.m_Instance.PlaySound(m_movementsounds[0], false, 1, m_volume);
                 m_playaudiomove1 = false;
             }
             else
             {
-                GameAudioManager.m_Instance.PlaySound(m_movementsounds[1], false, 1,false);
+                GameAudioManager.m_Instance.PlaySound(m_movementsounds[1], false, 1, m_volume);
                 m_playaudiomove1 = true;
             }
         }

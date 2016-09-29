@@ -27,6 +27,7 @@ public class GreenBullet : Bullet {
         gameObject.transform.localScale *= 1.75f;
         m_RigidBody2D.velocity = Vector2.zero;
         m_RigidBody2D.freezeRotation = true;
+        GetComponent<Animator>().speed = 1.5f;
     }
 	
 	// Update is called once per frame
@@ -41,7 +42,7 @@ public class GreenBullet : Bullet {
         {
             transform.position = new Vector2(m_GreenMuzzle.transform.position.x, transform.position.y);
         }
-	}
+    }
 
     void OnTriggerEnter2D(Collider2D p_Collider)
     {
@@ -49,8 +50,8 @@ public class GreenBullet : Bullet {
         {
             if (p_Collider.tag == "Enemy")
             {
-                GameObject t_explosion = Instantiate(AssetManager.m_Instance.GetPrefab("BulletGreenExplosion"), p_Collider.gameObject.transform.position, Quaternion.identity) as GameObject;
-                t_explosion.transform.localScale *= 2;
+                Explosion t_explosion = (Instantiate(AssetManager.m_Instance.GetPrefab("BulletGreenExplosion"), transform.position, Quaternion.identity) as GameObject).GetComponent<Explosion>();
+                t_explosion.SetAnimationSpeed(1.0f);
                 p_Collider.GetComponent<Enemy>().Death();
                 m_RigidBody2D.velocity = Vector3.up * m_speed;
                 //base.OnCollisionEnter2D(p_Collision);
@@ -62,6 +63,7 @@ public class GreenBullet : Bullet {
     {
         m_inflight = true;
         m_speed = p_Speed;
+        transform.localScale = new Vector2(0.5f, 3.0f);
         m_RigidBody2D.velocity = Vector3.up * (m_speed * m_SpriteRenderer.bounds.size.y/2);
         m_xpos = transform.position.x;
     }

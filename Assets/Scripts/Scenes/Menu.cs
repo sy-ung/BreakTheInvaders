@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 
 public class Menu : MonoBehaviour {
 
@@ -14,6 +15,8 @@ public class Menu : MonoBehaviour {
     private bool m_flashwhite;
     private float m_flashrate;
 
+    EventSystem m_primaryeventsystem;
+
     void Awake()
     {
         m_titleimage = GameObject.FindGameObjectWithTag("TitleImage").GetComponent<Image>();
@@ -21,19 +24,45 @@ public class Menu : MonoBehaviour {
         m_enemyimages = new Image[2] { t_enemies[0].GetComponent<Image>(), t_enemies[1].GetComponent<Image>() };
         m_flashrate = 0.6f;
         m_animaterate = 0.25f;
+        InitEventSystem();
     }
 
 
 	//Use this for initialization
-	void Start () {
-        
+	void Start ()
+    {
+        InitEventSystem();
+        GameAudioManager.m_Instance.PlayMusic("TestMusic");
 	}
+
+    void InitEventSystem()
+    {
+        if (m_primaryeventsystem == null)
+            m_primaryeventsystem = GameObject.FindObjectOfType<EventSystem>();
+
+        if(m_primaryeventsystem == null)
+        { 
+            GameObject t_es = new GameObject("PrimaryEventSystem");
+            m_primaryeventsystem = t_es.AddComponent<EventSystem>();
+            t_es.AddComponent<StandaloneInputModule>();
+        }
+
+        DontDestroyOnLoad(m_primaryeventsystem.gameObject);
+
+    }
 
     public void OnPlayButtonClicked()
     {
         SceneManager.LoadScene("Game", LoadSceneMode.Single);
     }
-
+    public void OnHelpButtonClicked()
+    {
+        SceneManager.LoadScene("Help", LoadSceneMode.Single);
+    }
+    public void OnCreditsButtonClicked()
+    {
+        SceneManager.LoadScene("Credits", LoadSceneMode.Single);
+    }
 	
 	// Update is called once per frame
 	void Update ()

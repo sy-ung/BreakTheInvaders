@@ -31,12 +31,8 @@ public class BackgroundManager : MonoBehaviour {
         }
     }
 
-    public void ClearAllBackgrounds()
+    public void ClearBackgrounds()
     {
-        foreach(Background t_bg in m_backgrounds)
-        {
-            Destroy(t_bg.gameObject);
-        }
         m_backgrounds.Clear();
     }
 

@@ -71,12 +71,19 @@ public class Enemy : MonoBehaviour
 
     protected string m_firesoundname;
 
+    private float m_health;
+    private float m_damageflashtimer;
+    private float m_damageflashtime;
+    private bool m_takendamage;
+
     protected void Awake()
     {
         m_spriterenderer = gameObject.GetComponent<SpriteRenderer>();
         m_rigidbody2D = gameObject.GetComponent<Rigidbody2D>();
         m_boxcollider2D = gameObject.GetComponent<BoxCollider2D>();
-
+        m_health = 100.0f;
+        m_damageflashtime = 0.05f;
+        m_takendamage = false;
         //SetSprite(AssetManager.m_Instance.GetSprite(m_spritename));
     }
 
@@ -105,6 +112,8 @@ public class Enemy : MonoBehaviour
         //SetScale(t_scaleFactor);
 
         m_firingrate = Random.Range(5.0f, 15f) / m_FiringRateFactor;
+        if (m_firingrate < 1.0f)
+            m_firingrate = Random.Range(1.50f, 3.0f);
     }
 
     public void SetScale(float p_ScaleFactor)
@@ -139,6 +148,10 @@ public class Enemy : MonoBehaviour
             Death();
             return;
         }
+
+        if (m_health <= 0)
+            Death();
+
         if (m_currentbullet != null)
         {
             if (m_firingtimer> m_firingrate)
@@ -155,13 +168,31 @@ public class Enemy : MonoBehaviour
             {
                 m_firingtimer += Time.deltaTime;
             }
-            
         }
+
+        if (m_takendamage)
+            DamageFlash();
+
         if (m_CurrentEnemySquad != null)
         { 
             if (m_CurrentEnemySquad.m_PlayFrame)
                 PlayFrame();
         }
+    }
+
+    void DamageFlash()
+    {
+        if (m_damageflashtimer > m_damageflashtime)
+        { 
+            m_spriterenderer.color = m_currentcolor;
+            m_damageflashtimer = 0;
+            m_takendamage = false;
+        }
+        else
+        {
+            m_damageflashtimer += Time.deltaTime;
+        }
+            
     }
 
     protected void LateUpdate()
@@ -211,6 +242,13 @@ public class Enemy : MonoBehaviour
                     m_CurrentEnemySquad.m_MoveSquadDown = true;
                 }
             }
+
+            if(transform.position.y < -m_boundries.y + (m_HalfSize.x))
+            {
+                if(PlayerManager.m_Instance.m_Player!=null)
+                    PlayerManager.m_Instance.m_Player.TakeDamage(1000);
+            }
+
         }
         else
         {
@@ -247,7 +285,7 @@ public class Enemy : MonoBehaviour
                 transform.position.x - m_spriterenderer.bounds.size.x / 2 < t_screen.x) 
             { 
                 GameObject t_explosion = Instantiate(m_deathparticle, transform.position, Quaternion.identity) as GameObject;
-                t_explosion.GetComponent<ParticleSystem>().startColor = m_spriterenderer.color;
+                t_explosion.GetComponent<ParticleSystem>().startColor = m_currentcolor;
 
                 m_Alive = false;
                     
@@ -256,8 +294,14 @@ public class Enemy : MonoBehaviour
                     m_CurrentEnemySquad.RemoveEnemyFromSquad(this);
                 }
 
-                GameObject.FindGameObjectWithTag("pointblank").GetComponent<Game>().AddPoints(m_points);
+                int t_points = m_points * (int)m_CurrentEnemySquad.m_DifficultyFactor;
+                if (t_points > 1000)
+                    t_points = 1000;
+
+                GameObject.FindGameObjectWithTag("pointblank").GetComponent<Game>().AddPoints(t_points);
                 SpawnPowerUp();
+
+
                 Destroy(gameObject);
             }
         }
@@ -301,6 +345,17 @@ public class Enemy : MonoBehaviour
             Bullet t_bullet = Instantiate(m_currentbullet).GetComponent<Bullet>();
             t_bullet.transform.position = new Vector2(transform.position.x, transform.position.y - m_spriterenderer.bounds.size.y/2 - t_bullet.GetComponent<SpriteRenderer>().bounds.size.x / 2);
             t_bullet.tag = "Bullet";
+
+            if (-m_CurrentEnemySquad.m_DifficultyFactor > -2.5f)
+                t_bullet.m_speed = -2.5f;
+            else if (-m_CurrentEnemySquad.m_DifficultyFactor < -6.0f)
+                t_bullet.m_speed = -6.0f;
+            else
+                t_bullet.m_speed = -m_CurrentEnemySquad.m_DifficultyFactor;
+
+
+            
+
             PlayFireSound();
         }
     }
@@ -326,7 +381,7 @@ public class Enemy : MonoBehaviour
 
     void PlayFireSound()
     {
-        GameAudioManager.m_Instance.PlaySound(m_firesoundname, false, 1.0f, false);
+        GameAudioManager.m_Instance.PlaySound(m_firesoundname, false, 1.0f, 0.2f);
     }
 
     public virtual void SpawnPowerUp()
@@ -345,6 +400,13 @@ public class Enemy : MonoBehaviour
                 Instantiate(AssetManager.m_Instance.GetPrefab("GreenPower"), transform.position, Quaternion.identity);
             }
         }
+    }
+
+    public void TakeDamaage(float m_Damage)
+    {
+        m_health -= m_Damage;
+        m_spriterenderer.color = Color.white;
+        m_takendamage = true;
     }
 
 }

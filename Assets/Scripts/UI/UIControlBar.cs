@@ -50,7 +50,10 @@ class UIControlBar : UIElement {
     void MovePlayer(Vector2 p_TouchScreenCoord)
     {
         Vector2 t_currenttouchposition = Camera.main.ScreenToWorldPoint(p_TouchScreenCoord);
-        m_player.MovePlayer(new Vector2((t_currenttouchposition.x - m_previoustouchposition.x) * 10, 0));
+
+        if(m_player != null)
+            m_player.MovePlayer(new Vector2((t_currenttouchposition.x - m_previoustouchposition.x) * 10, 0));
+
         m_previoustouchposition = t_currenttouchposition;
     }
 }

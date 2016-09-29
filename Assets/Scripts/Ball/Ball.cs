@@ -10,7 +10,7 @@ public class Ball : MonoBehaviour {
     }
 
     private SpriteRenderer m_spriterenderer;
-    private Vector2 m_originalscale;
+    private Vector3 m_originalscale;
     protected CircleCollider2D m_circlecollider2D;
 
     //Offsets for boundry check against ball image
@@ -34,6 +34,8 @@ public class Ball : MonoBehaviour {
     private bool m_alive;
 
     private float m_angleoffset;
+
+    
 
     private void Initialize()
     {
@@ -68,6 +70,21 @@ public class Ball : MonoBehaviour {
 
         m_angleoffset = 0.30f;
 
+        SetupTrailRenderer();
+
+    }
+
+    void SetupTrailRenderer()
+    {
+        TrailRenderer t_tr = GetComponent<TrailRenderer>();
+        t_tr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        t_tr.receiveShadows = false;
+        t_tr.useLightProbes = false;
+        t_tr.time = 0.5f;
+        t_tr.startWidth = 0.25f;
+        t_tr.endWidth = 0;
+        t_tr.autodestruct = true;
+        t_tr.sortingLayerName = "BallTrail";
     }
 
 	// Use this for initialization
@@ -116,7 +133,7 @@ public class Ball : MonoBehaviour {
 
             ChangeVelocity(new Vector2(m_rigidbody2D.velocity.x, -m_rigidbody2D.velocity.y));
 
-            GameAudioManager.m_Instance.PlaySound("BallWallHit", false, 1.0f,false);
+            GameAudioManager.m_Instance.PlaySound("BallWallHit", false, 1.0f,0.4f);
             SpeedCheck();
         }
         else if(transform.position.y < -m_boundrysize.y + m_spriterenderer.bounds.size.y/2) //Bottom
@@ -125,7 +142,7 @@ public class Ball : MonoBehaviour {
 
             ChangeVelocity(new Vector2(m_rigidbody2D.velocity.x, -m_rigidbody2D.velocity.y));
             
-            GameAudioManager.m_Instance.PlaySound("BallWallHit", false, 1.0f,false);
+            GameAudioManager.m_Instance.PlaySound("BallWallHit", false, 1.0f, 0.4f);
 
             SpeedCheck();
         }
@@ -137,7 +154,7 @@ public class Ball : MonoBehaviour {
 
             ChangeVelocity(new Vector2(-m_rigidbody2D.velocity.x, m_rigidbody2D.velocity.y));
 
-            GameAudioManager.m_Instance.PlaySound("BallWallHit", false, 1.0f,false);
+            GameAudioManager.m_Instance.PlaySound("BallWallHit", false, 1.0f, 0.4f);
             SpeedCheck();
         }
         else if(transform.position.x < -m_boundrysize.x + m_spriterenderer.bounds.size.x/2)//Left
@@ -146,7 +163,7 @@ public class Ball : MonoBehaviour {
 
             ChangeVelocity(new Vector2(-m_rigidbody2D.velocity.x, m_rigidbody2D.velocity.y));
 
-            GameAudioManager.m_Instance.PlaySound("BallWallHit", false, 1.0f,false);
+            GameAudioManager.m_Instance.PlaySound("BallWallHit", false, 1.0f, 0.4f);
             SpeedCheck();
         }
 
@@ -266,7 +283,10 @@ public class Ball : MonoBehaviour {
 
     public virtual void OnTriggerEnter2D(Collider2D p_Collider)
     {
-        CheckCollision(p_Collider);
+        if (p_Collider.tag != "EnemyBullet" && p_Collider.tag != "Bullet")
+            CheckCollision(p_Collider);
+        else if (p_Collider.tag == "EnemyBullet")
+            Destroy(p_Collider.gameObject);
     }
 
     protected void OnTriggerExit2D(Collider2D p_Collider)
@@ -274,7 +294,7 @@ public class Ball : MonoBehaviour {
         if(p_Collider.tag == "Player")
         {
             p_Collider.GetComponent<Player>().m_Muzzle.Reload();
-            GameAudioManager.m_Instance.PlaySound("BallPlayerHit", false, 1.0f, false);
+            GameAudioManager.m_Instance.PlaySound("BallPlayerHit", false, 1.0f, 0.4f);
         }
     }
 

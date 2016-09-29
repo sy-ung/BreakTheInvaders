@@ -15,23 +15,27 @@ public class GreenMuzzle : Muzzle {
         m_spriteRenderer.color = Color.green;
         m_projectileready = false;
 
-        m_firingrate = 0.2f;
+        m_firingrate = 0f;
         m_firingtimer = m_firingrate + 1;
-    }
+        m_muzzleshakestrength = 0.045f;
 
-    // Use this for initialization
-    void Start()
-    {
-        base.Start();
-        SetMaxAmmoCount(7);
+        SetMaxAmmoCount(20);
         m_ammobar.m_ammoprefab = AssetManager.m_Instance.GetPrefab("GreenAmmoIcon");
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (m_currentammocount <= 0)
-            return;
+        if (Game.m_GameStarted)
+        {
+            if (m_currentammocount <= 0)
+            {
+                ShowReload();
+                return;
+            }
+            else if (m_currentammocount > 0)
+                HideReload();
+        }
 
         if (m_StartFiring)
         {
@@ -80,8 +84,10 @@ public class GreenMuzzle : Muzzle {
         m_currentammocount--;
         m_ammobar.EjectCurrentAmmo();
 
+        CameraShake();
+
         GameAudioManager.m_Instance.StopSound("GreenMuzzleCharge");
-        GameAudioManager.m_Instance.PlaySound("GreenMuzzleLaunch", false, 1.0f,false);
+        GameAudioManager.m_Instance.PlaySound("GreenMuzzleLaunch", false, 1.0f, m_muzzlevolume);
         m_projectileready = false;
     }
 
@@ -95,9 +101,9 @@ public class GreenMuzzle : Muzzle {
         Vector2 t_startPosition = (Vector2)transform.position + (t_firedirection * (m_currentspawnedprojectile.GetComponent<SpriteRenderer>().bounds.size.magnitude / 2));
         m_currentspawnedprojectile.transform.position = t_startPosition;
 
-        m_currentspawnedprojectile.transform.rotation = Quaternion.FromToRotation(m_currentspawnedprojectile.transform.right, t_firedirection);
+        //m_currentspawnedprojectile.transform.rotation = Quaternion.FromToRotation(m_currentspawnedprojectile.transform.right, t_firedirection);
 
-        GameAudioManager.m_Instance.PlaySound("GreenMuzzleCharge", true, 1.0f,false);
+        GameAudioManager.m_Instance.PlaySound("GreenMuzzleCharge", true, 1.0f, m_muzzlevolume);
 
     }
 
